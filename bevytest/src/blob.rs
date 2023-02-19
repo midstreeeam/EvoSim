@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*
+};
 use bevy_rapier2d::prelude::*;
 
 use crate::{
@@ -20,14 +22,14 @@ pub struct BlobRapierBundle{
     pub restitution: Restitution,
     pub damping: Damping,
     
-    pub sleeping: Sleeping
+    pub sleeping: Sleeping,
+    pub ccd: Ccd
 }
 
 #[derive(Bundle)]
 pub struct BlobBundle{
     pub blob: Blob,
-    pub rapier: BlobRapierBundle,
-
+    pub rapier: BlobRapierBundle
 }
 
 
@@ -50,7 +52,8 @@ impl Default for BlobBundle {
                     linear_damping: LINEAR_DAMPING,
                     angular_damping: ANGULAR_DAMPING},
                 
-                sleeping: Sleeping::disabled()
+                sleeping: Sleeping::disabled(),
+                ccd: Ccd::enabled()
             }
         }
     }

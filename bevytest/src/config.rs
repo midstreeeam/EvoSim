@@ -18,12 +18,10 @@ pub const BLOB_DENSITY: f32 = 2.0;
 // wall config
 pub const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 pub const WALL_THICKNESS: f32 = 10.0;
-// x coordinates
-pub const WALL_LEFT: f32 = -450.;
-pub const WALL_RIGHT: f32 = 450.;
-// y coordinates
-pub const WALL_BOTTOM: f32 = -300.;
-pub const WALL_TOP: f32 = 300.;
+// half width
+pub const WALL_X: f32 = 450.;
+// half height
+pub const WALL_Y: f32 = 300.;
 
 
 // These constants are defined in `Transform` units.
