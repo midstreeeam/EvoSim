@@ -11,8 +11,9 @@ pub const ANGULAR_DAMPING: f32 = 0.3;
 
 // blob config
 pub const BLOB_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
-pub const BLOB_RADIUS: f32 = 30.0;
 pub const BLOB_DENSITY: f32 = 2.0;
+pub const BLOB_RADIUS: f32 = 30.0;
+pub const BLOB_SIZE: Vec3 = Vec3::new(BLOB_RADIUS, BLOB_RADIUS, 0.);
 
 
 // wall config

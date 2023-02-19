@@ -10,7 +10,7 @@ use crate::{
 pub fn run() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(50.0))
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(30.0))
         .add_plugin(RapierDebugRenderPlugin::default())
         .insert_resource(RapierConfiguration{
             // gravity: GRAVITY,
