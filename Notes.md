@@ -19,3 +19,7 @@ particle based liquid world.
 **John Buffer SFML implementation**: https://github.com/johnBuffer/VerletSFML, https://www.youtube.com/watch?v=lS_qeBy3aQI
 
 **Salva_2d**: https://github.com/dimforge/salva
+
+### Vacuo Simulation
+
+much easier and cheaper than fluid.
