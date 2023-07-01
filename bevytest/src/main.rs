@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 // use bevy::ecs::system::{SystemParam};
 use bevy::{
     prelude::*,
@@ -75,7 +77,7 @@ fn setup_physics(
             RigidBody::Dynamic,
             Velocity{
                 linvel: Vec2 { x: 0.0, y: 0.0 },
-                angvel: -1.0
+                angvel: 0.0
             },
         )).id();
 
@@ -98,7 +100,9 @@ fn setup_physics(
 
     let joint = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(0.0, 0.0))
-        .local_anchor2(Vec2::new(150.0, 0.0)).limits([-0.0,3.10]);
+        .local_anchor2(Vec2::new(150.0, 0.0))
+        .motor(PI/2.0, 0.0, 10.0, 0.3)
+        .limits([0.0,3.0]);
     
     commands.spawn((
         SpriteBundle{
@@ -118,7 +122,7 @@ fn setup_physics(
 
 fn print_angle(joints: Query<&ImpulseJoint>){
     for joint in joints.iter(){
-        //println!("{:#?}",joint)
+        // println!("{:#?}",joint)
     }
 }
 
