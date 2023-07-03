@@ -2,7 +2,10 @@ mod physics;
 mod block;
 
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::{
+    prelude::*,
+    rapier::prelude::JointAxis
+};
 
 use physics::physical_world;
 use block::PhysiBlockBundle;
@@ -16,15 +19,14 @@ fn main() {
         .add_plugin(physical_world::PhysiWorld)
         .add_startup_system(setup_graphics)
         .add_startup_system(setup_test)
+        .add_system(contorl)
+        // .add_system(print_angle)
         .run();
 }
 
 pub fn setup_graphics(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
-
-#[derive(Component)]
-pub struct ControlFlag;
 
 fn setup_test(
     mut commands: Commands,
@@ -55,34 +57,131 @@ fn setup_test(
     let joint_right_1 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(25.0, 0.0))
         .local_anchor2(Vec2::new(-50.0, 0.0))
-        .limits([-2.0,2.0]);
+        .limits([-2.0,2.0])
+        ;
 
     let joint_right_2 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(50.0, 0.0))
         .local_anchor2(Vec2::new(-50.0, 0.0))
-        .limits([-2.0,0.0]);
+        .limits([-3.0,0.0])
+        ;
 
     let joint_left_1 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(-25.0, 0.0))
         .local_anchor2(Vec2::new(50.0, 0.0))
-        .limits([-2.0,2.0]);
+        .limits([-2.0,2.0])
+        ;
 
     let joint_left_2 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(-50.0, 0.0))
         .local_anchor2(Vec2::new(50.0, 0.0))
-        .limits([0.0,2.0]);
+        .limits([0.0,3.0])
+        ;
 
-    bind_joint(&mut commands, body, right_1, joint_right_1);
-    bind_joint(&mut commands, right_1, right_2, joint_right_2);
-    bind_joint(&mut commands, body, left_1, joint_left_1);
-    bind_joint(&mut commands, left_1, left_2, joint_left_2);
+    bind_joint(&mut commands, body, right_1, joint_right_1, Some(ControlFlag::Right));
+    bind_joint(&mut commands, right_1, right_2, joint_right_2, None);
+    bind_joint(&mut commands, body, left_1, joint_left_1, Some(ControlFlag::Left));
+    bind_joint(&mut commands, left_1, left_2, joint_left_2, None);
 
 }
 
-fn bind_joint(commands: &mut Commands, parent: Entity, child: Entity, joint: RevoluteJointBuilder){
+#[derive(Component)]
+pub enum ControlFlag{
+    Left,
+    Right,
+}
+
+fn bind_joint(
+    commands: &mut Commands,
+    parent: Entity,
+    child: Entity,
+    joint: RevoluteJointBuilder,
+    control_flag: Option<ControlFlag>
+){
     commands.entity(child).with_children(|cmd| {
         let mut new_joint = ImpulseJoint::new(parent, joint);
         new_joint.data.set_contacts_enabled(false);
-        cmd.spawn(new_joint);
+        match control_flag {
+            Some(flag) => {
+                cmd.spawn((new_joint, flag));
+            },
+            None => {
+                cmd.spawn(new_joint);
+            },
+        }
     });
 }
+
+pub fn contorl(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut joint_query: Query<(&mut ImpulseJoint, &ControlFlag)>,
+    // time: Res<Time>,
+) {
+    
+    let a_press= keyboard_input.pressed(KeyCode::A);
+    let d_press = keyboard_input.pressed(KeyCode::D);
+    for (mut joint,flag) in joint_query.iter_mut(){
+        match (a_press,d_press,flag) {
+            (true,false,ControlFlag::Left) => {
+                joint.data.set_motor(
+                    JointAxis::AngX,1.0,10.0,10.0,1.0
+                );
+            },
+            (true,false,ControlFlag::Right) => {
+                joint.data.set_motor(
+                    JointAxis::AngX,-1.0,-10.0,10.0,1.0
+                );
+            },
+            (false,true,ControlFlag::Left) => {
+                joint.data.set_motor(
+                    JointAxis::AngX,-1.0,-10.0,10.0,1.0
+                );
+            },
+            (false,true,ControlFlag::Right) => {
+                joint.data.set_motor(
+                    JointAxis::AngX,1.0,10.0,10.0,1.0
+                );
+            },
+            _ => {
+                joint.data.set_motor(
+                    JointAxis::AngX,0.0,0.0,0.0,0.0
+                );
+            }
+        }
+    }
+    
+    // if let Ok(mut transform) = player_query.get_single_mut() {
+    //     let mut direction = Vec3::ZERO;
+
+    //     if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A) {
+    //         direction += Vec3::new(-1.0, 0.0, 0.0);
+    //     }
+    //     if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D) {
+    //         direction += Vec3::new(1.0, 0.0, 0.0);
+    //     }
+    //     if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) {
+    //         direction += Vec3::new(0.0, 1.0, 0.0);
+    //     }
+    //     if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) {
+    //         direction += Vec3::new(0.0, -1.0, 0.0);
+    //     }
+
+    //     if direction.length() > 0.0 {
+    //         direction = direction.normalize();
+    //     }
+
+    //     transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
+    // }
+}
+
+
+// fn print_angle(
+//     joints: Query<(&Transform, &ImpulseJoint)>,
+//     tvq: Query<&Transform>
+// ){
+//     for (child_transform,joint) in joints.iter(){
+//         if let Ok(parent_transform) = tvq.get(joint.parent) {
+//             print!("{:#?}",get_relative_rotation(parent_transform, child_transform));
+//         }
+//     }
+// }

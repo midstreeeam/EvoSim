@@ -123,3 +123,25 @@ fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32{
 fn get_relative_angular_velocity(v1: &Velocity, v2:&Velocity) ->f32{
     (v1.angvel-v2.angvel)/PI*180.0
 }
+
+
+
+fn print_angle(
+    tq: Query<&Transform>,
+    mut q: Query<(&Parent, &mut ImpulseJoint, &ControlFlag)>
+){
+    for (entity, mut joint,flag) in q.iter_mut(){
+        if let ControlFlag::Left = flag{
+            let parent_transform = tq.get(joint.parent).ok().unwrap();
+            let child_transform = tq.get(entity.get()).ok().unwrap();
+            let theta = get_relative_rotation(parent_transform,child_transform);
+           
+        }
+    }
+}
+
+fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32{
+    let r1 = transform1.rotation;
+    let r2 = transform2.rotation;
+    r1.z.atan2(r1.w)*360.0/PI-r2.z.atan2(r2.w)*360.0/PI
+}
