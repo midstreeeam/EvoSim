@@ -22,6 +22,24 @@ fn setup_physics(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
 
+    commands.spawn((
+        MaterialMesh2dBundle {
+            mesh: meshes.add(shape::Circle::new(50.).into()).into(),
+            material: materials.add(ColorMaterial::from(Color::rgb(0.55, 0.25, 0.25))),
+            transform: Transform::from_translation(Vec3::new(150., 100., 0.)),
+            ..default()
+        },
+        RigidBody::Dynamic,
+        Collider::ball(50.0),
+        Friction::default(),
+        Restitution::default(),
+        Velocity{
+            linvel: Vec2 { x: -300.0, y: 100.0 },
+            angvel: 0.0
+        }
+    ));
+
+
     let sq = commands
         .spawn((
             SpriteBundle{
