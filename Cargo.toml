@@ -1,5 +1,5 @@
 [package]
-name = "test2"
+name = "evosim"
 version = "0.1.0"
 edition = "2021"
 
