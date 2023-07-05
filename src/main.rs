@@ -1,5 +1,6 @@
 mod physics;
 mod block;
+mod graphics;
 
 use bevy::prelude::*;
 use bevy_rapier2d::{
@@ -9,6 +10,7 @@ use bevy_rapier2d::{
 
 use physics::physical_world;
 use block::PhysiBlockBundle;
+use graphics::*;
 
 
 fn main() {
@@ -17,15 +19,11 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierDebugRenderPlugin::default())
         .add_plugin(physical_world::PhysiWorld)
-        .add_startup_system(setup_graphics)
+        .add_plugin(Graphics)
         .add_startup_system(setup_test)
         .add_system(contorl)
         // .add_system(print_angle)
         .run();
-}
-
-pub fn setup_graphics(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
 }
 
 fn setup_test(
@@ -40,18 +38,16 @@ fn setup_test(
     let right_1 = commands.spawn((
         PhysiBlockBundle::from_xy_dx_dy(75.0, 0.0, 50.0, 10.0)
         .with_density(0.1),
-        ControlFlag::Right
     )).id();
 
-    let right_2 = commands.spawn((
+    let right_2 = commands.spawn(
         PhysiBlockBundle::from_xy_dx_dy(175.0, 0.0, 50.0, 10.0)
         .with_density(0.1)
-    )).id();
+    ).id();
 
     let left_1 = commands.spawn((
         PhysiBlockBundle::from_xy_dx_dy(-75.0, 0.0, 50.0, 10.0)
         .with_density(0.1),
-        ControlFlag::Left
     )).id();
 
     let left_2 = commands.spawn((
