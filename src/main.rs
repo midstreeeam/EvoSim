@@ -57,26 +57,22 @@ fn setup_test(
     let joint_right_1 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(25.0, 0.0))
         .local_anchor2(Vec2::new(-50.0, 0.0))
-        .limits([-2.0,2.0])
-        ;
+        .limits([-2.0,2.0]);
 
     let joint_right_2 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(50.0, 0.0))
         .local_anchor2(Vec2::new(-50.0, 0.0))
-        .limits([-3.0,0.0])
-        ;
+        .limits([-135f32.to_radians(),0.0]);
 
     let joint_left_1 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(-25.0, 0.0))
         .local_anchor2(Vec2::new(50.0, 0.0))
-        .limits([-2.0,2.0])
-        ;
+        .limits([-2.0,2.0]);
 
     let joint_left_2 = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(-50.0, 0.0))
         .local_anchor2(Vec2::new(50.0, 0.0))
-        .limits([0.0,3.0])
-        ;
+        .limits([0.0,135f32.to_radians()]);
 
     bind_joint(&mut commands, body, right_1, joint_right_1, Some(ControlFlag::Right));
     bind_joint(&mut commands, right_1, right_2, joint_right_2, None);
@@ -124,22 +120,22 @@ pub fn contorl(
         match (a_press,d_press,flag) {
             (true,false,ControlFlag::Left) => {
                 joint.data.set_motor(
-                    JointAxis::AngX,1.0,10.0,10.0,1.0
+                    JointAxis::AngX,135f32.to_radians(),0.0,10.0,3.0
                 );
             },
             (true,false,ControlFlag::Right) => {
                 joint.data.set_motor(
-                    JointAxis::AngX,-1.0,-10.0,10.0,1.0
+                    JointAxis::AngX,-135f32.to_radians(),0.0,10.0,3.0
                 );
             },
             (false,true,ControlFlag::Left) => {
                 joint.data.set_motor(
-                    JointAxis::AngX,-1.0,-10.0,10.0,1.0
+                    JointAxis::AngX,-135f32.to_radians(),0.0,10.0,3.0
                 );
             },
             (false,true,ControlFlag::Right) => {
                 joint.data.set_motor(
-                    JointAxis::AngX,1.0,10.0,10.0,1.0
+                    JointAxis::AngX, 135f32.to_radians(),0.0,10.0,3.0
                 );
             },
             _ => {
@@ -150,38 +146,4 @@ pub fn contorl(
         }
     }
     
-    // if let Ok(mut transform) = player_query.get_single_mut() {
-    //     let mut direction = Vec3::ZERO;
-
-    //     if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A) {
-    //         direction += Vec3::new(-1.0, 0.0, 0.0);
-    //     }
-    //     if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D) {
-    //         direction += Vec3::new(1.0, 0.0, 0.0);
-    //     }
-    //     if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) {
-    //         direction += Vec3::new(0.0, 1.0, 0.0);
-    //     }
-    //     if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) {
-    //         direction += Vec3::new(0.0, -1.0, 0.0);
-    //     }
-
-    //     if direction.length() > 0.0 {
-    //         direction = direction.normalize();
-    //     }
-
-    //     transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
-    // }
 }
-
-
-// fn print_angle(
-//     joints: Query<(&Transform, &ImpulseJoint)>,
-//     tvq: Query<&Transform>
-// ){
-//     for (child_transform,joint) in joints.iter(){
-//         if let Ok(parent_transform) = tvq.get(joint.parent) {
-//             print!("{:#?}",get_relative_rotation(parent_transform, child_transform));
-//         }
-//     }
-// }
