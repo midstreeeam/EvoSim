@@ -11,6 +11,7 @@ impl Plugin for PhysiWorld {
         .add_startup_system(setup_walls)
         .add_startup_system(setup_gravity)
         // .add_system(apply_forces)
+        .add_system(viscosity)
         ;
     }
 }

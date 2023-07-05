@@ -12,6 +12,7 @@ pub struct PhysiBlockBundle{
     pub massprop: ColliderMassProperties,
     pub friction: Friction,
     pub restitution: Restitution,
+    pub damping: Damping,
 
     pub ex_force: ExternalForce,
     pub ex_impulse: ExternalImpulse
@@ -36,6 +37,7 @@ impl Default for PhysiBlockBundle{
             massprop: ColliderMassProperties::Density(1.0),
             friction: Friction::default(),
             restitution: Restitution::default(),
+            damping: Damping::default(),
             ex_force: ExternalForce::default(),
             ex_impulse: ExternalImpulse::default()
         }
@@ -59,9 +61,9 @@ impl PhysiBlockBundle{
         }
     }
 
-    pub fn set_color(&mut self, color:Color){
-        self.sprite.sprite.color=color
-    }
+    // pub fn set_color(&mut self, color:Color){
+    //     self.sprite.sprite.color=color
+    // }
 
     pub fn with_density(mut self, density:f32) -> Self{
         self.massprop = ColliderMassProperties::Density(density);

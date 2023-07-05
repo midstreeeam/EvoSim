@@ -5,20 +5,26 @@ pub fn setup_gravity(mut rapier_config: ResMut<RapierConfiguration>) {
     rapier_config.gravity = Vec2::ZERO;
 }
 
-/* Apply forces and impulses inside of a system. */
-pub fn apply_forces(
-    mut ext_forces: Query<&mut ExternalForce>,
-    mut ext_impulses: Query<&mut ExternalImpulse>
-) {
-    // Apply forces.
-    for mut ext_force in ext_forces.iter_mut() {
-        ext_force.force = Vec2::new(-500.0, -500.0);
-        ext_force.torque = 0.4;
-    }
 
-    // Apply impulses.
-    for mut ext_impulse in ext_impulses.iter_mut() {
-        ext_impulse.impulse = Vec2::new(100.0, 200.0);
-        ext_impulse.torque_impulse = 0.4;
+pub fn viscosity(
+    mut block_q: Query<(&Collider, &Transform, &Velocity, &mut ExternalForce)>
+){
+    for (collider,transform,v,mut force) in block_q.iter_mut(){
+        // skip objects not moving
+        if v.linvel.length()==0.0{
+            continue;
+        }
+        let cube_shape: Vec2 = collider.as_cuboid().unwrap().half_extents();
+        let rotation: f32 = transform.rotation.to_axis_angle().1;
+
+        let velocity_direction = v.linvel.normalize();
+        let face_direction = Vec2::new(rotation.cos(), rotation.sin());
+        let angle = velocity_direction.angle_between(face_direction).abs();
+        let projected_area = (cube_shape.x * angle.sin().abs())
+            + cube_shape.y * angle.cos().abs();
+
+        // considering changing drag_coeff
+        force.force = 5.0 * (-v.linvel * projected_area);
+
     }
 }
