@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.10.1"
-bevy_rapier2d = "0.21.0"
+bevy_rapier2d = {git = "https://github.com/midstreeeam/bevy_rapier.git", branch = "new_dependencies"}
