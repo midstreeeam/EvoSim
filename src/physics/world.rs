@@ -1,17 +1,17 @@
 use bevy::{
     prelude::*,
-    window::PrimaryWindow
 };
 use bevy_rapier2d::prelude::*;
 
+use crate::consts::*;
 
 #[derive(Component)]
 pub struct Wall{}
 
-pub fn setup_walls(mut commands: Commands,window_query: Query<&Window, With<PrimaryWindow>>) {
-    let window = window_query.get_single().unwrap();
-    let half_window_width = window.width() / 2.0;
-    let half_window_height = window.height() / 2.0;
+pub fn setup_walls(mut commands: Commands) {
+
+    let half_window_width = WORLD_WIDTH / 2.0;
+    let half_window_height = WORLD_HEIGHT /2.0;
 
     // Left wall
     commands.spawn((

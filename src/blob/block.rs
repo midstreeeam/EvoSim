@@ -1,8 +1,26 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+#[derive(Component, Clone, Debug)]
+pub struct BlockAnchors{
+    pub top: Vec2,
+    pub bottom: Vec2,
+    pub left: Vec2,
+    pub right: Vec2
+}
 
-#[derive(Bundle)]
+impl BlockAnchors {
+    pub fn from_xy(dx:f32, dy:f32) -> Self{
+        Self { 
+            top: Vec2 { x: 0.0, y: dy },
+            bottom: Vec2 { x: 0.0, y: -dy },
+            left: Vec2 { x: -dx, y: 0.0 },
+            right: Vec2 { x: dx, y: 0.0 }
+        }
+    }
+}
+
+#[derive(Bundle,Clone)]
 pub struct PhysiBlockBundle{
     pub sprite: SpriteBundle,
     pub collider: Collider,
@@ -15,12 +33,14 @@ pub struct PhysiBlockBundle{
     pub damping: Damping,
 
     pub ex_force: ExternalForce,
-    pub ex_impulse: ExternalImpulse
+    pub ex_impulse: ExternalImpulse,
+
+    pub anchors: BlockAnchors
 }
 
 impl Default for PhysiBlockBundle{
     fn default() -> Self {
-        let default_rad = 10.0;
+        let default_rad = 1.0;
         Self { 
             sprite: SpriteBundle { 
                 sprite: Sprite { 
@@ -31,6 +51,7 @@ impl Default for PhysiBlockBundle{
                 transform: Transform::default(),
                 ..default()
             },
+            anchors: BlockAnchors::from_xy(default_rad, default_rad),
             collider: Collider::cuboid(default_rad/2.0, default_rad/2.0),
             rigbody: RigidBody::Dynamic,
             velocity: Velocity::default(),
@@ -50,13 +71,14 @@ impl PhysiBlockBundle{
             sprite: SpriteBundle { 
                 sprite: Sprite {
                     color: Color::rgb(0.25, 0.25, 0.55),
-                    custom_size: Some(Vec2 { x: 2.0*dx, y: 2.0*dy }),
+                    custom_size: Some(Vec2 { x: 2.0*dx , y: 2.0*dy }),
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(x,y,0.0)),
                 ..default()
             },
             collider: Collider::cuboid(dx, dy),
+            anchors: BlockAnchors::from_xy(dx, dy),
             ..default()
         }
     }

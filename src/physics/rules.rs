@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::consts::*;
+
 pub fn setup_gravity(mut rapier_config: ResMut<RapierConfiguration>) {
     rapier_config.gravity = Vec2::ZERO;
 }
@@ -11,7 +13,7 @@ pub fn viscosity(
 ){
     for (collider,transform,v,mut force) in block_q.iter_mut(){
         // skip objects not moving
-        if v.linvel.length()==0.0{
+        if v.linvel.length().abs() < EPSILON{
             continue;
         }
         let cube_shape: Vec2 = collider.as_cuboid().unwrap().half_extents();
@@ -24,7 +26,7 @@ pub fn viscosity(
             + cube_shape.y * angle.cos().abs();
 
         // considering changing drag_coeff
-        force.force = 5.0 * (-v.linvel * projected_area);
+        force.force = DRAG_COEFF * (-v.linvel * projected_area);
 
     }
 }
