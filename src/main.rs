@@ -16,14 +16,28 @@ use graphics::*;
 use blob::{block::PhysiBlockBundle, blob_builder::BlobBuilder};
 
 
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+
+
+
 fn main() {
     App::new()
+        // defualt
         .add_plugins(DefaultPlugins)
+
+        // log frame rate
+        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugin(FrameTimeDiagnosticsPlugin::default())
+
+        // raiper
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierDebugRenderPlugin::default())
+
+        // cost
         .add_plugin(physical_world::PhysiWorld)
         .add_plugin(Graphics)
         .add_startup_system(setup_test)
+
         .run();
 }
 
@@ -59,3 +73,4 @@ fn setup_test(
     // println!("{:#?}",bb.blocks);
 
 }
+
