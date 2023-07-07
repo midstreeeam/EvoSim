@@ -7,10 +7,9 @@ use crate::consts::*;
 
 use super::block::{PhysiBlockBundle, BlockAnchors};
 
+/// flag of a blob entity
 #[derive(Component)]
 pub struct Blob;
-
-
 
 #[derive(Debug)]
 pub struct BlobBlock {
@@ -26,6 +25,8 @@ pub struct BlobBlock {
 }
 
 pub struct BlobBuilder<'a>{
+    blob: Entity,
+    color: Color,
     commands: Commands<'a, 'a>,
     pub blocks: Vec<BlobBlock>,
     current_pos: Option<usize>
@@ -39,17 +40,36 @@ impl<'a> BlobBuilder<'a> {
     /// 
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
     /// please use [`clean()`] so that there won't be joints connects.
-    pub fn from_commands(commands: Commands<'a, 'a>) -> Self{
+    pub fn from_commands(mut commands: Commands<'a, 'a>) -> Self{
         Self{
+            blob: commands.spawn((
+                Blob,
+                Visibility::Visible,
+                ComputedVisibility::HIDDEN,
+                TransformBundle::IDENTITY
+            )).id(),
+            color: Color::AZURE,
             commands: commands,
             blocks: Vec::new(),
             current_pos:None
         }
     }
 
+    /// set color for blob
+    pub fn set_color(&mut self, color: Color) -> &mut Self{
+        self.color = color;
+        self
+    }
+
     /// Clean all the things inside BlobBuilder
     /// Equvalent to drop the old builder and generate a new one
     pub fn clean(&mut self) -> &mut Self{
+        self.blob = self.commands.spawn((
+            Blob,
+            Visibility::Visible,
+            ComputedVisibility::HIDDEN,
+            TransformBundle::IDENTITY
+        )).id();
         self.blocks = Vec::new();
         self.current_pos = None;
         self
@@ -126,7 +146,7 @@ impl<'a> BlobBuilder<'a> {
         &mut self,
         phy_block_bundle: PhysiBlockBundle,
         others: T) -> &mut Self{
-        let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
+        let id = self.commands.spawn(phy_block_bundle.clone().with_color(self.color)).insert(others).id();
         let block = BlobBlock{
             id: id,
             top: None,
@@ -138,6 +158,8 @@ impl<'a> BlobBuilder<'a> {
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors
         };
+        
+        self.commands.entity(self.blob).push_children(&[block.id]);
         self.blocks.push(block);
         self.current_pos = Some(0);
 
@@ -168,7 +190,7 @@ impl<'a> BlobBuilder<'a> {
         let spawn_y = block.translation.y;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
             spawn_x, spawn_y, dx, dy
-        );
+        ).with_color(self.color).with_density(DEFAULT_DENSITY);
         let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
         let new_block = BlobBlock{
             id: id,
@@ -208,6 +230,7 @@ impl<'a> BlobBuilder<'a> {
 
         bind_joint(&mut self.commands, block.id, new_block.id, joint);
 
+        self.commands.entity(self.blob).push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
@@ -237,7 +260,7 @@ impl<'a> BlobBuilder<'a> {
         let spawn_y = block.translation.y;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
             spawn_x, spawn_y, dx, dy
-        );
+        ).with_color(self.color).with_density(DEFAULT_DENSITY);
         let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
         let new_block = BlobBlock{
             id: id,
@@ -277,6 +300,7 @@ impl<'a> BlobBuilder<'a> {
 
         bind_joint(&mut self.commands, block.id, new_block.id, joint);
 
+        self.commands.entity(self.blob).push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
@@ -307,7 +331,7 @@ impl<'a> BlobBuilder<'a> {
         let spawn_y = block.translation.y + block.size.y + dy;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
             spawn_x, spawn_y, dx, dy
-        );
+        ).with_color(self.color).with_density(DEFAULT_DENSITY);
         let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
         let new_block = BlobBlock{
             id: id,
@@ -347,6 +371,7 @@ impl<'a> BlobBuilder<'a> {
 
         bind_joint(&mut self.commands, block.id, new_block.id, joint);
 
+        self.commands.entity(self.blob).push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
@@ -377,7 +402,7 @@ impl<'a> BlobBuilder<'a> {
         let spawn_y = block.translation.y - block.size.y - dy;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
             spawn_x, spawn_y, dx, dy
-        );
+        ).with_color(self.color).with_density(DEFAULT_DENSITY);
         let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
         let new_block = BlobBlock{
             id: id,
@@ -417,6 +442,7 @@ impl<'a> BlobBuilder<'a> {
 
         bind_joint(&mut self.commands, block.id, new_block.id, joint);
 
+        self.commands.entity(self.blob).push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self

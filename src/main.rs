@@ -41,7 +41,7 @@ fn setup_test(
             -100.0, 0.0, 25.0, 50.0
         ).with_density(1.0);
     
-    bb.create_first(body, ()).add_to_bottom(
+    bb.set_color(Color::RED).create_first(body, ()).add_to_bottom(
         50.0, 50.0, Some(155f32.to_radians()),None,()
     ).add_to_right(
         50.0, 50.0, Some(155f32.to_radians()),None,()
@@ -52,7 +52,7 @@ fn setup_test(
     );
 
     // create new blob
-    bb.clean().create_first(body2,()).add_to_top(
+    bb.clean().set_color(Color::LIME_GREEN).create_first(body2,()).add_to_top(
         50.0, 50.0, Some(155f32.to_radians()),None,()
     );
 

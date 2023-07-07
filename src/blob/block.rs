@@ -83,9 +83,14 @@ impl PhysiBlockBundle{
         }
     }
 
-    // pub fn set_color(&mut self, color:Color){
-    //     self.sprite.sprite.color=color
-    // }
+    pub fn set_color(&mut self, color:Color) {
+        self.sprite.sprite.color=color
+    }
+
+    pub fn with_color(mut self, color:Color) -> Self{
+        self.sprite.sprite.color=color;
+        self
+    }
 
     pub fn with_density(mut self, density:f32) -> Self{
         self.massprop = ColliderMassProperties::Density(density);
