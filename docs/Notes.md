@@ -23,3 +23,22 @@ particle based liquid world.
 ### Vacuo Simulation
 
 much easier and cheaper than fluid.
+
+
+
+## Brain Design
+
+### Normal DNN
+
+can use python implementation
+
+can preform reinforcement learning:
+
+- Using Monte Carlo can be slow, but it might still faster than genetic algorithm.
+
+- Q-learning: 
+  - problem 1: infinite possible stages and actions
+    - function approximation, using DQN
+  - problem2: complex action (give a vector instead of choose the one with highest q value)
+
+hard to implement genetic algorithm (too much parameters)
