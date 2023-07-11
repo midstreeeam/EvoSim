@@ -7,9 +7,7 @@ mod graphics;
 mod consts;
 
 use bevy::prelude::*;
-use bevy_rapier2d::{
-    prelude::*
-};
+use bevy_rapier2d::prelude::*;
 
 use physics::physical_world;
 use graphics::*;
@@ -22,21 +20,23 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 fn main() {
     App::new()
-        // defualt
-        .add_plugins(DefaultPlugins)
+        .add_plugins((
+            // defualt
+            DefaultPlugins,
 
-        // log frame rate
-        .add_plugin(LogDiagnosticsPlugin::default())
-        .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            // log frame rate
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin::default(),
 
-        // raiper
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugin(RapierDebugRenderPlugin::default())
-
-        // cost
-        .add_plugin(physical_world::PhysiWorld)
-        .add_plugin(Graphics)
-        .add_startup_system(setup_test)
+            // raiper
+            RapierPhysicsPlugin::<NoUserData>::default(),
+            RapierDebugRenderPlugin::default(),
+            
+            // cost
+            physical_world::PhysiWorld,
+            Graphics
+        ))
+        .add_systems(Startup,setup_test)
 
         .run();
 }
@@ -73,4 +73,3 @@ fn setup_test(
     // println!("{:#?}",bb.blocks);
 
 }
-

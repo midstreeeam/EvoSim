@@ -8,10 +8,13 @@ pub struct PhysiWorld;
 impl Plugin for PhysiWorld {
     fn build(&self, app: &mut App) {
         app
-        .add_startup_system(setup_walls)
-        .add_startup_system(setup_gravity)
-        // .add_system(apply_forces)
-        .add_system(viscosity)
-        ;
+        .add_systems(
+            Startup,(
+                setup_walls,
+                setup_gravity,
+                // apply_forces
+        )).add_systems(
+            Update,viscosity
+        );
     }
 }

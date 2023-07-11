@@ -11,9 +11,9 @@ pub struct Graphics;
 impl Plugin for Graphics {
     fn build(&self, app: &mut App) {
         app
-        .add_startup_system(setup_graphics)
-        .add_plugin(PanCamPlugin::default())
-        .add_system(toggle_vsync)
+        .add_systems(Startup,setup_graphics)
+        .add_plugins(PanCamPlugin::default())
+        .add_systems(Update,toggle_vsync)
 
         // using Fixed timestep so that the simulation can speed up
         .insert_resource(RapierConfiguration{
