@@ -20,6 +20,8 @@
 - SIMD programming
 - avoiding branch structure using bitwise operation
 - ECS way instead of OOP way
+- parallel systems access
+- parallel iterator
 
 ### timestep
 
