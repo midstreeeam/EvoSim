@@ -13,7 +13,7 @@ use bevy_rapier2d::prelude::*;
 use brain::resource::BevyBlockNeurons;
 use physics::physical_world;
 use graphics::*;
-use blob::{block::PhysiBlockBundle, blob_builder::BlobBuilder};
+use blob::{block::PhysiBlockBundle, blob_builder::BlobBuilder, geno_blob_builder::BlobGeno};
 
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
@@ -35,8 +35,8 @@ fn main() {
             // }),
 
             // log frame rate
-            LogDiagnosticsPlugin::default(),
-            FrameTimeDiagnosticsPlugin::default(),
+            // LogDiagnosticsPlugin::default(),
+            // FrameTimeDiagnosticsPlugin::default(),
 
             // raiper
             RapierPhysicsPlugin::<NoUserData>::default(),
@@ -84,6 +84,9 @@ fn setup_test(
     );
 
     // println!("{:#?}",bb.blocks);
+
+    let test = BlobGeno::new_rand();
+    println!("{:#?}",test);
 
 }
 

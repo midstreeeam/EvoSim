@@ -9,3 +9,4 @@ edition = "2021"
 bevy = "0.11"
 bevy_pancam = {git = "https://github.com/johanhelsing/bevy_pancam.git", branch = "bevy-0.11"}
 bevy_rapier2d = {git = "https://github.com/midstreeeam/bevy_rapier.git", branch = "new_dependencies"}
+rand = "0.8.5"
