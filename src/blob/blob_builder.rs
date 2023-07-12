@@ -18,7 +18,8 @@ pub struct BlobBlock {
     vec_index: usize,
     size: Vec2,
     translation: Vec2,
-    anchors: BlockAnchors
+    anchors: BlockAnchors,
+    depth: u32,
 }
 
 pub struct BlobBuilder<'a>{
@@ -26,10 +27,13 @@ pub struct BlobBuilder<'a>{
     blob_bundle: Entity,
     commands: Commands<'a, 'a>,
     pub blocks: Vec<BlobBlock>,
-    current_pos: Option<usize>,
 
     // blob info
-    info: BlobInfo
+    info: BlobInfo,
+
+    // position info
+    /// current position index in block vector
+    current_pos: Option<usize>,
 }
 
 impl<'a> BlobBuilder<'a> {
@@ -151,7 +155,8 @@ impl<'a> BlobBuilder<'a> {
             vec_index: 0,
             size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
-            anchors: phy_block_bundle.anchors
+            anchors: phy_block_bundle.anchors,
+            depth: 0
         };
 
         // update blob_info in bundle
@@ -197,15 +202,18 @@ impl<'a> BlobBuilder<'a> {
             bottom: None,
             left: None,
             right: Some(pos),
-            vec_index: self.blocks.len(),
             size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
-            anchors: phy_block_bundle.anchors
+            anchors: phy_block_bundle.anchors,
+            depth: block.depth+1,
+            vec_index: self.blocks.len()
         };
         
         let block = &mut self.blocks[pos];
         block.left = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
+        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
+
 
         // set joint motor
         let mut stiff = 0.0;
@@ -271,15 +279,17 @@ impl<'a> BlobBuilder<'a> {
             bottom: None,
             left: Some(pos),
             right: None,
-            vec_index: self.blocks.len(),
             size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
-            anchors: phy_block_bundle.anchors
+            anchors: phy_block_bundle.anchors,
+            depth: block.depth+1,
+            vec_index: self.blocks.len()
         };
         
         let block = &mut self.blocks[pos];
         block.right = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
+        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
@@ -346,15 +356,17 @@ impl<'a> BlobBuilder<'a> {
             bottom: Some(pos),
             left: None,
             right: None,
-            vec_index: self.blocks.len(),
             size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
-            anchors: phy_block_bundle.anchors
+            anchors: phy_block_bundle.anchors,
+            depth: block.depth+1,
+            vec_index: self.blocks.len()
         };
         
         let block = &mut self.blocks[pos];
         block.top = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
+        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
@@ -421,15 +433,17 @@ impl<'a> BlobBuilder<'a> {
             bottom: None,
             left: None,
             right: None,
-            vec_index: self.blocks.len(),
             size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
-            anchors: phy_block_bundle.anchors
+            anchors: phy_block_bundle.anchors,
+            depth: block.depth+1,
+            vec_index: self.blocks.len()
         };
         
         let block = &mut self.blocks[pos];
         block.bottom = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
+        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;

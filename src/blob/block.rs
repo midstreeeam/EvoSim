@@ -20,12 +20,24 @@ impl BlockAnchors {
     }
 }
 
+/// BlockDepth is a u32 which represent the depth of the block
+/// in the blob tree
+/// 
+/// Depth determines the processing order of Neural Network
+#[derive(Component, Clone, Debug)]
+pub struct BlockDepth(pub u32);
+
+/// PhysiBlockBundle is the smallest unit in this simulation.
+/// It is the cubiod that construct blobs.
 #[derive(Bundle,Clone)]
 pub struct PhysiBlockBundle{
+    // basic config
     pub sprite: SpriteBundle,
     pub collider: Collider,
     pub rigbody: RigidBody,
+    pub depth: BlockDepth,
 
+    // physical config
     pub velocity: Velocity,
     pub massprop: ColliderMassProperties,
     pub friction: Friction,
@@ -35,6 +47,7 @@ pub struct PhysiBlockBundle{
     pub ex_force: ExternalForce,
     pub ex_impulse: ExternalImpulse,
 
+    // helper componet for builder
     pub anchors: BlockAnchors
 }
 
@@ -51,6 +64,7 @@ impl Default for PhysiBlockBundle{
                 transform: Transform::default(),
                 ..default()
             },
+            depth: BlockDepth(0),
             anchors: BlockAnchors::from_xy(default_rad, default_rad),
             collider: Collider::cuboid(default_rad/2.0, default_rad/2.0),
             rigbody: RigidBody::Dynamic,
@@ -94,6 +108,11 @@ impl PhysiBlockBundle{
 
     pub fn with_density(mut self, density:f32) -> Self{
         self.massprop = ColliderMassProperties::Density(density);
+        self
+    }
+
+    pub fn with_depth(mut self, depth:u32) -> Self{
+        self.depth = BlockDepth(depth);
         self
     }
 }

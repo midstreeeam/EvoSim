@@ -37,7 +37,9 @@ impl BlobInfo {
     }
 
     /// Add geometric infomation of new blocks in blob,
-    /// update blobinfo accordingly
+    /// update blobinfo accordingly 
+    /// 
+    /// This function should only be called by BlobBuilder
     pub fn add(&mut self, translation:Vec2, size:Vec2){
         let large = translation + size;
         let small = translation - size;

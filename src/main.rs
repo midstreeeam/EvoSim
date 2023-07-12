@@ -37,7 +37,6 @@ fn main() {
             Graphics
         ))
         .add_systems(Startup,setup_test)
-
         .run();
 }
 
