@@ -13,7 +13,7 @@ use bevy_rapier2d::prelude::*;
 use brain::resource::BevyBlockNeurons;
 use physics::physical_world;
 use graphics::*;
-use blob::{block::PhysiBlockBundle, blob_builder::BlobBuilder, geno_blob_builder::BlobGeno};
+use blob::{block::PhysiBlockBundle, blob_builder::BlobBuilder, geno_blob_builder::{BlobGeno, GenoBlobBuilder}};
 
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
@@ -58,35 +58,37 @@ fn setup_test(
     commands: Commands,
 ) {
         
-    let mut bb = BlobBuilder::from_commands(commands);
+    // let mut bb = BlobBuilder::from_commands(commands);
 
-    let body = PhysiBlockBundle::from_xy_dx_dy(
-            0.0, 0.0, 25.0, 50.0
-        ).with_density(1.0);
+    // let body = PhysiBlockBundle::from_xy_dx_dy(
+    //         0.0, 0.0, 25.0, 50.0
+    //     ).with_density(1.0);
 
-    let body2 = PhysiBlockBundle::from_xy_dx_dy(
-            -100.0, 0.0, 25.0, 50.0
-        ).with_density(1.0);
+    // let body2 = PhysiBlockBundle::from_xy_dx_dy(
+    //         -100.0, 0.0, 25.0, 50.0
+    //     ).with_density(1.0);
     
-    bb.set_color(Color::RED).create_first(body, ()).add_to_bottom(
-        50.0, 50.0, Some(155f32.to_radians()),None,()
-    ).add_to_right(
-        50.0, 50.0, Some(155f32.to_radians()),None,()
-    ).add_to_right(
-        30.0, 50.0, Some(155f32.to_radians()),None,()
-    ).left().add_to_bottom(
-        30.0, 50.0, Some(155f32.to_radians()),None,()
-    );
+    // bb.set_color(Color::RED).create_first(body, ()).add_to_bottom(
+    //     50.0, 50.0, Some(155f32.to_radians()),None,()
+    // ).add_to_right(
+    //     50.0, 50.0, Some(155f32.to_radians()),None,()
+    // ).add_to_right(
+    //     30.0, 50.0, Some(155f32.to_radians()),None,()
+    // ).left().add_to_bottom(
+    //     30.0, 50.0, Some(155f32.to_radians()),None,()
+    // );
 
-    // create new blob
-    bb.clean().set_color(Color::LIME_GREEN).create_first(body2,()).add_to_top(
-        50.0, 50.0, Some(155f32.to_radians()),None,()
-    );
+    // // create new blob
+    // bb.clean().set_color(Color::LIME_GREEN).create_first(body2,()).add_to_top(
+    //     50.0, 50.0, Some(155f32.to_radians()),None,()
+    // );
 
-    // println!("{:#?}",bb.blocks);
+    // // println!("{:#?}",bb.blocks);
 
-    let test = BlobGeno::new_rand();
-    println!("{:#?}",test);
+
+    let mut builder = GenoBlobBuilder::from_commands(commands);
+    builder.build(&BlobGeno::new_rand(), [0.0,0.0]);
+
 
 }
 

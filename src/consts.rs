@@ -20,7 +20,7 @@ pub const DEFAULT_DENSITY:f32 = 1.0;
 
 // Geno
 pub const GENO_MAX_DEPTH:u32 = 3; // max recursion depth of Geno type
-pub const DEFAULT_BLOCK_SIZE:[f32;2] = [10.0,15.0];
+pub const DEFAULT_BLOCK_SIZE:[f32;2] = [50.0,50.0];
 
 // Rand
 pub const RAND_NODE_NOT_NONE:f64 = 0.6;

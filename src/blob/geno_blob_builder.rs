@@ -7,7 +7,90 @@ use rand::prelude::*;
 use crate::consts::*;
 
 use super::blob_builder::BlobBuilder;
+use super::block::PhysiBlockBundle;
 
+/// Generate Blob according to Genotype
+/// Wrapper around BlobBuilder
+pub struct GenoBlobBuilder<'a>{
+    builder: BlobBuilder<'a>,
+}
+
+impl<'a> GenoBlobBuilder<'a>{
+    pub fn from_commands(commands:Commands<'a, 'a>) -> Self {
+        Self{
+            builder: BlobBuilder::from_commands(commands)
+        }
+    }
+
+    /// generate blob according to its genotype
+    pub fn build(&mut self, geno:&BlobGeno, center:[f32;2]){
+
+        // Lambda function to use in child extraction
+        fn lambda(node: &Option<GenericGenoNode>) -> Option<&GenoNode>{
+            node.as_ref().and_then(|node| match node {
+                GenericGenoNode::Parent => None,
+                GenericGenoNode::Child(child) => Some(child)
+            })
+        }
+
+        fn build_node(builder: &mut BlobBuilder, tree:&QuadTree<GenericGenoNode>, index:usize){
+            if let Some(Some(_)) = tree.nodes.get(index) {
+                let children = tree.children(index);
+                let (top_child, bottom_child, left_child, right_child) = (
+                    tree.nodes.get(children[0]).and_then(lambda),
+                    tree.nodes.get(children[1]).and_then(lambda),
+                    tree.nodes.get(children[2]).and_then(lambda),
+                    tree.nodes.get(children[3]).and_then(lambda),
+                );
+
+                if top_child.is_some(){
+                    let size = top_child.unwrap().size;
+                    builder.add_to_top(
+                        size[0],size[1],None,None,()
+                    );
+                    build_node(builder, tree, children[0]);
+                    builder.bottom();
+                }
+                
+                if bottom_child.is_some(){
+                    let size = bottom_child.unwrap().size;
+                    builder.add_to_bottom(
+                        size[0],size[1],None,None,()
+                    );
+                    build_node(builder, tree, children[1]);
+                    builder.top();
+                }
+                
+                if left_child.is_some(){
+                    let size = left_child.unwrap().size;
+                    builder.add_to_left(
+                        size[0],size[1],None,None,()
+                    );
+                    build_node(builder, tree, children[2]);
+                    builder.right();
+                }
+
+                if right_child.is_some(){
+                    let size = right_child.unwrap().size;
+                    builder.add_to_right(
+                        size[0],size[1],None,None,()
+                    );
+                    build_node(builder, tree, children[3]);
+                    builder.left();
+                }
+            }
+        }
+
+        // create first
+        let builder = &mut self.builder;
+        builder.create_first(
+            geno.get_first().unwrap().to_bundle(center), ()
+        );
+
+        // start recursion
+        build_node(&mut self.builder, &geno.vec_tree, 0);
+    }
+}
 
 /// The Geno for morphyology of the blob.
 /// The Geno is a QuadTree (it can be represented as TernaryTree as well).
@@ -27,13 +110,13 @@ impl Default for BlobGeno{
 
 impl BlobGeno{
 
+    // TODO: bugs, self-conflict blob can be generated
     // TODO: this function is too complicate
     /// generate a random BlobGeno
     pub fn new_rand() -> BlobGeno{
         // init rng and tree
         let mut rng = thread_rng();
         let mut bg = BlobGeno::default();
-
 
         // root node can't be none
         let joint_limits = [
@@ -71,6 +154,7 @@ impl BlobGeno{
         bg
     }
 
+    // TODO: better to use match to make this function cleaner
     /// clean the vector and add parent indicator to create a tree
     fn rand_tree_clean(bg: &mut BlobGeno, index: usize){
         let mut rng = thread_rng();
@@ -105,6 +189,16 @@ impl BlobGeno{
         }
 
     }
+
+    pub fn get_first(&self) -> Option<&GenoNode> {
+        self.vec_tree.nodes[0].as_ref().and_then(
+            |node| match node{
+                GenericGenoNode::Parent => None,
+                GenericGenoNode::Child(child) => Some(child)
+            })
+    }
+    
+
 }
 
 
@@ -134,12 +228,14 @@ impl Default for GenoNode{
     }
 }
 
-/// Generate Blob according to Genotype
-pub struct GenoBlobBuilder<'a>{
-    builder: BlobBuilder<'a>,
-
+impl GenoNode {
+    /// generate [`PhysiBlockBundle`] from GenoNode
+    fn to_bundle(&self, center:[f32;2]) -> PhysiBlockBundle{
+        PhysiBlockBundle::from_xy_dx_dy(
+            center[0], center[1], self.size[0], self.size[1]
+        )
+    }
 }
-
 
 /// QuadTree, Helper struct
 pub struct QuadTree<T> {
