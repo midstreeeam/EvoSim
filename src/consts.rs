@@ -10,6 +10,8 @@ pub const WORLD_HEIGHT:f32 = 10000.0;
 pub const MOTOR_STIFFNESS:f32 = 10.0;
 pub const MOTOR_DAMPING:f32 = 0.0;
 pub const ENABLE_CONTACTS:bool = false;
+// joint contorl
+pub const MOTOR_MAX_TARGET_V:f32 = 10.0;
 
 // math
 pub const EPSILON:f32 = 0.0001; // max error
@@ -19,7 +21,7 @@ pub const DRAG_COEFF:f32 = 5.0; // drag coefficient in fluid simulation
 pub const DEFAULT_DENSITY:f32 = 1.0;
 
 // Geno
-pub const GENO_MAX_DEPTH:u32 = 4; // max recursion depth of Geno type
+pub const GENO_MAX_DEPTH:u32 = 2; // max recursion depth of Geno type
 pub const DEFAULT_BLOCK_SIZE:[f32;2] = [50.0,50.0];
 
 // Rand

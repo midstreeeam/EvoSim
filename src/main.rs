@@ -5,6 +5,7 @@ mod brain;
 mod consts;
 mod graphics;
 mod physics;
+mod contorl;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -14,6 +15,7 @@ use blob::{
     geno_blob_builder::{BlobGeno, GenoBlobBuilder},
 };
 use brain::resource::BevyBlockNeurons;
+use contorl::block_action;
 use graphics::*;
 use physics::physical_world;
 
@@ -47,12 +49,19 @@ fn main() {
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
         // .add_systems(Update, res_test)
+        .add_systems(Update, block_action)
         .run();
 }
 
 fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
+    // builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
+
+    for i in -2..2 {
+        for j in -2..2 {
+            builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
+        }
+    }
 }
 
 fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {

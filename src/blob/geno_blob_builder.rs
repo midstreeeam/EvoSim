@@ -19,7 +19,7 @@ pub struct GenoBlobBuilder<'a> {
 impl<'a> GenoBlobBuilder<'a> {
     pub fn from_commands(commands: Commands<'a, 'a>, nnvec: &'a mut Vec<BlockNeuron>) -> Self {
         Self {
-            builder: BlobBuilder::from_commands(commands,nnvec),
+            builder: BlobBuilder::from_commands(commands, nnvec),
         }
     }
 
@@ -44,25 +44,49 @@ impl<'a> GenoBlobBuilder<'a> {
                 );
 
                 if let Some(node) = top_child {
-                    builder.add_to_top(node.size[0], node.size[1], None, Some(node.joint_limits), ());
+                    builder.add_to_top(
+                        node.size[0],
+                        node.size[1],
+                        None,
+                        Some(node.joint_limits),
+                        (),
+                    );
                     build_node(builder, tree, children[0]);
                     builder.bottom();
                 }
 
                 if let Some(node) = bottom_child {
-                    builder.add_to_bottom(node.size[0], node.size[1], None, Some(node.joint_limits), ());
+                    builder.add_to_bottom(
+                        node.size[0],
+                        node.size[1],
+                        None,
+                        Some(node.joint_limits),
+                        (),
+                    );
                     build_node(builder, tree, children[1]);
                     builder.top();
                 }
 
                 if let Some(node) = left_child {
-                    builder.add_to_left(node.size[0], node.size[1], None, Some(node.joint_limits), ());
+                    builder.add_to_left(
+                        node.size[0],
+                        node.size[1],
+                        None,
+                        Some(node.joint_limits),
+                        (),
+                    );
                     build_node(builder, tree, children[2]);
                     builder.right();
                 }
 
                 if let Some(node) = right_child {
-                    builder.add_to_right(node.size[0], node.size[1], None, Some(node.joint_limits), ());
+                    builder.add_to_right(
+                        node.size[0],
+                        node.size[1],
+                        None,
+                        Some(node.joint_limits),
+                        (),
+                    );
                     build_node(builder, tree, children[3]);
                     builder.left();
                 }
