@@ -2,7 +2,9 @@ use bevy::prelude::*;
 
 use super::neuron::BlockNeuron;
 
-#[derive(Resource)]
+/// index 0 is occupied by default,
+/// which represent random neuron output.
+#[derive(Resource,Debug)]
 pub struct BevyBlockNeurons{
     pub nnvec:Vec<BlockNeuron>
 }

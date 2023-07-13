@@ -4,6 +4,7 @@ use std::fmt::{self, Debug};
 use bevy::prelude::*;
 use rand::prelude::*;
 
+use crate::brain::neuron::BlockNeuron;
 use crate::consts::*;
 
 use super::blob_builder::BlobBuilder;
@@ -16,9 +17,9 @@ pub struct GenoBlobBuilder<'a> {
 }
 
 impl<'a> GenoBlobBuilder<'a> {
-    pub fn from_commands(commands: Commands<'a, 'a>) -> Self {
+    pub fn from_commands(commands: Commands<'a, 'a>, nnvec: &'a mut Vec<BlockNeuron>) -> Self {
         Self {
-            builder: BlobBuilder::from_commands(commands),
+            builder: BlobBuilder::from_commands(commands,nnvec),
         }
     }
 
@@ -42,30 +43,26 @@ impl<'a> GenoBlobBuilder<'a> {
                     tree.nodes.get(children[3]).and_then(lambda),
                 );
 
-                if top_child.is_some() {
-                    let size = top_child.unwrap().size;
-                    builder.add_to_top(size[0], size[1], None, None, ());
+                if let Some(node) = top_child {
+                    builder.add_to_top(node.size[0], node.size[1], None, Some(node.joint_limits), ());
                     build_node(builder, tree, children[0]);
                     builder.bottom();
                 }
 
-                if bottom_child.is_some() {
-                    let size = bottom_child.unwrap().size;
-                    builder.add_to_bottom(size[0], size[1], None, None, ());
+                if let Some(node) = bottom_child {
+                    builder.add_to_bottom(node.size[0], node.size[1], None, Some(node.joint_limits), ());
                     build_node(builder, tree, children[1]);
                     builder.top();
                 }
 
-                if left_child.is_some() {
-                    let size = left_child.unwrap().size;
-                    builder.add_to_left(size[0], size[1], None, None, ());
+                if let Some(node) = left_child {
+                    builder.add_to_left(node.size[0], node.size[1], None, Some(node.joint_limits), ());
                     build_node(builder, tree, children[2]);
                     builder.right();
                 }
 
-                if right_child.is_some() {
-                    let size = right_child.unwrap().size;
-                    builder.add_to_right(size[0], size[1], None, None, ());
+                if let Some(node) = right_child {
+                    builder.add_to_right(node.size[0], node.size[1], None, Some(node.joint_limits), ());
                     build_node(builder, tree, children[3]);
                     builder.left();
                 }

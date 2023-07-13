@@ -9,7 +9,10 @@ mod physics;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder};
+use blob::{
+    block::NeuronId,
+    geno_blob_builder::{BlobGeno, GenoBlobBuilder},
+};
 use brain::resource::BevyBlockNeurons;
 use graphics::*;
 use physics::physical_world;
@@ -42,24 +45,26 @@ fn main() {
             Graphics,
         ))
         .add_systems(Startup, setup_test)
-        // .init_resource::<BevyBlockNeurons>()
+        .init_resource::<BevyBlockNeurons>()
         // .add_systems(Update, res_test)
         .run();
 }
 
-fn setup_test(commands: Commands) {
-    let mut builder = GenoBlobBuilder::from_commands(commands);
+fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
+    let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
 }
 
-fn res_test(res: Res<BevyBlockNeurons>) {
-    res.nnvec.first().unwrap().thread_test();
+fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {
+    for NeuronId(i) in block_q.iter() {
+        let _ = &res.nnvec[*i];
+    }
 }
 
 /// Generate 100 random blobs.
 /// Pressure test for Rapier
-fn pressure_test(commands: Commands) {
-    let mut builder = GenoBlobBuilder::from_commands(commands);
+fn pressure_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
+    let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     for i in -5..5 {
         for j in -5..5 {
             builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);

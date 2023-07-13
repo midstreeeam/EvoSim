@@ -27,6 +27,10 @@ impl BlockAnchors {
 #[derive(Component, Clone, Debug)]
 pub struct BlockDepth(pub u32);
 
+/// id for relate Neuron
+#[derive(Component, Clone, Debug)]
+pub struct NeuronId(pub usize);
+
 /// PhysiBlockBundle is the smallest unit in this simulation.
 /// It is the cubiod that construct blobs.
 #[derive(Bundle, Clone)]
@@ -49,6 +53,11 @@ pub struct PhysiBlockBundle {
 
     // helper componet for builder
     pub anchors: BlockAnchors,
+
+    /// neuron id
+    /// 
+    /// id=0 is the default id, means random neuron output
+    pub neuron_id: NeuronId
 }
 
 impl Default for PhysiBlockBundle {
@@ -67,6 +76,7 @@ impl Default for PhysiBlockBundle {
                 transform: Transform::default(),
                 ..default()
             },
+            neuron_id: NeuronId(0),
             depth: BlockDepth(0),
             anchors: BlockAnchors::from_xy(default_rad, default_rad),
             collider: Collider::cuboid(default_rad / 2.0, default_rad / 2.0),
@@ -119,6 +129,11 @@ impl PhysiBlockBundle {
 
     pub fn with_depth(mut self, depth: u32) -> Self {
         self.depth = BlockDepth(depth);
+        self
+    }
+
+    pub fn with_nn_id(mut self, nn_id: usize) -> Self{
+        self.neuron_id = NeuronId(nn_id);
         self
     }
 }

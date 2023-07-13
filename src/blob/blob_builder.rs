@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::consts::*;
+use crate::{brain::neuron::BlockNeuron, consts::*};
 
 use super::{blob::*, block::*};
 
@@ -22,9 +22,12 @@ pub struct BlobBlock {
 }
 
 pub struct BlobBuilder<'a> {
+    // tools
+    commands: Commands<'a, 'a>,
+    nnvec: &'a mut Vec<BlockNeuron>,
+
     // builder info
     blob_bundle: Entity,
-    commands: Commands<'a, 'a>,
     pub blocks: Vec<BlobBlock>,
 
     // blob info
@@ -43,10 +46,11 @@ impl<'a> BlobBuilder<'a> {
     ///
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
     /// please use [`clean()`] so that there won't be joints connects.
-    pub fn from_commands(mut commands: Commands<'a, 'a>) -> Self {
+    pub fn from_commands(mut commands: Commands<'a, 'a>, nnvec: &'a mut Vec<BlockNeuron>) -> Self {
         Self {
             blob_bundle: commands.spawn(BlobBundle::default()).id(),
             commands: commands,
+            nnvec: nnvec,
             blocks: Vec::new(),
             current_pos: None,
             info: BlobInfo::default(),
@@ -61,7 +65,10 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// Clean all the things inside BlobBuilder
+    ///
     /// Equvalent to drop the old builder and generate a new one
+    ///
+    /// [`nnvec`] will be kept
     pub fn clean(&mut self) -> &mut Self {
         self.blob_bundle = self.commands.spawn(BlobBundle::default()).id();
         self.blocks = Vec::new();
@@ -142,9 +149,18 @@ impl<'a> BlobBuilder<'a> {
         phy_block_bundle: PhysiBlockBundle,
         others: T,
     ) -> &mut Self {
+        let nn = BlockNeuron::new();
+        self.nnvec.push(nn);
+        let nn_id = self.nnvec.len() - 1;
+
         let id = self
             .commands
-            .spawn(phy_block_bundle.clone().with_color(self.info.color))
+            .spawn(
+                phy_block_bundle
+                    .clone()
+                    .with_color(self.info.color)
+                    .with_nn_id(nn_id),
+            )
             .insert(others)
             .id();
 
@@ -195,11 +211,16 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
+        let nn = BlockNeuron::new();
+        self.nnvec.push(nn);
+        let nn_id = self.nnvec.len() - 1;
+
         let spawn_x = block.translation.x - block.size.x - dx;
         let spawn_y = block.translation.y;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
-            .with_density(DEFAULT_DENSITY);
+            .with_density(DEFAULT_DENSITY)
+            .with_nn_id(nn_id);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -279,11 +300,17 @@ impl<'a> BlobBuilder<'a> {
             warn!("trying to add a block to an occupied position");
             return self;
         }
+
+        let nn = BlockNeuron::new();
+        self.nnvec.push(nn);
+        let nn_id = self.nnvec.len() - 1;
+
         let spawn_x = block.translation.x + block.size.x + dx;
         let spawn_y = block.translation.y;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
-            .with_density(DEFAULT_DENSITY);
+            .with_density(DEFAULT_DENSITY)
+            .with_nn_id(nn_id);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -364,11 +391,16 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
+        let nn = BlockNeuron::new();
+        self.nnvec.push(nn);
+        let nn_id = self.nnvec.len() - 1;
+
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y + block.size.y + dy;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
-            .with_density(DEFAULT_DENSITY);
+            .with_density(DEFAULT_DENSITY)
+            .with_nn_id(nn_id);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -449,11 +481,16 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
+        let nn = BlockNeuron::new();
+        self.nnvec.push(nn);
+        let nn_id = self.nnvec.len() - 1;
+
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y - block.size.y - dy;
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
-            .with_density(DEFAULT_DENSITY);
+            .with_density(DEFAULT_DENSITY)
+            .with_nn_id(nn_id);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())

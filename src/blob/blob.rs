@@ -22,7 +22,7 @@ impl Default for BlobInfo {
             center: Vec2::NAN,
             xbound: [NAN, NAN],
             ybound: [NAN, NAN],
-            color: Color::ALICE_BLUE,
+            color: Color::LIME_GREEN,
         }
     }
 }
