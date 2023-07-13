@@ -20,6 +20,7 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 
 // TODO: Headless mode causing panic
+// TODO: Not all cores are fully tuilized
 fn main() {
     App::new()
         .add_plugins((
@@ -85,14 +86,7 @@ fn setup_test(
     // // println!("{:#?}",bb.blocks);
 
     let mut builder = GenoBlobBuilder::from_commands(commands);
-    for i in -5..5{
-        for j in -5..5{
-            builder.build(&BlobGeno::new_rand(), [700.0*i as f32, 700.0*j as f32]);
-        }
-    }
-
-    // builder.build(&BlobGeno::new_rand(), [0.0,0.0]);
-
+    builder.build(&BlobGeno::new_rand(), [0.0,0.0]);
 
 
 }
@@ -104,23 +98,15 @@ fn res_test(res: Res<BevyBlockNeurons>){
 
 
 
-/// Generate 900 spining blobs.
+/// Generate 100 random blobs.
 /// Pressure test for Rapier
 fn pressure_test(
     commands: Commands,
 ) {
-    let mut bb = BlobBuilder::from_commands(commands);
-
-    for i in -15..15{
-        for j in -15..15{
-            // create new blob
-            bb.clean().set_color(Color::LIME_GREEN).create_first(
-                PhysiBlockBundle::from_xy_dx_dy(
-                    250.0 * j as f32, 250.0 * i as f32, 25.0, 50.0
-                ).with_density(1.0),()).add_to_top(
-                50.0, 50.0, Some(155f32.to_radians()),None,()
-            );
+    let mut builder = GenoBlobBuilder::from_commands(commands);
+    for i in -5..5{
+        for j in -5..5{
+            builder.build(&BlobGeno::new_rand(), [700.0*i as f32, 700.0*j as f32]);
         }
     }
-
 }
