@@ -7,40 +7,38 @@ use bevy::prelude::*;
 pub struct Blob;
 
 #[derive(Component, Clone, Debug)]
-pub struct BlobInfo{
+pub struct BlobInfo {
     pub center: Vec2,
     // bound: [min,max] to represent size
-    pub xbound: [f32;2],
-    pub ybound: [f32;2],
-    pub color: Color
-
-    //TODO: add a children entities list, need to know which child is which limb of the blob,
-    // bevy's ECS's query is unsorted. can not rely on query order.
+    pub xbound: [f32; 2],
+    pub ybound: [f32; 2],
+    pub color: Color, //TODO: add a children entities list, need to know which child is which limb of the blob,
+                      // bevy's ECS's query is unsorted. can not rely on query order.
 }
 
 impl Default for BlobInfo {
     fn default() -> Self {
         Self {
             center: Vec2::NAN,
-            xbound:[NAN,NAN],
-            ybound:[NAN,NAN],
-            color: Color::ALICE_BLUE
+            xbound: [NAN, NAN],
+            ybound: [NAN, NAN],
+            color: Color::ALICE_BLUE,
         }
     }
 }
 
 impl BlobInfo {
-    pub fn init(&mut self, center:Vec2, size:Vec2){
+    pub fn init(&mut self, center: Vec2, size: Vec2) {
         self.center = center;
-        self.xbound = [center.x-size.x,center.x+size.x];
-        self.ybound = [center.y-size.y,center.y+size.y];
+        self.xbound = [center.x - size.x, center.x + size.x];
+        self.ybound = [center.y - size.y, center.y + size.y];
     }
 
     /// Add geometric infomation of new blocks in blob,
-    /// update blobinfo accordingly 
-    /// 
+    /// update blobinfo accordingly
+    ///
     /// This function should only be called by BlobBuilder
-    pub fn add(&mut self, translation:Vec2, size:Vec2){
+    pub fn add(&mut self, translation: Vec2, size: Vec2) {
         let large = translation + size;
         let small = translation - size;
 
@@ -52,19 +50,19 @@ impl BlobInfo {
 }
 
 #[derive(Bundle)]
-pub struct BlobBundle{
+pub struct BlobBundle {
     // flag
-    blob_flag:Blob,
+    blob_flag: Blob,
 
     // set visibility so it's children can be seen
     visibility: Visibility,
     computed_visibility: ComputedVisibility,
 
     // identity transform
-    transform_bundle:TransformBundle,
+    transform_bundle: TransformBundle,
 
     // real blob information
-    info: BlobInfo
+    info: BlobInfo,
 }
 
 impl Default for BlobBundle {
@@ -74,7 +72,7 @@ impl Default for BlobBundle {
             visibility: Visibility::Visible,
             computed_visibility: ComputedVisibility::HIDDEN,
             transform_bundle: TransformBundle::IDENTITY,
-            info: BlobInfo::default()
+            info: BlobInfo::default(),
         }
     }
 }

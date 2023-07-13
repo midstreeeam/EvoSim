@@ -1,5 +1,5 @@
 use bevy::{prelude::*, window::PresentMode};
-use bevy_pancam::{PanCamPlugin, PanCam};
+use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
 use crate::consts::{RAPIER_DT, RAPIER_SUBSTEPS};
@@ -10,28 +10,22 @@ pub struct Graphics;
 
 impl Plugin for Graphics {
     fn build(&self, app: &mut App) {
-        app
-        .add_systems(Startup,setup_graphics)
-        .add_plugins(PanCamPlugin::default())
-        .add_systems(Update,toggle_vsync)
-
-        // using Fixed timestep so that the simulation can speed up
-        .insert_resource(RapierConfiguration{
-            timestep_mode: TimestepMode::Fixed {
-                dt: RAPIER_DT, substeps: RAPIER_SUBSTEPS
-            },
-            ..default()
-        })
-        ;
+        app.add_systems(Startup, setup_graphics)
+            .add_plugins(PanCamPlugin::default())
+            .add_systems(Update, toggle_vsync)
+            // using Fixed timestep so that the simulation can speed up
+            .insert_resource(RapierConfiguration {
+                timestep_mode: TimestepMode::Fixed {
+                    dt: RAPIER_DT,
+                    substeps: RAPIER_SUBSTEPS,
+                },
+                ..default()
+            });
     }
 }
 
 pub fn setup_graphics(mut commands: Commands) {
-    commands.spawn((
-        Camera2dBundle::default(),
-        PanCam::default(),
-        MainCamera
-    ));
+    commands.spawn((Camera2dBundle::default(), PanCam::default(), MainCamera));
 }
 
 /// This system toggles the vsync mode when pressing the button V.

@@ -5,8 +5,7 @@ use bevy_rapier2d::prelude::*;
 
 use crate::consts::*;
 
-use super::{block::*, blob::*};
-
+use super::{blob::*, block::*};
 
 #[derive(Debug)]
 pub struct BlobBlock {
@@ -22,7 +21,7 @@ pub struct BlobBlock {
     depth: u32,
 }
 
-pub struct BlobBuilder<'a>{
+pub struct BlobBuilder<'a> {
     // builder info
     blob_bundle: Entity,
     commands: Commands<'a, 'a>,
@@ -37,25 +36,25 @@ pub struct BlobBuilder<'a>{
 }
 
 impl<'a> BlobBuilder<'a> {
-    /// BlobBuilder taks ownership of Commands, 
+    /// BlobBuilder taks ownership of Commands,
     /// which means you can not use Commands anymore after using the BlobBuilder.
     /// To use commands, you need to preform it before creating BlobBuilder
     /// or just create another system.
-    /// 
+    ///
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
     /// please use [`clean()`] so that there won't be joints connects.
-    pub fn from_commands(mut commands: Commands<'a, 'a>) -> Self{
-        Self{
+    pub fn from_commands(mut commands: Commands<'a, 'a>) -> Self {
+        Self {
             blob_bundle: commands.spawn(BlobBundle::default()).id(),
             commands: commands,
             blocks: Vec::new(),
-            current_pos:None,
-            info: BlobInfo::default()
+            current_pos: None,
+            info: BlobInfo::default(),
         }
     }
 
     /// set color for blob
-    pub fn set_color(&mut self, color: Color) -> &mut Self{
+    pub fn set_color(&mut self, color: Color) -> &mut Self {
         self.info.color = color;
         self.update_info();
         self
@@ -63,7 +62,7 @@ impl<'a> BlobBuilder<'a> {
 
     /// Clean all the things inside BlobBuilder
     /// Equvalent to drop the old builder and generate a new one
-    pub fn clean(&mut self) -> &mut Self{
+    pub fn clean(&mut self) -> &mut Self {
         self.blob_bundle = self.commands.spawn(BlobBundle::default()).id();
         self.blocks = Vec::new();
         self.current_pos = None;
@@ -72,10 +71,10 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// move one step left from the current position
-    pub fn left(&mut self) -> &mut Self{
-        if self.current_pos.is_some(){
+    pub fn left(&mut self) -> &mut Self {
+        if self.current_pos.is_some() {
             let pos = self.current_pos.unwrap();
-            if self.blocks[pos].left.is_some(){
+            if self.blocks[pos].left.is_some() {
                 let index = self.blocks[pos].left.unwrap();
                 self.current_pos = Some(index);
                 return self;
@@ -86,10 +85,10 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// move one step right from the current position
-    pub fn right(&mut self) -> &mut Self{
-        if self.current_pos.is_some(){
+    pub fn right(&mut self) -> &mut Self {
+        if self.current_pos.is_some() {
             let pos = self.current_pos.unwrap();
-            if self.blocks[pos].right.is_some(){
+            if self.blocks[pos].right.is_some() {
                 let index = self.blocks[pos].right.unwrap();
                 self.current_pos = Some(index);
                 return self;
@@ -100,10 +99,10 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// move one step up from the current position
-    pub fn top(&mut self) -> &mut Self{
-        if self.current_pos.is_some(){
+    pub fn top(&mut self) -> &mut Self {
+        if self.current_pos.is_some() {
             let pos = self.current_pos.unwrap();
-            if self.blocks[pos].top.is_some(){
+            if self.blocks[pos].top.is_some() {
                 let index = self.blocks[pos].top.unwrap();
                 self.current_pos = Some(index);
                 return self;
@@ -114,10 +113,10 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// move one step down from the current position
-    pub fn bottom(&mut self) -> &mut Self{
-        if self.current_pos.is_some(){
+    pub fn bottom(&mut self) -> &mut Self {
+        if self.current_pos.is_some() {
             let pos = self.current_pos.unwrap();
-            if self.blocks[pos].bottom.is_some(){
+            if self.blocks[pos].bottom.is_some() {
                 let index = self.blocks[pos].bottom.unwrap();
                 self.current_pos = Some(index);
                 return self;
@@ -128,8 +127,8 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// reset the current position to the first block
-    pub fn reset(&mut self) -> &mut Self{
-        if self.current_pos.is_some(){
+    pub fn reset(&mut self) -> &mut Self {
+        if self.current_pos.is_some() {
             self.current_pos = Some(0);
             return self;
         }
@@ -138,32 +137,37 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// create the first block and return itself
-    pub fn create_first<T:Bundle>(
+    pub fn create_first<T: Bundle>(
         &mut self,
         phy_block_bundle: PhysiBlockBundle,
-        others: T) -> &mut Self{
-        let id = self.commands.spawn(
-            phy_block_bundle.clone().with_color(self.info.color)
-        ).insert(others).id();
+        others: T,
+    ) -> &mut Self {
+        let id = self
+            .commands
+            .spawn(phy_block_bundle.clone().with_color(self.info.color))
+            .insert(others)
+            .id();
 
-        let block = BlobBlock{
+        let block = BlobBlock {
             id: id,
             top: None,
             bottom: None,
             left: None,
             right: None,
             vec_index: 0,
-            size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
+            size: phy_block_bundle.sprite.sprite.custom_size.unwrap() / 2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
-            depth: 0
+            depth: 0,
         };
 
         // update blob_info in bundle
         self.info.init(block.translation, block.size);
         self.update_info();
-        
-        self.commands.entity(self.blob_bundle).push_children(&[block.id]);
+
+        self.commands
+            .entity(self.blob_bundle)
+            .push_children(&[block.id]);
         self.blocks.push(block);
         self.current_pos = Some(0);
 
@@ -171,61 +175,67 @@ impl<'a> BlobBuilder<'a> {
     }
 
     /// add a new block to the left of the current block and move the current position to that block
-    pub fn add_to_left<T:Bundle>(
-        &mut self, 
-        dx:f32, 
-        dy:f32, 
-        motor_pos: Option<f32>, 
-        motor_limits: Option<[f32; 2]>, 
-        others: T) -> &mut Self{
-        if self.current_pos.is_none(){
+    pub fn add_to_left<T: Bundle>(
+        &mut self,
+        dx: f32,
+        dy: f32,
+        motor_pos: Option<f32>,
+        motor_limits: Option<[f32; 2]>,
+        others: T,
+    ) -> &mut Self {
+        if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
             return self;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
-        if block.left.is_some(){
+        if block.left.is_some() {
             warn!("trying to add a block to an occupied position");
             return self;
         }
 
         let spawn_x = block.translation.x - block.size.x - dx;
         let spawn_y = block.translation.y;
-        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
-            spawn_x, spawn_y, dx, dy
-        ).with_color(self.info.color).with_density(DEFAULT_DENSITY);
-        let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
-        let new_block = BlobBlock{
+        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
+            .with_color(self.info.color)
+            .with_density(DEFAULT_DENSITY);
+        let id = self
+            .commands
+            .spawn(phy_block_bundle.clone())
+            .insert(others)
+            .id();
+        let new_block = BlobBlock {
             id: id,
             top: None,
             bottom: None,
             left: None,
             right: Some(pos),
-            size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
+            size: phy_block_bundle.sprite.sprite.custom_size.unwrap() / 2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
-            depth: block.depth+1,
-            vec_index: self.blocks.len()
+            depth: block.depth + 1,
+            vec_index: self.blocks.len(),
         };
-        
+
         let block = &mut self.blocks[pos];
         block.left = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
-        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
-
+        self.commands
+            .entity(new_block.id)
+            .insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
         let mut motor_target = 0.0;
-        if motor_pos.is_some(){
+        if motor_pos.is_some() {
             stiff = MOTOR_STIFFNESS;
             motor_target = motor_pos.unwrap();
         }
 
         // set joint limits
-        let mut limits = [-PI,PI];
-        if motor_limits.is_some(){
+        let mut limits = [-PI, PI];
+        if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
 
@@ -241,67 +251,75 @@ impl<'a> BlobBuilder<'a> {
         self.info.add(block.translation, block.size);
         self.update_info();
 
-        self.commands.entity(self.blob_bundle).push_children(&[new_block.id]);
+        self.commands
+            .entity(self.blob_bundle)
+            .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
     }
 
-
     /// add a new block to the right of the current block and move the current position to that block
-    pub fn add_to_right<T:Bundle>(
-        &mut self, 
-        dx:f32, 
-        dy:f32, 
-        motor_pos: Option<f32>, 
-        motor_limits: Option<[f32; 2]>, 
-        others: T) -> &mut Self{
-        if self.current_pos.is_none(){
+    pub fn add_to_right<T: Bundle>(
+        &mut self,
+        dx: f32,
+        dy: f32,
+        motor_pos: Option<f32>,
+        motor_limits: Option<[f32; 2]>,
+        others: T,
+    ) -> &mut Self {
+        if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
             return self;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
-        if block.right.is_some(){
+        if block.right.is_some() {
             warn!("trying to add a block to an occupied position");
             return self;
         }
         let spawn_x = block.translation.x + block.size.x + dx;
         let spawn_y = block.translation.y;
-        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
-            spawn_x, spawn_y, dx, dy
-        ).with_color(self.info.color).with_density(DEFAULT_DENSITY);
-        let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
-        let new_block = BlobBlock{
+        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
+            .with_color(self.info.color)
+            .with_density(DEFAULT_DENSITY);
+        let id = self
+            .commands
+            .spawn(phy_block_bundle.clone())
+            .insert(others)
+            .id();
+        let new_block = BlobBlock {
             id: id,
             top: None,
             bottom: None,
             left: Some(pos),
             right: None,
-            size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
+            size: phy_block_bundle.sprite.sprite.custom_size.unwrap() / 2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
-            depth: block.depth+1,
-            vec_index: self.blocks.len()
+            depth: block.depth + 1,
+            vec_index: self.blocks.len(),
         };
-        
+
         let block = &mut self.blocks[pos];
         block.right = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
-        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
+        self.commands
+            .entity(new_block.id)
+            .insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
         let mut motor_target = 0.0;
-        if motor_pos.is_some(){
+        if motor_pos.is_some() {
             stiff = MOTOR_STIFFNESS;
             motor_target = motor_pos.unwrap();
         }
 
         // set joint limits
-        let mut limits = [-PI,PI];
-        if motor_limits.is_some(){
+        let mut limits = [-PI, PI];
+        if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
 
@@ -317,68 +335,76 @@ impl<'a> BlobBuilder<'a> {
         self.info.add(block.translation, block.size);
         self.update_info();
 
-        self.commands.entity(self.blob_bundle).push_children(&[new_block.id]);
+        self.commands
+            .entity(self.blob_bundle)
+            .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
     }
 
-
     /// add a new block to the top of the current block and move the current position to that block
-    pub fn add_to_top<T:Bundle>(
-        &mut self, 
-        dx:f32, 
-        dy:f32, 
-        motor_pos: Option<f32>, 
-        motor_limits: Option<[f32; 2]>, 
-        others: T) -> &mut Self{
-        if self.current_pos.is_none(){
+    pub fn add_to_top<T: Bundle>(
+        &mut self,
+        dx: f32,
+        dy: f32,
+        motor_pos: Option<f32>,
+        motor_limits: Option<[f32; 2]>,
+        others: T,
+    ) -> &mut Self {
+        if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
             return self;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
-        if block.top.is_some(){
+        if block.top.is_some() {
             warn!("trying to add a block to an occupied position");
             return self;
         }
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y + block.size.y + dy;
-        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
-            spawn_x, spawn_y, dx, dy
-        ).with_color(self.info.color).with_density(DEFAULT_DENSITY);
-        let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
-        let new_block = BlobBlock{
+        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
+            .with_color(self.info.color)
+            .with_density(DEFAULT_DENSITY);
+        let id = self
+            .commands
+            .spawn(phy_block_bundle.clone())
+            .insert(others)
+            .id();
+        let new_block = BlobBlock {
             id: id,
             top: None,
             bottom: Some(pos),
             left: None,
             right: None,
-            size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
+            size: phy_block_bundle.sprite.sprite.custom_size.unwrap() / 2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
-            depth: block.depth+1,
-            vec_index: self.blocks.len()
+            depth: block.depth + 1,
+            vec_index: self.blocks.len(),
         };
-        
+
         let block = &mut self.blocks[pos];
         block.top = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
-        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
+        self.commands
+            .entity(new_block.id)
+            .insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
         let mut motor_target = 0.0;
-        if motor_pos.is_some(){
+        if motor_pos.is_some() {
             stiff = MOTOR_STIFFNESS;
             motor_target = motor_pos.unwrap();
         }
 
         // set joint limits
-        let mut limits = [-PI,PI];
-        if motor_limits.is_some(){
+        let mut limits = [-PI, PI];
+        if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
 
@@ -394,68 +420,76 @@ impl<'a> BlobBuilder<'a> {
         self.info.add(block.translation, block.size);
         self.update_info();
 
-        self.commands.entity(self.blob_bundle).push_children(&[new_block.id]);
+        self.commands
+            .entity(self.blob_bundle)
+            .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
     }
 
-
     /// add a new block to the bottom of the current block and move the current position to that block
-    pub fn add_to_bottom<T:Bundle>(
-        &mut self, 
-        dx:f32, 
-        dy:f32, 
-        motor_pos: Option<f32>, 
-        motor_limits: Option<[f32; 2]>, 
-        others: T) -> &mut Self{
-        if self.current_pos.is_none(){
+    pub fn add_to_bottom<T: Bundle>(
+        &mut self,
+        dx: f32,
+        dy: f32,
+        motor_pos: Option<f32>,
+        motor_limits: Option<[f32; 2]>,
+        others: T,
+    ) -> &mut Self {
+        if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
             return self;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
-        if block.bottom.is_some(){
+        if block.bottom.is_some() {
             warn!("trying to add a block to an occupied position");
             return self;
         }
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y - block.size.y - dy;
-        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(
-            spawn_x, spawn_y, dx, dy
-        ).with_color(self.info.color).with_density(DEFAULT_DENSITY);
-        let id = self.commands.spawn(phy_block_bundle.clone()).insert(others).id();
-        let new_block = BlobBlock{
+        let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
+            .with_color(self.info.color)
+            .with_density(DEFAULT_DENSITY);
+        let id = self
+            .commands
+            .spawn(phy_block_bundle.clone())
+            .insert(others)
+            .id();
+        let new_block = BlobBlock {
             id: id,
             top: Some(pos),
             bottom: None,
             left: None,
             right: None,
-            size: phy_block_bundle.sprite.sprite.custom_size.unwrap()/2.0,
+            size: phy_block_bundle.sprite.sprite.custom_size.unwrap() / 2.0,
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
-            depth: block.depth+1,
-            vec_index: self.blocks.len()
+            depth: block.depth + 1,
+            vec_index: self.blocks.len(),
         };
-        
+
         let block = &mut self.blocks[pos];
         block.bottom = Some(new_block.vec_index);
         self.current_pos = Some(new_block.vec_index);
-        self.commands.entity(new_block.id).insert(BlockDepth(new_block.depth));
+        self.commands
+            .entity(new_block.id)
+            .insert(BlockDepth(new_block.depth));
 
         // set joint motor
         let mut stiff = 0.0;
         let mut motor_target = 0.0;
-        if motor_pos.is_some(){
+        if motor_pos.is_some() {
             stiff = MOTOR_STIFFNESS;
             motor_target = motor_pos.unwrap();
         }
 
         // set joint limits
-        let mut limits = [-PI,PI];
-        if motor_limits.is_some(){
+        let mut limits = [-PI, PI];
+        if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
 
@@ -471,18 +505,20 @@ impl<'a> BlobBuilder<'a> {
         self.info.add(block.translation, block.size);
         self.update_info();
 
-        self.commands.entity(self.blob_bundle).push_children(&[new_block.id]);
+        self.commands
+            .entity(self.blob_bundle)
+            .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
         self
     }
 
-
     /// update info inside the blob_bundle
-    fn update_info(&mut self){
-        self.commands.entity(self.blob_bundle).insert(self.info.clone());
+    fn update_info(&mut self) {
+        self.commands
+            .entity(self.blob_bundle)
+            .insert(self.info.clone());
     }
-    
 }
 
 // helper function
@@ -491,7 +527,7 @@ pub fn bind_joint(
     parent: Entity,
     child: Entity,
     joint: RevoluteJointBuilder,
-){
+) {
     commands.entity(child).with_children(|cmd| {
         let mut new_joint = ImpulseJoint::new(parent, joint);
         new_joint.data.set_contacts_enabled(ENABLE_CONTACTS);

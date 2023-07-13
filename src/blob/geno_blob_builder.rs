@@ -11,29 +11,28 @@ use super::block::PhysiBlockBundle;
 
 /// Generate Blob according to Genotype
 /// Wrapper around BlobBuilder
-pub struct GenoBlobBuilder<'a>{
+pub struct GenoBlobBuilder<'a> {
     builder: BlobBuilder<'a>,
 }
 
-impl<'a> GenoBlobBuilder<'a>{
-    pub fn from_commands(commands:Commands<'a, 'a>) -> Self {
-        Self{
-            builder: BlobBuilder::from_commands(commands)
+impl<'a> GenoBlobBuilder<'a> {
+    pub fn from_commands(commands: Commands<'a, 'a>) -> Self {
+        Self {
+            builder: BlobBuilder::from_commands(commands),
         }
     }
 
     /// generate blob according to its genotype
-    pub fn build(&mut self, geno:&BlobGeno, center:[f32;2]){
-
+    pub fn build(&mut self, geno: &BlobGeno, center: [f32; 2]) {
         // Lambda function to use in child extraction
-        fn lambda(node: &Option<GenericGenoNode>) -> Option<&GenoNode>{
+        fn lambda(node: &Option<GenericGenoNode>) -> Option<&GenoNode> {
             node.as_ref().and_then(|node| match node {
                 GenericGenoNode::Parent => None,
-                GenericGenoNode::Child(child) => Some(child)
+                GenericGenoNode::Child(child) => Some(child),
             })
         }
 
-        fn build_node(builder: &mut BlobBuilder, tree:&QuadTree<GenericGenoNode>, index:usize){
+        fn build_node(builder: &mut BlobBuilder, tree: &QuadTree<GenericGenoNode>, index: usize) {
             if let Some(Some(_)) = tree.nodes.get(index) {
                 let children = tree.children(index);
                 let (top_child, bottom_child, left_child, right_child) = (
@@ -43,38 +42,30 @@ impl<'a> GenoBlobBuilder<'a>{
                     tree.nodes.get(children[3]).and_then(lambda),
                 );
 
-                if top_child.is_some(){
+                if top_child.is_some() {
                     let size = top_child.unwrap().size;
-                    builder.add_to_top(
-                        size[0],size[1],None,None,()
-                    );
+                    builder.add_to_top(size[0], size[1], None, None, ());
                     build_node(builder, tree, children[0]);
                     builder.bottom();
                 }
-                
-                if bottom_child.is_some(){
+
+                if bottom_child.is_some() {
                     let size = bottom_child.unwrap().size;
-                    builder.add_to_bottom(
-                        size[0],size[1],None,None,()
-                    );
+                    builder.add_to_bottom(size[0], size[1], None, None, ());
                     build_node(builder, tree, children[1]);
                     builder.top();
                 }
-                
-                if left_child.is_some(){
+
+                if left_child.is_some() {
                     let size = left_child.unwrap().size;
-                    builder.add_to_left(
-                        size[0],size[1],None,None,()
-                    );
+                    builder.add_to_left(size[0], size[1], None, None, ());
                     build_node(builder, tree, children[2]);
                     builder.right();
                 }
 
-                if right_child.is_some(){
+                if right_child.is_some() {
                     let size = right_child.unwrap().size;
-                    builder.add_to_right(
-                        size[0],size[1],None,None,()
-                    );
+                    builder.add_to_right(size[0], size[1], None, None, ());
                     build_node(builder, tree, children[3]);
                     builder.left();
                 }
@@ -84,7 +75,11 @@ impl<'a> GenoBlobBuilder<'a>{
         // create first
         let builder = &mut self.builder;
         builder.create_first(
-            geno.get_first().unwrap().to_bundle(center).with_color(Color::BLUE), ()
+            geno.get_first()
+                .unwrap()
+                .to_bundle(center)
+                .with_color(Color::BLUE),
+            (),
         );
 
         // start recursion
@@ -99,51 +94,53 @@ impl<'a> GenoBlobBuilder<'a>{
 /// The Geno is a QuadTree (it can be represented as TernaryTree as well).
 /// index 0,1,2,3 means up,down,left,right (one of them can be ParentIndicator)
 #[derive(Debug)]
-pub struct BlobGeno{
+pub struct BlobGeno {
     pub vec_tree: QuadTree<GenericGenoNode>,
 }
 
-impl Default for BlobGeno{
+impl Default for BlobGeno {
     fn default() -> Self {
         Self {
-            vec_tree: QuadTree::<GenericGenoNode>::new(GENO_MAX_DEPTH)
+            vec_tree: QuadTree::<GenericGenoNode>::new(GENO_MAX_DEPTH),
         }
     }
 }
 
-impl BlobGeno{
-
+impl BlobGeno {
     // TODO: Clean the code. Ugly long function
     /// generate a random GenoType that don't have conflict limbs
-    pub fn new_rand() -> BlobGeno{
+    pub fn new_rand() -> BlobGeno {
         // prevent tree-structural block conflict
-        let mut occupied_region = Vec::<[f32;4]>::new();
+        let mut occupied_region = Vec::<[f32; 4]>::new();
 
-        fn is_overlapped(center:[f32;2], size:[f32;2], occupied_region: &mut Vec<[f32; 4]>) -> bool{
+        fn is_overlapped(
+            center: [f32; 2],
+            size: [f32; 2],
+            occupied_region: &mut Vec<[f32; 4]>,
+        ) -> bool {
             let x_min = center[0] - size[0];
             let x_max = center[0] + size[0];
-            let y_min = center[1] -size[1];
-            let y_max = center[1] +size[1];
+            let y_min = center[1] - size[1];
+            let y_max = center[1] + size[1];
 
-            for region in occupied_region.iter(){
+            for region in occupied_region.iter() {
                 let x_overlap = x_min <= region[1] && x_max >= region[0];
                 let y_overlap = y_min <= region[3] && y_max >= region[2];
                 if x_overlap && y_overlap {
-                    occupied_region.push(
-                        [x_min,x_max,y_min,y_max]
-                    );
-                    return true
+                    occupied_region.push([x_min, x_max, y_min, y_max]);
+                    return true;
                 }
-            };
-            occupied_region.push(
-                [x_min,x_max,y_min,y_max]
-            );
-            return false
+            }
+            occupied_region.push([x_min, x_max, y_min, y_max]);
+            return false;
         }
 
-
         /// function to acquire a new rand node
-        fn rand_nodes(parent:&GenoNode, direction:usize, occupied_region: &mut Vec<[f32; 4]>) -> Option<GenericGenoNode>{
+        fn rand_nodes(
+            parent: &GenoNode,
+            direction: usize,
+            occupied_region: &mut Vec<[f32; 4]>,
+        ) -> Option<GenericGenoNode> {
             let mut rng = thread_rng();
 
             let parent_size = parent.size;
@@ -152,70 +149,84 @@ impl BlobGeno{
             // set limitation
             // limitation can only avoid block conflict
             // it can not avoid conflict caused by tree structure
-            let dx_dy_limits_top_bottom = [
-                parent_size[0],DEFAULT_BLOCK_SIZE[0]*RAND_SIZE_SCALER[1]
-            ];
-            let dx_dy_limits_left_right = [
-                DEFAULT_BLOCK_SIZE[0]*RAND_SIZE_SCALER[1], parent_size[1]
-            ];
+            let dx_dy_limits_top_bottom =
+                [parent_size[0], DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1]];
+            let dx_dy_limits_left_right =
+                [DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1], parent_size[1]];
 
-            if rng.gen_bool(RAND_NODE_NOT_NONE){
-                let joint_limits = [
-                    rng.gen_range(-PI..0.0), 
-                    rng.gen_range(0.0..PI)];
+            if rng.gen_bool(RAND_NODE_NOT_NONE) {
+                let joint_limits = [rng.gen_range(-PI..0.0), rng.gen_range(0.0..PI)];
                 let mut size = [
-                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0]), 
-                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_top_bottom[1])
-                    ];
-                if direction == 2 || direction == 3{
+                    rng.gen_range(
+                        RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0],
+                    ),
+                    rng.gen_range(
+                        RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_top_bottom[1],
+                    ),
+                ];
+                if direction == 2 || direction == 3 {
                     size = [
-                        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_left_right[0]), 
-                        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_left_right[1])
+                        rng.gen_range(
+                            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_left_right[0],
+                        ),
+                        rng.gen_range(
+                            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_left_right[1],
+                        ),
                     ];
                 }
 
                 // center
                 let mut center = [
                     parent_center[0],
-                    parent_center[1] + parent_size[1] + size[1]
+                    parent_center[1] + parent_size[1] + size[1],
                 ];
-                if direction==1{
+                if direction == 1 {
                     center = [
                         parent_center[0],
-                        parent_center[1] - parent_size[1] - size[1]
+                        parent_center[1] - parent_size[1] - size[1],
                     ];
-                }else if direction==2 {
+                } else if direction == 2 {
                     center = [
                         parent_center[0] - parent_size[0] - size[0],
-                        parent_center[1]
+                        parent_center[1],
                     ];
-                }else if direction==3{
+                } else if direction == 3 {
                     center = [
                         parent_center[0] + parent_size[0] + size[0],
-                        parent_center[1]
+                        parent_center[1],
                     ]
                 }
-                if is_overlapped(center, size, occupied_region){
-                    return None
-                }else{
-                    return Some(GenericGenoNode::Child(GenoNode { joint_limits, size, center }))
+                if is_overlapped(center, size, occupied_region) {
+                    return None;
+                } else {
+                    return Some(GenericGenoNode::Child(GenoNode {
+                        joint_limits,
+                        size,
+                        center,
+                    }));
                 }
             };
-            return None
+            return None;
         }
 
         /// recursive function
-        fn build(tree:&mut QuadTree<GenericGenoNode>, index:usize, occupied_region: &mut Vec<[f32; 4]>){
+        fn build(
+            tree: &mut QuadTree<GenericGenoNode>,
+            index: usize,
+            occupied_region: &mut Vec<[f32; 4]>,
+        ) {
             let mut rng = thread_rng();
 
             let children = tree.children(index);
 
             // index and children index should in range
-            if tree.nodes.get(children[3]).is_none(){return}
+            if tree.nodes.get(children[3]).is_none() {
+                return;
+            }
 
             // random init four nodes, avoid self-conflict
-            if let Some(GenericGenoNode::Child(node)) = tree.nodes[index].clone(){
-                for (i,&child) in children.iter().enumerate(){
+            if let Some(GenericGenoNode::Child(node)) = tree.nodes[index].clone() {
+                for (i, &child) in children.iter().enumerate() {
                     tree.nodes[child] = rand_nodes(&node, i, occupied_region)
                 }
 
@@ -224,8 +235,8 @@ impl BlobGeno{
                 tree.nodes[parent_idx] = Some(GenericGenoNode::Parent);
 
                 // keep recursion
-                for &i in children.iter(){
-                    if i!=parent_idx{
+                for &i in children.iter() {
+                    if i != parent_idx {
                         build(tree, i, occupied_region);
                     }
                 }
@@ -241,56 +252,50 @@ impl BlobGeno{
     }
 
     pub fn get_first(&self) -> Option<&GenoNode> {
-        self.vec_tree.nodes[0].as_ref().and_then(
-            |node| match node{
-                GenericGenoNode::Parent => None,
-                GenericGenoNode::Child(child) => Some(child)
-            })
+        self.vec_tree.nodes[0].as_ref().and_then(|node| match node {
+            GenericGenoNode::Parent => None,
+            GenericGenoNode::Child(child) => Some(child),
+        })
     }
-    
-
 }
-
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
 /// Representing morphyology of each block inside blob.
 #[derive(Debug, Clone)]
-pub enum GenericGenoNode{
+pub enum GenericGenoNode {
     /// parent indicator
     Parent,
-    Child(GenoNode)
+    Child(GenoNode),
 }
 
-#[derive(Debug,Clone)]
-pub struct GenoNode{
-    joint_limits: [f32;2],
-    size: [f32;2],
-    center: [f32;2]
+#[derive(Debug, Clone)]
+pub struct GenoNode {
+    joint_limits: [f32; 2],
+    size: [f32; 2],
+    center: [f32; 2],
 }
 
-impl Default for GenoNode{
+impl Default for GenoNode {
     fn default() -> Self {
         Self {
-            joint_limits:[-PI,PI],
-            size:DEFAULT_BLOCK_SIZE,
-            center: [0.0,0.0]
+            joint_limits: [-PI, PI],
+            size: DEFAULT_BLOCK_SIZE,
+            center: [0.0, 0.0],
         }
     }
 }
 
 impl GenoNode {
     /// generate [`PhysiBlockBundle`] from GenoNode
-    fn to_bundle(&self, center:[f32;2]) -> PhysiBlockBundle{
-        PhysiBlockBundle::from_xy_dx_dy(
-            center[0], center[1], self.size[0], self.size[1]
-        )
+    fn to_bundle(&self, center: [f32; 2]) -> PhysiBlockBundle {
+        PhysiBlockBundle::from_xy_dx_dy(center[0], center[1], self.size[0], self.size[1])
     }
 }
 
 /// QuadTree, Helper struct
 pub struct QuadTree<T> {
     pub nodes: Vec<Option<T>>,
-    pub max_depth: u32
+    pub max_depth: u32,
 }
 
 impl<T> QuadTree<T> {
@@ -299,7 +304,7 @@ impl<T> QuadTree<T> {
         let nodes = (0..capacity).map(|_| None).collect();
         Self { max_depth, nodes }
     }
-    
+
     pub fn parent(&self, index: usize) -> Option<usize> {
         if index == 0 {
             None
@@ -351,7 +356,12 @@ impl<T> QuadTree<T> {
 impl<T: Debug> Debug for QuadTree<T> {
     /// tree structure debug info
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fn print_node<T: Debug>(tree: &QuadTree<T>, index: usize, indent: &str, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fn print_node<T: Debug>(
+            tree: &QuadTree<T>,
+            index: usize,
+            indent: &str,
+            f: &mut fmt::Formatter<'_>,
+        ) -> fmt::Result {
             match tree.nodes.get(index) {
                 None | Some(None) => Ok(()), // skip empty nodes
                 Some(Some(node)) => {
