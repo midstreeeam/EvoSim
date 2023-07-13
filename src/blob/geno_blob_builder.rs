@@ -84,11 +84,14 @@ impl<'a> GenoBlobBuilder<'a>{
         // create first
         let builder = &mut self.builder;
         builder.create_first(
-            geno.get_first().unwrap().to_bundle(center), ()
+            geno.get_first().unwrap().to_bundle(center).with_color(Color::BLUE), ()
         );
 
         // start recursion
         build_node(&mut self.builder, &geno.vec_tree, 0);
+
+        // reset builder
+        self.builder.clean();
     }
 }
 
@@ -110,84 +113,131 @@ impl Default for BlobGeno{
 
 impl BlobGeno{
 
-    // TODO: bugs, self-conflict blob can be generated
-    // TODO: this function is too complicate
-    /// generate a random BlobGeno
+    // TODO: Clean the code. Ugly long function
+    /// generate a random GenoType that don't have conflict limbs
     pub fn new_rand() -> BlobGeno{
-        // init rng and tree
-        let mut rng = thread_rng();
-        let mut bg = BlobGeno::default();
+        // prevent tree-structural block conflict
+        let mut occupied_region = Vec::<[f32;4]>::new();
 
-        // root node can't be none
-        let joint_limits = [
-            rng.gen_range(-PI..0.0), 
-            rng.gen_range(0.0..PI)
-        ];
-        let size = [
-            rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[0]), 
-            rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[1])
-        ];
-        let geno_node = GenoNode { joint_limits, size };
-        bg.vec_tree.nodes[0] = Some(GenericGenoNode::Child(geno_node));
+        fn is_overlapped(center:[f32;2], size:[f32;2], occupied_region: &mut Vec<[f32; 4]>) -> bool{
+            let x_min = center[0] - size[0];
+            let x_max = center[0] + size[0];
+            let y_min = center[1] -size[1];
+            let y_max = center[1] +size[1];
+
+            for region in occupied_region.iter(){
+                let x_overlap = x_min <= region[1] && x_max >= region[0];
+                let y_overlap = y_min <= region[3] && y_max >= region[2];
+                if x_overlap && y_overlap {
+                    occupied_region.push(
+                        [x_min,x_max,y_min,y_max]
+                    );
+                    return true
+                }
+            };
+            occupied_region.push(
+                [x_min,x_max,y_min,y_max]
+            );
+            return false
+        }
 
 
-        // init the random vector over other nodes
-        for node in &mut bg.vec_tree.nodes.iter_mut().skip(1){
-            // if node is not empty
+        /// function to acquire a new rand node
+        fn rand_nodes(parent:&GenoNode, direction:usize, occupied_region: &mut Vec<[f32; 4]>) -> Option<GenericGenoNode>{
+            let mut rng = thread_rng();
+
+            let parent_size = parent.size;
+            let parent_center = parent.center;
+
+            // set limitation
+            // limitation can only avoid block conflict
+            // it can not avoid conflict caused by tree structure
+            let dx_dy_limits_top_bottom = [
+                parent_size[0],DEFAULT_BLOCK_SIZE[0]*RAND_SIZE_SCALER[1]
+            ];
+            let dx_dy_limits_left_right = [
+                DEFAULT_BLOCK_SIZE[0]*RAND_SIZE_SCALER[1], parent_size[1]
+            ];
+
             if rng.gen_bool(RAND_NODE_NOT_NONE){
                 let joint_limits = [
                     rng.gen_range(-PI..0.0), 
-                    rng.gen_range(0.0..PI)
+                    rng.gen_range(0.0..PI)];
+                let mut size = [
+                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0]), 
+                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_top_bottom[1])
+                    ];
+                if direction == 2 || direction == 3{
+                    size = [
+                        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_left_right[0]), 
+                        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_left_right[1])
+                    ];
+                }
+
+                // center
+                let mut center = [
+                    parent_center[0],
+                    parent_center[1] + parent_size[1] + size[1]
                 ];
-                let size = [
-                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[0]), 
-                    rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[1])
-                ];
-                let geno_node = GenoNode { joint_limits, size };
-                *node = Some(GenericGenoNode::Child(geno_node));
+                if direction==1{
+                    center = [
+                        parent_center[0],
+                        parent_center[1] - parent_size[1] - size[1]
+                    ];
+                }else if direction==2 {
+                    center = [
+                        parent_center[0] - parent_size[0] - size[0],
+                        parent_center[1]
+                    ];
+                }else if direction==3{
+                    center = [
+                        parent_center[0] + parent_size[0] + size[0],
+                        parent_center[1]
+                    ]
+                }
+                if is_overlapped(center, size, occupied_region){
+                    return None
+                }else{
+                    return Some(GenericGenoNode::Child(GenoNode { joint_limits, size, center }))
+                }
+            };
+            return None
+        }
+
+        /// recursive function
+        fn build(tree:&mut QuadTree<GenericGenoNode>, index:usize, occupied_region: &mut Vec<[f32; 4]>){
+            let mut rng = thread_rng();
+
+            let children = tree.children(index);
+
+            // index and children index should in range
+            if tree.nodes.get(children[3]).is_none(){return}
+
+            // random init four nodes, avoid self-conflict
+            if let Some(GenericGenoNode::Child(node)) = tree.nodes[index].clone(){
+                for (i,&child) in children.iter().enumerate(){
+                    tree.nodes[child] = rand_nodes(&node, i, occupied_region)
+                }
+
+                // one parent indicator
+                let parent_idx = *children.choose(&mut rng).unwrap();
+                tree.nodes[parent_idx] = Some(GenericGenoNode::Parent);
+
+                // keep recursion
+                for &i in children.iter(){
+                    if i!=parent_idx{
+                        build(tree, i, occupied_region);
+                    }
+                }
             }
         }
 
-        // clean the rand tree
-        Self::rand_tree_clean(&mut bg,0);
-
+        // init tree
+        let mut bg = BlobGeno::default();
+        // root node
+        bg.vec_tree.nodes[0] = Some(GenericGenoNode::Child(GenoNode::default()));
+        build(&mut bg.vec_tree, 0, &mut occupied_region);
         bg
-    }
-
-    // TODO: better to use match to make this function cleaner
-    /// clean the vector and add parent indicator to create a tree
-    fn rand_tree_clean(bg: &mut BlobGeno, index: usize){
-        let mut rng = thread_rng();
-
-        let tree = &mut bg.vec_tree;
-
-        // index out of bounds or leaf node 
-        // (which should only contains parent indicator)
-        if tree.nodes.get(index).is_none() || tree.is_leaf(index){
-            return
-        }
-        // empty nodes
-        if tree.nodes.get(index).unwrap().is_none(){
-            tree.clean_subtree(index);
-            return
-        }
-        // parent indicator
-        if let GenericGenoNode::Parent = tree.nodes.get(index).unwrap().as_ref().unwrap(){
-            tree.clean_subtree_without_self(index);
-            return;
-        }
-
-        // add parent indicator
-        let children_indices = tree.children(index);
-        let parent_indicator_index = children_indices.choose(&mut rng);
-        tree.nodes[*parent_indicator_index.unwrap()] = Some(GenericGenoNode::Parent);
-
-
-        // Recursively clean the rest of the tree
-        for &child_index in &children_indices {
-            Self::rand_tree_clean(bg, child_index);
-        }
-
     }
 
     pub fn get_first(&self) -> Option<&GenoNode> {
@@ -204,26 +254,26 @@ impl BlobGeno{
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
 /// Representing morphyology of each block inside blob.
-#[derive(Debug)]
-
+#[derive(Debug, Clone)]
 pub enum GenericGenoNode{
     /// parent indicator
     Parent,
     Child(GenoNode)
 }
 
-#[derive(Debug)]
-
+#[derive(Debug,Clone)]
 pub struct GenoNode{
     joint_limits: [f32;2],
-    size: [f32;2]
+    size: [f32;2],
+    center: [f32;2]
 }
 
 impl Default for GenoNode{
     fn default() -> Self {
         Self {
             joint_limits:[-PI,PI],
-            size:DEFAULT_BLOCK_SIZE
+            size:DEFAULT_BLOCK_SIZE,
+            center: [0.0,0.0]
         }
     }
 }

@@ -33,4 +33,4 @@
 ### creature structure
 
 - blob construction & rules
-
+- random blob rules, self-conflict situation (block size, tree structure)

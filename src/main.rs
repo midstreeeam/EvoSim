@@ -35,8 +35,8 @@ fn main() {
             // }),
 
             // log frame rate
-            // LogDiagnosticsPlugin::default(),
-            // FrameTimeDiagnosticsPlugin::default(),
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin::default(),
 
             // raiper
             RapierPhysicsPlugin::<NoUserData>::default(),
@@ -48,7 +48,6 @@ fn main() {
 
         ))
         .add_systems(Startup,setup_test)
-
         // .init_resource::<BevyBlockNeurons>()
         // .add_systems(Update, res_test)
         .run();
@@ -85,9 +84,15 @@ fn setup_test(
 
     // // println!("{:#?}",bb.blocks);
 
-
     let mut builder = GenoBlobBuilder::from_commands(commands);
-    builder.build(&BlobGeno::new_rand(), [0.0,0.0]);
+    for i in -5..5{
+        for j in -5..5{
+            builder.build(&BlobGeno::new_rand(), [700.0*i as f32, 700.0*j as f32]);
+        }
+    }
+
+    // builder.build(&BlobGeno::new_rand(), [0.0,0.0]);
+
 
 
 }
