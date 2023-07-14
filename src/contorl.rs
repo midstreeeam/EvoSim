@@ -20,7 +20,13 @@ pub fn block_action(
 ) {
     for (parent, mut joint) in q.iter_mut() {
         let entity_id = parent.get();
-        let NeuronId(nn_id) = nn_id_q.get(entity_id).unwrap_or(&NeuronId(0));
+        let NeuronId {
+            id: nn_id,
+            parent_id: parent_nn_id,
+        } = nn_id_q.get(entity_id).unwrap_or(&NeuronId {
+            id: 0,
+            parent_id: None,
+        });
 
         // get events
         let _ = get_cf_event(entity_id, &mut cf_events);
@@ -51,7 +57,6 @@ pub fn get_cf_event(
         .find(|&event| event.collider1 == entity_id || event.collider2 == entity_id)
         .and_then(|event| Some(event.clone()))
 }
-
 
 /// Update `JointInfo` componet each frame.
 pub fn update_joint_info(

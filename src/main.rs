@@ -65,8 +65,8 @@ fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
 }
 
 fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {
-    for NeuronId(i) in block_q.iter() {
-        let _ = &res.nnvec[*i];
+    for NeuronId { id, parent_id } in block_q.iter() {
+        let _ = &res.nnvec[*id];
     }
 }
 

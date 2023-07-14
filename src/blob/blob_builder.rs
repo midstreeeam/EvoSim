@@ -19,6 +19,7 @@ pub struct BlobBlock {
     translation: Vec2,
     anchors: BlockAnchors,
     depth: u32,
+    nn_id: usize
 }
 
 pub struct BlobBuilder<'a> {
@@ -159,7 +160,7 @@ impl<'a> BlobBuilder<'a> {
                 phy_block_bundle
                     .clone()
                     .with_color(self.info.color)
-                    .with_nn_id(nn_id),
+                    .with_nn_id(nn_id,None),
             )
             .insert(others)
             .id();
@@ -175,6 +176,7 @@ impl<'a> BlobBuilder<'a> {
             translation: phy_block_bundle.sprite.transform.translation.truncate(),
             anchors: phy_block_bundle.anchors,
             depth: 0,
+            nn_id:nn_id
         };
 
         // update blob_info in bundle
@@ -220,7 +222,7 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id);
+            .with_nn_id(nn_id,Some(block.nn_id));
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -237,6 +239,7 @@ impl<'a> BlobBuilder<'a> {
             anchors: phy_block_bundle.anchors,
             depth: block.depth + 1,
             vec_index: self.blocks.len(),
+            nn_id: nn_id
         };
 
         let block = &mut self.blocks[pos];
@@ -310,7 +313,7 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id);
+            .with_nn_id(nn_id,Some(block.nn_id));
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -327,6 +330,7 @@ impl<'a> BlobBuilder<'a> {
             anchors: phy_block_bundle.anchors,
             depth: block.depth + 1,
             vec_index: self.blocks.len(),
+            nn_id:nn_id
         };
 
         let block = &mut self.blocks[pos];
@@ -400,7 +404,7 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id);
+            .with_nn_id(nn_id,Some(block.nn_id));
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -417,6 +421,7 @@ impl<'a> BlobBuilder<'a> {
             anchors: phy_block_bundle.anchors,
             depth: block.depth + 1,
             vec_index: self.blocks.len(),
+            nn_id:nn_id
         };
 
         let block = &mut self.blocks[pos];
@@ -490,7 +495,7 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id);
+            .with_nn_id(nn_id,Some(block.nn_id));
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -507,6 +512,7 @@ impl<'a> BlobBuilder<'a> {
             anchors: phy_block_bundle.anchors,
             depth: block.depth + 1,
             vec_index: self.blocks.len(),
+            nn_id:nn_id
         };
 
         let block = &mut self.blocks[pos];

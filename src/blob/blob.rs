@@ -12,8 +12,7 @@ pub struct BlobInfo {
     // bound: [min,max] to represent size
     pub xbound: [f32; 2],
     pub ybound: [f32; 2],
-    pub color: Color, //TODO: add a children entities list, need to know which child is which limb of the blob,
-                      // bevy's ECS's query is unsorted. can not rely on query order.
+    pub color: Color
 }
 
 impl Default for BlobInfo {

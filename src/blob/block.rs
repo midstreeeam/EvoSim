@@ -29,8 +29,16 @@ pub struct BlockDepth(pub u32);
 
 /// id for relate Neuron
 #[derive(Component, Clone, Debug)]
-pub struct NeuronId(pub usize);
+pub struct NeuronId{
+    pub id:usize,
+    pub parent_id:Option<usize>
+}
 
+impl Default for NeuronId {
+    fn default() -> Self {
+        Self { id: 0, parent_id: None }
+    }
+}
 
 /// JointInfor for joint sensors
 #[derive(Component, Clone)]
@@ -94,7 +102,7 @@ impl Default for PhysiBlockBundle {
                 transform: Transform::default(),
                 ..default()
             },
-            neuron_id: NeuronId(0),
+            neuron_id: NeuronId::default(),
             depth: BlockDepth(0),
             anchors: BlockAnchors::from_xy(default_rad, default_rad),
             collider: Collider::cuboid(default_rad / 2.0, default_rad / 2.0),
@@ -154,8 +162,8 @@ impl PhysiBlockBundle {
         self
     }
 
-    pub fn with_nn_id(mut self, nn_id: usize) -> Self{
-        self.neuron_id = NeuronId(nn_id);
+    pub fn with_nn_id(mut self, nn_id: usize, parent_nn_id: Option<usize>) -> Self{
+        self.neuron_id = NeuronId{id: nn_id, parent_id: parent_nn_id};
         self
     }
 }
