@@ -14,6 +14,7 @@ use crate::{
 };
 
 // TODO: also select center block or add a new way to make center block's neuron work
+// TODO: solve parallel problem, the first block receive output after the last block send signal
 /// select `Query<(&Parent, &mut ImpulseJoint)` 
 /// means the center block will not be selected
 /// 

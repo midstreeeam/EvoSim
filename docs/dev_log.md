@@ -23,6 +23,9 @@
 - parallel systems access
 - parallel iterator
 
+### parallel connection problem
+- the first output is received after the last input is sent, but it runs in a loop
+
 ### timestep
 
 - game tick vs framerate, delta_time
