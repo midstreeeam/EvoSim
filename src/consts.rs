@@ -11,7 +11,7 @@ pub const MOTOR_STIFFNESS:f32 = 10.0;
 pub const MOTOR_DAMPING:f32 = 0.0;
 pub const ENABLE_CONTACTS:bool = false;
 // joint contorl
-pub const MOTOR_MAX_TARGET_V:f32 = 10.0;
+pub const MOTOR_MAX_TARGET_V:f32 = 3.0;
 
 // math
 pub const EPSILON:f32 = 0.0001; // max error

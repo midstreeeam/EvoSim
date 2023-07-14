@@ -9,27 +9,38 @@ use bevy_rapier2d::{
 use crate::{
     blob::block::{JointInfo, NeuronId},
     brain::resource::BevyBlockNeurons,
+    componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
 };
 
+// TODO: also select center block or add a new way to make center block's neuron work
+/// select `Query<(&Parent, &mut ImpulseJoint)` 
+/// means the center block will not be selected
+/// 
+/// Can not use `EventReader` multiple times each frame.
+/// Events been read will be marked as read.
 pub fn block_action(
     mut q: Query<(&Parent, &mut ImpulseJoint)>,
     nn_id_q: Query<&NeuronId>,
     bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
+    collider_q: Query<&ColliderFlag>,
 ) {
+
+    let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
+
     for (parent, mut joint) in q.iter_mut() {
         let entity_id = parent.get();
         let NeuronId {
             id: nn_id,
-            parent_id: parent_nn_id,
+            parent_id: _,
         } = nn_id_q.get(entity_id).unwrap_or(&NeuronId {
             id: 0,
             parent_id: None,
         });
 
-        // get events
-        let _ = get_cf_event(entity_id, &mut cf_events);
+        // if contact
+        if let Some(_) = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q) {}
 
         let signal = bbn.nnvec[*nn_id].get_rand_output();
         joint
@@ -48,14 +59,52 @@ pub fn block_action(
 //
 /// get contact force event for an entity,
 /// return the first if multiple event shappen at the same time
-pub fn get_cf_event(
+fn get_cf_event(
     entity_id: Entity,
-    cf_events: &mut EventReader<ContactForceEvent>,
+    cf_events: &mut Vec<ContactForceEvent>,
 ) -> Option<ContactForceEvent> {
     cf_events
         .iter()
         .find(|&event| event.collider1 == entity_id || event.collider2 == entity_id)
         .and_then(|event| Some(event.clone()))
+}
+
+/// Not a bevy system.
+/// Output singal depends on NN's input
+fn get_cf_signal(
+    entity_id: Entity,
+    cf_events_vec: &mut Vec<ContactForceEvent>,
+    blob_flag_q: &Query<&ColliderFlag>,
+) -> Option<(bool, bool, [f32; 2], f32)> {
+
+    // if contact
+    if let Some(event) = get_cf_event(entity_id, cf_events_vec) {
+
+        let other = if entity_id == event.collider1 {
+            event.collider2
+        } else {
+            event.collider1
+        };
+
+        if let (
+            Ok(ColliderFlag::BLOCK(BlobEntityIndex(Some(sid)))),
+            Ok(oflag)) =
+            (blob_flag_q.get(entity_id), blob_flag_q.get(other)
+        ) {
+            let (mut wall, mut blob, vect, mag) =
+                (false, false, event.total_force, event.total_force_magnitude);
+            if let ColliderFlag::WALL = oflag {
+                wall = true;
+            }
+            if let ColliderFlag::BLOCK(BlobEntityIndex(Some(oid))) = oflag {
+                if sid != oid {
+                    blob = true;
+                }
+            }
+            return Some((wall, blob, [vect.x, vect.y], mag));
+        }
+    }
+    None
 }
 
 /// Update `JointInfo` componet each frame.
