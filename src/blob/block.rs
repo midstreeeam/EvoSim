@@ -31,6 +31,21 @@ pub struct BlockDepth(pub u32);
 #[derive(Component, Clone, Debug)]
 pub struct NeuronId(pub usize);
 
+
+/// JointInfor for joint sensors
+#[derive(Component, Clone)]
+pub struct JointInfo{
+    pub ang_pos:f32,
+    pub ang_velocity:f32,
+}
+
+impl JointInfo {
+    pub fn update(&mut self,pos:f32,v:f32){
+        self.ang_pos=pos;
+        self.ang_velocity=v;
+    }
+}
+
 /// PhysiBlockBundle is the smallest unit in this simulation.
 /// It is the cubiod that construct blobs.
 #[derive(Bundle, Clone)]
@@ -39,6 +54,7 @@ pub struct PhysiBlockBundle {
     pub sprite: SpriteBundle,
     pub collider: Collider,
     pub rigbody: RigidBody,
+    pub event_flag: ActiveEvents,
     pub depth: BlockDepth,
 
     // physical config
@@ -57,7 +73,9 @@ pub struct PhysiBlockBundle {
     /// neuron id
     /// 
     /// id=0 is the default id, means random neuron output
-    pub neuron_id: NeuronId
+    pub neuron_id: NeuronId,
+
+    pub joint_info: JointInfo
 }
 
 impl Default for PhysiBlockBundle {
@@ -88,6 +106,10 @@ impl Default for PhysiBlockBundle {
             damping: Damping::default(),
             ex_force: ExternalForce::default(),
             ex_impulse: ExternalImpulse::default(),
+            // contact_force_events for sensor
+            event_flag: ActiveEvents::CONTACT_FORCE_EVENTS,
+            // default JointInfo is all 0
+            joint_info: JointInfo { ang_pos: 0.0, ang_velocity: 0.0 }
         }
     }
 }

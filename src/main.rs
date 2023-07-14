@@ -15,7 +15,7 @@ use blob::{
     geno_blob_builder::{BlobGeno, GenoBlobBuilder},
 };
 use brain::resource::BevyBlockNeurons;
-use contorl::block_action;
+use contorl::{block_action, update_joint_info};
 use graphics::*;
 use physics::physical_world;
 
@@ -49,7 +49,7 @@ fn main() {
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
         // .add_systems(Update, res_test)
-        .add_systems(Update, block_action)
+        .add_systems(Update, (block_action,update_joint_info))
         .run();
 }
 
