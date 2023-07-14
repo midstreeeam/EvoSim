@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::componet::ColliderFlag;
+
 #[derive(Component, Clone, Debug)]
 pub struct BlockAnchors {
     pub top: Vec2,
@@ -26,6 +28,11 @@ impl BlockAnchors {
 /// Depth determines the processing order of Neural Network
 #[derive(Component, Clone, Debug)]
 pub struct BlockDepth(pub u32);
+
+/// denote which blob it belongs to.
+/// The u32 value is the idx value inside `Entity` class
+#[derive(Component, Clone, Debug)]
+pub struct BlobEntityIndex(pub Option<u32>);
 
 /// id for relate Neuron
 #[derive(Component, Clone, Debug)]
@@ -82,7 +89,8 @@ pub struct PhysiBlockBundle {
     /// 
     /// id=0 is the default id, means random neuron output
     pub neuron_id: NeuronId,
-
+    pub blob_id: BlobEntityIndex,
+    pub type_falg: ColliderFlag,
     pub joint_info: JointInfo
 }
 
@@ -117,7 +125,9 @@ impl Default for PhysiBlockBundle {
             // contact_force_events for sensor
             event_flag: ActiveEvents::CONTACT_FORCE_EVENTS,
             // default JointInfo is all 0
-            joint_info: JointInfo { ang_pos: 0.0, ang_velocity: 0.0 }
+            joint_info: JointInfo { ang_pos: 0.0, ang_velocity: 0.0 },
+            type_falg: ColliderFlag::BLOCK,
+            blob_id: BlobEntityIndex(None)
         }
     }
 }
@@ -164,6 +174,11 @@ impl PhysiBlockBundle {
 
     pub fn with_nn_id(mut self, nn_id: usize, parent_nn_id: Option<usize>) -> Self{
         self.neuron_id = NeuronId{id: nn_id, parent_id: parent_nn_id};
+        self
+    }
+
+    pub fn with_blob(mut self, blob_id: u32) -> Self{
+        self.blob_id = BlobEntityIndex(Some(blob_id));
         self
     }
 }

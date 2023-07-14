@@ -6,6 +6,7 @@ mod consts;
 mod graphics;
 mod physics;
 mod contorl;
+mod componet;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;

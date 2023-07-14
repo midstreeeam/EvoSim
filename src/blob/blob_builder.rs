@@ -160,7 +160,8 @@ impl<'a> BlobBuilder<'a> {
                 phy_block_bundle
                     .clone()
                     .with_color(self.info.color)
-                    .with_nn_id(nn_id,None),
+                    .with_nn_id(nn_id,None)
+                    .with_blob(self.blob_bundle.index())
             )
             .insert(others)
             .id();
@@ -222,7 +223,8 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id,Some(block.nn_id));
+            .with_nn_id(nn_id,Some(block.nn_id))
+            .with_blob(self.blob_bundle.index());
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -313,7 +315,8 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id,Some(block.nn_id));
+            .with_nn_id(nn_id,Some(block.nn_id))
+            .with_blob(self.blob_bundle.index());
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -404,7 +407,8 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id,Some(block.nn_id));
+            .with_nn_id(nn_id,Some(block.nn_id))
+            .with_blob(self.blob_bundle.index());
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -495,7 +499,8 @@ impl<'a> BlobBuilder<'a> {
         let phy_block_bundle = PhysiBlockBundle::from_xy_dx_dy(spawn_x, spawn_y, dx, dy)
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
-            .with_nn_id(nn_id,Some(block.nn_id));
+            .with_nn_id(nn_id,Some(block.nn_id))
+            .with_blob(self.blob_bundle.index());
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())

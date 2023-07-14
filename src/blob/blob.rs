@@ -6,6 +6,8 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Blob;
 
+// TODO: update x and y bounds and center dynamiclly each frame
+// TODO: add the mass_center element (to track blob movement)
 #[derive(Component, Clone, Debug)]
 pub struct BlobInfo {
     pub center: Vec2,
