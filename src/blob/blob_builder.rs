@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::{brain::neuron::BlockNeuron, consts::*};
+use crate::{brain::neuron::GenericBlockNN, consts::*};
 
 use super::{blob::*, block::*};
 
@@ -25,7 +25,7 @@ pub struct BlobBlock {
 pub struct BlobBuilder<'a> {
     // tools
     commands: Commands<'a, 'a>,
-    nnvec: &'a mut Vec<BlockNeuron>,
+    nnvec: &'a mut Vec<GenericBlockNN>,
 
     // builder info
     blob_bundle: Entity,
@@ -48,7 +48,7 @@ impl<'a> BlobBuilder<'a> {
     ///
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
     /// please use [`clean()`] so that there won't be joints connects.
-    pub fn from_commands(mut commands: Commands<'a, 'a>, nnvec: &'a mut Vec<BlockNeuron>) -> Self {
+    pub fn from_commands(mut commands: Commands<'a, 'a>, nnvec: &'a mut Vec<GenericBlockNN>) -> Self {
         Self {
             blob_bundle: commands.spawn(BlobBundle::default()).id(),
             commands: commands,
@@ -151,7 +151,7 @@ impl<'a> BlobBuilder<'a> {
         phy_block_bundle: PhysiBlockBundle,
         others: T,
     ) -> &mut Self {
-        let nn = BlockNeuron::new();
+        let nn = GenericBlockNN::new();
         self.nnvec.push(nn);
         let nn_id = self.nnvec.len() - 1;
 
@@ -215,7 +215,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNeuron::new();
+        let nn = GenericBlockNN::new();
         self.nnvec.push(nn);
         let nn_id = self.nnvec.len() - 1;
 
@@ -307,7 +307,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNeuron::new();
+        let nn = GenericBlockNN::new();
         self.nnvec.push(nn);
         let nn_id = self.nnvec.len() - 1;
 
@@ -399,7 +399,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNeuron::new();
+        let nn = GenericBlockNN::new();
         self.nnvec.push(nn);
         let nn_id = self.nnvec.len() - 1;
 
@@ -491,7 +491,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNeuron::new();
+        let nn = GenericBlockNN::new();
         self.nnvec.push(nn);
         let nn_id = self.nnvec.len() - 1;
 

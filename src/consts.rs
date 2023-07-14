@@ -27,3 +27,9 @@ pub const DEFAULT_BLOCK_SIZE:[f32;2] = [50.0,50.0];
 // Rand
 pub const RAND_NODE_NOT_NONE:f64 = 0.9;
 pub const RAND_SIZE_SCALER:[f32;2] = [0.5,2.0];
+
+// nn
+/// each children has 4 input values
+/// 
+/// shape is for nalgebra's matrix
+pub const INWARD_NN_CHILDREN_INPUT_LEN:usize = 4;

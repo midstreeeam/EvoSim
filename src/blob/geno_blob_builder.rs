@@ -4,7 +4,7 @@ use std::fmt::{self, Debug};
 use bevy::prelude::*;
 use rand::prelude::*;
 
-use crate::brain::neuron::BlockNeuron;
+use crate::brain::neuron::GenericBlockNN;
 use crate::consts::*;
 
 use super::blob_builder::BlobBuilder;
@@ -17,7 +17,7 @@ pub struct GenoBlobBuilder<'a> {
 }
 
 impl<'a> GenoBlobBuilder<'a> {
-    pub fn from_commands(commands: Commands<'a, 'a>, nnvec: &'a mut Vec<BlockNeuron>) -> Self {
+    pub fn from_commands(commands: Commands<'a, 'a>, nnvec: &'a mut Vec<GenericBlockNN>) -> Self {
         Self {
             builder: BlobBuilder::from_commands(commands, nnvec),
         }
