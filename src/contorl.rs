@@ -8,13 +8,15 @@ use bevy_rapier2d::{
 
 use crate::{
     blob::block::{JointInfo, NeuronId},
-    brain::resource::BevyBlockNeurons,
+    brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler}},
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
 };
 
 // TODO: also select center block or add a new way to make center block's neuron work
-// TODO: solve parallel problem, the first block receive output after the last block send signal
+// TODO: solve parallel problem,
+// the first block receive output after the last block send signal
+// one way is to get bulk info, send to neuron and receive bulk output
 /// select `Query<(&Parent, &mut ImpulseJoint)` 
 /// means the center block will not be selected
 /// 
@@ -26,31 +28,50 @@ pub fn block_action(
     bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
     collider_q: Query<&ColliderFlag>,
+    joint_info_q: Query<&JointInfo>
 ) {
+
+    let mut signal_handler = SignalHandler::default();
 
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
+    // push inward
     for (parent, mut joint) in q.iter_mut() {
         let entity_id = parent.get();
+
+        // get id
         let NeuronId {
             id: nn_id,
-            parent_id: _,
+            parent_id: parent_nn_id,
         } = nn_id_q.get(entity_id).unwrap_or(&NeuronId {
             id: 0,
             parent_id: None,
         });
 
-        // if contact
-        if let Some(_) = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q) {}
+        // init signal
+        let cf_singal = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q);
+        let joint_motor = joint.data.motor(JointAxis::AngX).unwrap();
+        let joint_info = joint_info_q.get(entity_id).unwrap();
+        let joint_signal = (joint_motor.target_pos,joint_motor.target_vel,joint_info.ang_pos,joint_info.ang_velocity);
+        let inward_signal = InwardNNInputSignal::default().with_collision_signal(cf_singal).with_joint_singal(joint_signal);
 
-        let signal = bbn.nnvec[*nn_id].get_rand_output();
-        joint
-            .data
-            .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
-        joint
-            .data
-            .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
+        // push to signal handler
+        signal_handler.push_inward(inward_signal, *nn_id, *parent_nn_id);
     }
+
+    // run neuron
+    signal_handler.run();
+
+    // // update physical world
+    // for (parent, mut joint) in q.iter_mut() {
+    //     let signal = bbn.nnvec[*nn_id].get_rand_output();
+    //     joint
+    //         .data
+    //         .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
+    //     joint
+    //         .data
+    //         .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
+    // }
 }
 
 // TODO: test preformance and change to `get_bulk_cf_events()` if necessary
