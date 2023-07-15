@@ -1,38 +1,45 @@
 use bevy_rapier2d::na::{SMatrix, SVector};
 
 use crate::consts::*;
-
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
-pub struct SignalHandler{
-    signal_vec: Vec<InwardNNInputSignalUnit>
+/// `SignalHandler` handles input signal from bevy
+pub struct SignalHandler {
+    signal_vec: Vec<InwardNNInputSignalUnit>,
 }
 
 impl Default for SignalHandler {
     fn default() -> Self {
-        Self { 
-            signal_vec: Vec::<InwardNNInputSignalUnit>::new()
+        Self {
+            signal_vec: Vec::<InwardNNInputSignalUnit>::new(),
         }
+    }
+}
+
+impl SignalHandler{
+    // TODO: use trait or other way to realise `len()`
+    pub fn len(&self) -> usize{
+        self.signal_vec.len()
     }
 }
 
 impl SignalHandler {
     /// push inward signals and ids to handler
-    pub fn push_inward(&mut self, signal: InwardNNInputSignal, nn_id:usize, parent_nn_id:Option<usize> ){
-        self.signal_vec.push(
-            InwardNNInputSignalUnit { signal: signal, nn_id: nn_id, parent_nn_id: parent_nn_id }
-        )
+    pub fn push_inward(
+        &mut self,
+        signal: InwardNNInputSignal,
+        nn_id: usize,
+        parent_nn_id: Option<usize>,
+    ) {
+        self.signal_vec.push(InwardNNInputSignalUnit {
+            signal: signal,
+            nn_id: nn_id,
+            parent_nn_id: parent_nn_id,
+        })
     }
-
-    // TODO: make it iterable so the output can be accessed better
-    /// start neuron computing and return outputs
-    pub fn run(&mut self){
-
-    }
-
 }
 
-pub struct InwardNNInputSignalUnit{
+pub struct InwardNNInputSignalUnit {
     signal: InwardNNInputSignal,
     nn_id: usize,
     parent_nn_id: Option<usize>,
@@ -73,16 +80,8 @@ impl Default for InwardNNInputSignal {
 }
 
 impl InwardNNInputSignal {
-    pub fn with_collision_signal(
-        mut self,
-        signal: Option<(bool,bool,[f32;2],f32)>
-    ) -> Self {
-        if let Some((
-            wall,
-            blob,
-            vect,
-            mag
-        )) = signal{
+    pub fn with_collision_signal(mut self, signal: Option<(bool, bool, [f32; 2], f32)>) -> Self {
+        if let Some((wall, blob, vect, mag)) = signal {
             self.collision_with_wall = wall;
             self.collision_with_other_blob = blob;
             self.collision_vect = SVector::from_iterator(vect.into_iter());
@@ -91,10 +90,7 @@ impl InwardNNInputSignal {
         self
     }
 
-    pub fn with_joint_singal(
-        mut self,
-        signal: (f32,f32,f32,f32)
-    ) -> Self {
+    pub fn with_joint_singal(mut self, signal: (f32, f32, f32, f32)) -> Self {
         let (motor_pos, motor_v, ang_pos, ang_v) = signal;
         self.cur_motor_pos = motor_pos;
         self.cur_motor_v = motor_v;

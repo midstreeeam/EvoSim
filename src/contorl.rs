@@ -36,7 +36,7 @@ pub fn block_action(
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
     // push inward
-    for (parent, mut joint) in q.iter_mut() {
+    for (parent, joint) in q.iter_mut() {
         let entity_id = parent.get();
 
         // get id
@@ -55,23 +55,23 @@ pub fn block_action(
         let joint_signal = (joint_motor.target_pos,joint_motor.target_vel,joint_info.ang_pos,joint_info.ang_velocity);
         let inward_signal = InwardNNInputSignal::default().with_collision_signal(cf_singal).with_joint_singal(joint_signal);
 
-        // push to signal handler
+        // push inward signals to signal handler
         signal_handler.push_inward(inward_signal, *nn_id, *parent_nn_id);
     }
 
     // run neuron
-    signal_handler.run();
+    let output = bbn.get_rand_outputs(signal_handler);
 
-    // // update physical world
-    // for (parent, mut joint) in q.iter_mut() {
-    //     let signal = bbn.nnvec[*nn_id].get_rand_output();
-    //     joint
-    //         .data
-    //         .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
-    //     joint
-    //         .data
-    //         .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
-    // }
+    // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
+    // update physical world
+    for (signal, (_, mut joint)) in output.iter().zip(q.iter_mut()) {
+        joint
+            .data
+            .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
+        joint
+            .data
+            .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
+    }
 }
 
 // TODO: test preformance and change to `get_bulk_cf_events()` if necessary
