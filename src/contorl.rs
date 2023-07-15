@@ -56,7 +56,8 @@ pub fn block_action(
         let inward_signal = InwardNNInputSignal::default().with_collision_signal(cf_singal).with_joint_singal(joint_signal);
 
         // push inward signals to signal handler
-        signal_handler.push_inward(inward_signal, *nn_id, *parent_nn_id);
+        // unwarp parent_id, since all inward signal should have parent
+        signal_handler.push_inward(inward_signal, *nn_id, parent_nn_id.unwrap());
     }
 
     // run neuron

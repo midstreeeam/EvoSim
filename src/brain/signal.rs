@@ -3,23 +3,26 @@ use bevy_rapier2d::na::{SMatrix, SVector};
 use crate::consts::*;
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
+// TODO: test correctness of signal
 /// `SignalHandler` handles input signal from bevy
 pub struct SignalHandler {
-    signal_vec: Vec<InwardNNInputSignalUnit>,
+    inward_signal_vec: Vec<InwardNNInputSignalUnit>,
+    brain_signal_vec: Vec<BrainSignalUnit>
 }
 
 impl Default for SignalHandler {
     fn default() -> Self {
         Self {
-            signal_vec: Vec::<InwardNNInputSignalUnit>::new(),
+            inward_signal_vec: Vec::<InwardNNInputSignalUnit>::new(),
+            brain_signal_vec: Vec::<BrainSignalUnit>::new()
         }
     }
 }
 
-impl SignalHandler{
+impl SignalHandler {
     // TODO: use trait or other way to realise `len()`
-    pub fn len(&self) -> usize{
-        self.signal_vec.len()
+    pub fn len(&self) -> usize {
+        self.inward_signal_vec.len()
     }
 }
 
@@ -29,12 +32,23 @@ impl SignalHandler {
         &mut self,
         signal: InwardNNInputSignal,
         nn_id: usize,
-        parent_nn_id: Option<usize>,
+        parent_nn_id: usize,
     ) {
-        self.signal_vec.push(InwardNNInputSignalUnit {
+        self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
             nn_id: nn_id,
             parent_nn_id: parent_nn_id,
+        })
+    }
+
+    pub fn push_brain(
+        &mut self,
+        signal: BrainSignal,
+        nn_id: usize
+    ) {
+        self.brain_signal_vec.push(BrainSignalUnit { 
+            signal: signal, 
+            nn_id: nn_id
         })
     }
 }
@@ -42,7 +56,7 @@ impl SignalHandler {
 pub struct InwardNNInputSignalUnit {
     signal: InwardNNInputSignal,
     nn_id: usize,
-    parent_nn_id: Option<usize>,
+    parent_nn_id: usize,
 }
 
 /// Input singal for single inward `BlockNeuron`
@@ -98,4 +112,25 @@ impl InwardNNInputSignal {
         self.joint_ang_v = ang_v;
         self
     }
+}
+
+
+/// Input signal of center block,
+/// which do not have parent and joint
+pub struct BrainSignal{
+    // collision signal
+    collision_with_wall: bool,
+    collision_with_other_blob: bool,
+    collision_vect: SVector<f32, 2>,
+    collision_mag: f32,
+
+    /// input singal from children neurons
+    children_input: SMatrix<f32, 3, CL>,
+
+    // TODO: other blob-level signals, such as blob mass center, blob center speed
+}
+
+pub struct BrainSignalUnit{
+    signal: BrainSignal,
+    nn_id: usize
 }
