@@ -5,7 +5,7 @@ use rand::prelude::*;
 
 use crate::consts::MOTOR_MAX_TARGET_V;
 
-use super::{neuron::{BlockNN, GenericNN}, signal::SignalHandler};
+use super::{neuron::GenericNN, signal::SignalHandler};
 
 /// Bevy resource, which make sure the neurons can be accessed 
 /// and modified from bevy side

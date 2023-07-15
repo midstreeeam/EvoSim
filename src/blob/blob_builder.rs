@@ -168,6 +168,7 @@ impl<'a> BlobBuilder<'a> {
                     .with_blob(self.blob_bundle.index()),
             )
             .insert(others)
+            .insert(CenterBlockFlag)
             .id();
 
         let block = BlobBlock {

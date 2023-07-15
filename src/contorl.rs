@@ -7,8 +7,8 @@ use bevy_rapier2d::{
 };
 
 use crate::{
-    blob::block::{JointInfo, NeuronId},
-    brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler}},
+    blob::block::{JointInfo, NeuronId, CenterBlockFlag},
+    brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler, BrainSignal}},
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
 };
@@ -23,7 +23,8 @@ use crate::{
 /// Can not use `EventReader` multiple times each frame.
 /// Events been read will be marked as read.
 pub fn block_action(
-    mut q: Query<(&Parent, &mut ImpulseJoint)>,
+    mut brain_q: Query<Entity,With<CenterBlockFlag>>,
+    mut block_q: Query<(&Parent, &mut ImpulseJoint)>,
     nn_id_q: Query<&NeuronId>,
     bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
@@ -36,7 +37,7 @@ pub fn block_action(
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
     // push inward
-    for (parent, joint) in q.iter_mut() {
+    for (parent, joint) in block_q.iter_mut() {
         let entity_id = parent.get();
 
         // get id
@@ -53,11 +54,21 @@ pub fn block_action(
         let joint_motor = joint.data.motor(JointAxis::AngX).unwrap();
         let joint_info = joint_info_q.get(entity_id).unwrap();
         let joint_signal = (joint_motor.target_pos,joint_motor.target_vel,joint_info.ang_pos,joint_info.ang_velocity);
-        let inward_signal = InwardNNInputSignal::default().with_collision_signal(cf_singal).with_joint_singal(joint_signal);
+        let inward_signal = InwardNNInputSignal::default().with_cf_signal(cf_singal).with_joint_singal(joint_signal);
 
         // push inward signals to signal handler
         // unwarp parent_id, since all inward signal should have parent
         signal_handler.push_inward(inward_signal, *nn_id, parent_nn_id.unwrap());
+    }
+
+    // push brains
+    for entity_id in brain_q.iter_mut(){
+        // get id
+        // should have id so unwrap
+        let nn_id = nn_id_q.get(entity_id).unwrap().id;
+
+        let cf_signal = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q);
+        signal_handler.push_brain(BrainSignal::default().with_cf_signal(cf_signal), nn_id);
     }
 
     // run neuron
@@ -65,7 +76,7 @@ pub fn block_action(
 
     // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
     // update physical world
-    for (signal, (_, mut joint)) in output.iter().zip(q.iter_mut()) {
+    for (signal, (_, mut joint)) in output.iter().zip(block_q.iter_mut()) {
         joint
             .data
             .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);

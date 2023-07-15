@@ -94,7 +94,7 @@ impl Default for InwardNNInputSignal {
 }
 
 impl InwardNNInputSignal {
-    pub fn with_collision_signal(mut self, signal: Option<(bool, bool, [f32; 2], f32)>) -> Self {
+    pub fn with_cf_signal(mut self, signal: Option<(bool, bool, [f32; 2], f32)>) -> Self {
         if let Some((wall, blob, vect, mag)) = signal {
             self.collision_with_wall = wall;
             self.collision_with_other_blob = blob;
@@ -128,6 +128,30 @@ pub struct BrainSignal{
     children_input: SMatrix<f32, 3, CL>,
 
     // TODO: other blob-level signals, such as blob mass center, blob center speed
+}
+
+impl Default for BrainSignal {
+    fn default() -> Self {
+        Self {
+            collision_with_wall: false,
+            collision_with_other_blob: false,
+            collision_vect: SVector::<f32, 2>::zeros(),
+            collision_mag: 0.0,
+            children_input: SMatrix::<f32, 3, CL>::zeros(),
+        }
+    }
+}
+
+impl BrainSignal{
+    pub fn with_cf_signal(mut self, signal: Option<(bool, bool, [f32; 2], f32)>) -> Self{
+        if let Some((wall, blob, vect, mag)) = signal {
+            self.collision_with_wall = wall;
+            self.collision_with_other_blob = blob;
+            self.collision_vect = SVector::from_iterator(vect.into_iter());
+            self.collision_mag = mag;
+        }
+        self
+    }
 }
 
 pub struct BrainSignalUnit{

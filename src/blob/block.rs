@@ -3,6 +3,9 @@ use bevy_rapier2d::prelude::*;
 
 use crate::componet::{ColliderFlag, BlobEntityIndex};
 
+#[derive(Component)]
+pub struct CenterBlockFlag;
+
 #[derive(Component, Clone, Debug)]
 pub struct BlockAnchors {
     pub top: Vec2,
