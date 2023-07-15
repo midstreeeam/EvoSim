@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::{brain::neuron::GenericBlockNN, consts::*};
+use crate::{brain::neuron::{BlockNN, BrainNN, GenericNN}, consts::*};
 
 use super::{blob::*, block::*};
 
@@ -25,7 +25,7 @@ pub struct BlobBlock {
 pub struct BlobBuilder<'a> {
     // tools
     commands: Commands<'a, 'a>,
-    nnvec: &'a mut Vec<GenericBlockNN>,
+    nnvec: &'a mut Vec<GenericNN>,
 
     // builder info
     blob_bundle: Entity,
@@ -47,8 +47,11 @@ impl<'a> BlobBuilder<'a> {
     /// or just create another system.
     ///
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
-    /// please use [`clean()`] so that there won't be joints connects.
-    pub fn from_commands(mut commands: Commands<'a, 'a>, nnvec: &'a mut Vec<GenericBlockNN>) -> Self {
+    /// please use `clean()` so that there won't be joints connects.
+    pub fn from_commands(
+        mut commands: Commands<'a, 'a>, 
+        nnvec: &'a mut Vec<GenericNN>, 
+    ) -> Self {
         Self {
             blob_bundle: commands.spawn(BlobBundle::default()).id(),
             commands: commands,
@@ -70,7 +73,7 @@ impl<'a> BlobBuilder<'a> {
     ///
     /// Equvalent to drop the old builder and generate a new one
     ///
-    /// [`nnvec`] will be kept
+    /// `nnvec` and `bnnvec` will be kept
     pub fn clean(&mut self) -> &mut Self {
         self.blob_bundle = self.commands.spawn(BlobBundle::default()).id();
         self.blocks = Vec::new();
@@ -151,9 +154,9 @@ impl<'a> BlobBuilder<'a> {
         phy_block_bundle: PhysiBlockBundle,
         others: T,
     ) -> &mut Self {
-        let nn = GenericBlockNN::new();
-        self.nnvec.push(nn);
-        let nn_id = self.nnvec.len() - 1;
+        let nn = BrainNN::default();
+        self.nnvec.push(GenericNN::BRAINNN(nn));
+        let nn_id = self.nnvec.len();
 
         let id = self
             .commands
@@ -215,9 +218,9 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = GenericBlockNN::new();
-        self.nnvec.push(nn);
-        let nn_id = self.nnvec.len() - 1;
+        let nn = BlockNN::new();
+        self.nnvec.push(GenericNN::BLOCKNN(nn));
+        let nn_id = self.nnvec.len();
 
         let spawn_x = block.translation.x - block.size.x - dx;
         let spawn_y = block.translation.y;
@@ -307,9 +310,9 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = GenericBlockNN::new();
-        self.nnvec.push(nn);
-        let nn_id = self.nnvec.len() - 1;
+        let nn = BlockNN::new();
+        self.nnvec.push(GenericNN::BLOCKNN(nn));
+        let nn_id = self.nnvec.len();
 
         let spawn_x = block.translation.x + block.size.x + dx;
         let spawn_y = block.translation.y;
@@ -399,9 +402,9 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = GenericBlockNN::new();
-        self.nnvec.push(nn);
-        let nn_id = self.nnvec.len() - 1;
+        let nn = BlockNN::new();
+        self.nnvec.push(GenericNN::BLOCKNN(nn));
+        let nn_id = self.nnvec.len();
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y + block.size.y + dy;
@@ -491,9 +494,9 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = GenericBlockNN::new();
-        self.nnvec.push(nn);
-        let nn_id = self.nnvec.len() - 1;
+        let nn = BlockNN::new();
+        self.nnvec.push(GenericNN::BLOCKNN(nn));
+        let nn_id = self.nnvec.len();
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y - block.size.y - dy;

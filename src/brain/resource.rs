@@ -5,24 +5,20 @@ use rand::prelude::*;
 
 use crate::consts::MOTOR_MAX_TARGET_V;
 
-use super::{neuron::GenericBlockNN, signal::SignalHandler};
+use super::{neuron::{BlockNN, GenericNN}, signal::SignalHandler};
 
 /// Bevy resource, which make sure the neurons can be accessed 
 /// and modified from bevy side
-/// 
-/// index 0 is occupied by default,
-/// which represent random neuron output.
 #[derive(Resource,Debug)]
 pub struct BevyBlockNeurons{
-    pub nnvec:Vec<GenericBlockNN>
+    pub nnvec:Vec<GenericNN>,
 }
 
 impl Default for BevyBlockNeurons {
     fn default() -> Self {
-        let mut v = Vec::<GenericBlockNN>::new();
-        v.push(GenericBlockNN { value: 0.0 });
+        let nnv = Vec::<GenericNN>::new();
         Self { 
-            nnvec: v
+            nnvec: nnv,
         }
     }
 }

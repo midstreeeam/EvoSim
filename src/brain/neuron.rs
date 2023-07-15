@@ -2,22 +2,28 @@ use crate::consts::*;
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
+#[derive(Debug)]
+pub enum GenericNN{
+    BLOCKNN(BlockNN),
+    BRAINNN(BrainNN)
+}
+
 /// neuron for blocks.
 ///
 /// Each block should have two independent neurons:
 /// InwardNN and OutwardNN
 #[derive(Debug)]
-pub struct GenericBlockNN {
+pub struct BlockNN {
     pub value: f32,
 }
 
-impl Default for GenericBlockNN {
+impl Default for BlockNN {
     fn default() -> Self {
         todo!()
     }
 }
 
-impl GenericBlockNN {
+impl BlockNN {
     pub fn new() -> Self {
         Self { value: 0.0 }
     }
@@ -31,5 +37,18 @@ impl GenericBlockNN {
     /// Takes input layer's singal
     pub fn get_output(&self) -> [f32; 2] {
         todo!()
+    }
+}
+
+
+/// NN for centeral brain
+#[derive(Debug)]
+pub struct BrainNN{
+    pub value: f32
+}
+
+impl Default for BrainNN {
+    fn default() -> Self {
+        Self { value: 0.0 }
     }
 }
