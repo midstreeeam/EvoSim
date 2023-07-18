@@ -7,16 +7,12 @@ use bevy_rapier2d::{
 };
 
 use crate::{
-    blob::block::{JointInfo, NeuronId, CenterBlockFlag},
+    blob::block::{JointInfo, NeuronId, CenterBlockFlag, BlockDepth},
     brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler, BrainSignal}},
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
 };
 
-// TODO: also select center block or add a new way to make center block's neuron work
-// TODO: solve parallel problem,
-// the first block receive output after the last block send signal
-// one way is to get bulk info, send to neuron and receive bulk output
 /// select `Query<(&Parent, &mut ImpulseJoint)` 
 /// means the center block will not be selected
 /// 
@@ -29,7 +25,8 @@ pub fn block_action(
     bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
     collider_q: Query<&ColliderFlag>,
-    joint_info_q: Query<&JointInfo>
+    joint_info_q: Query<&JointInfo>,
+    depth_q: Query<&BlockDepth>
 ) {
 
     let mut signal_handler = SignalHandler::default();
@@ -58,7 +55,10 @@ pub fn block_action(
 
         // push inward signals to signal handler
         // unwarp parent_id, since all inward signal should have parent
-        signal_handler.push_inward(inward_signal, *nn_id, parent_nn_id.unwrap());
+        // unwarp depth, since all inward signal should have depth
+        signal_handler.push_inward(
+            inward_signal, *nn_id, parent_nn_id.unwrap(),depth_q.get(entity_id).unwrap()
+        );
     }
 
     // push brains

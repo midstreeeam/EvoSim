@@ -1,6 +1,6 @@
 use bevy_rapier2d::na::{SMatrix, SVector};
 
-use crate::consts::*;
+use crate::{consts::*, blob::block::BlockDepth};
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
 // TODO: test correctness of signal
@@ -33,11 +33,13 @@ impl SignalHandler {
         signal: InwardNNInputSignal,
         nn_id: usize,
         parent_nn_id: usize,
+        depth: &BlockDepth
     ) {
         self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
             nn_id: nn_id,
             parent_nn_id: parent_nn_id,
+            depth: depth.0 as usize
         })
     }
 
@@ -57,6 +59,7 @@ pub struct InwardNNInputSignalUnit {
     signal: InwardNNInputSignal,
     nn_id: usize,
     parent_nn_id: usize,
+    depth: usize
 }
 
 /// Input singal for single inward `BlockNeuron`

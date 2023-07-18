@@ -12,7 +12,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use blob::{
-    block::NeuronId,
+    // block::NeuronId,
     geno_blob_builder::{BlobGeno, GenoBlobBuilder},
 };
 use brain::resource::BevyBlockNeurons;
@@ -22,6 +22,7 @@ use physics::physical_world;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
+// TODO: Inconsistant usize and u32 usage
 // TODO: Headless mode causing panic
 // TODO: Not all cores are fully tuilized
 fn main() {
@@ -65,11 +66,11 @@ fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     }
 }
 
-fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {
-    for NeuronId { id, parent_id } in block_q.iter() {
-        let _ = &res.nnvec[*id];
-    }
-}
+// fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {
+//     for NeuronId { id, parent_id } in block_q.iter() {
+//         let _ = &res.nnvec[*id];
+//     }
+// }
 
 /// Generate 100 random blobs.
 /// Pressure test for Rapier
