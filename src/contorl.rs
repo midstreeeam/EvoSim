@@ -185,7 +185,7 @@ fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
 }
 
 
-pub fn update_blob_center(
+pub fn update_blob_info(
     tc_q: Query<(&Transform, &Collider)>,
     mut blob_q: Query<(&mut BlobInfo, &Children)>,
 ){
@@ -201,7 +201,9 @@ pub fn update_blob_center(
             ])
         }
         // unwrap since all blob should have at least one block
-        blob.mass_center = get_mass_center(mass_vec).unwrap();
+        let new_mass_center = get_mass_center(mass_vec).unwrap();
+        blob.velocity = [new_mass_center[0]-blob.mass_center[0],new_mass_center[1]-blob.mass_center[1]];
+        blob.mass_center = new_mass_center;
     }
 }
 

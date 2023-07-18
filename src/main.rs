@@ -13,7 +13,7 @@ use bevy_rapier2d::prelude::*;
 
 use blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder};
 use brain::resource::BevyBlockNeurons;
-use contorl::{block_action, update_blob_center, update_joint_info};
+use contorl::{block_action, update_blob_info, update_joint_info};
 use graphics::*;
 use physics::physical_world;
 
@@ -50,7 +50,7 @@ fn main() {
         // .add_systems(Update, res_test)
         .add_systems(
             Update,
-            (block_action, update_joint_info, update_blob_center),
+            (block_action, update_joint_info, update_blob_info),
         )
         .run();
 }

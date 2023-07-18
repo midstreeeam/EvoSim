@@ -15,7 +15,9 @@ pub struct BlobInfo {
     pub xbound: [f32; 2],
     pub ybound: [f32; 2],
     pub color: Color,
-    pub mass_center: [f32;2]
+    pub mass_center: [f32;2],
+    /// velocity is base on `mass_center`
+    pub velocity: [f32;2]
 }
 
 impl Default for BlobInfo {
@@ -25,7 +27,8 @@ impl Default for BlobInfo {
             xbound: [NAN, NAN],
             ybound: [NAN, NAN],
             color: Color::LIME_GREEN,
-            mass_center: [NAN, NAN]
+            mass_center: [0.0, 0.0],
+            velocity: [0.0,0.0]
         }
     }
 }
