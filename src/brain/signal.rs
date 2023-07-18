@@ -130,7 +130,8 @@ pub struct BrainSignal{
     /// input singal from children neurons
     children_input: SMatrix<f32, 3, CL>,
 
-    // TODO: other blob-level signals, such as blob mass center, blob center speed
+    blob_mass_center: SVector<f32, 2>,
+    blob_speed: SVector<f32, 2>
 }
 
 impl Default for BrainSignal {
@@ -141,6 +142,8 @@ impl Default for BrainSignal {
             collision_vect: SVector::<f32, 2>::zeros(),
             collision_mag: 0.0,
             children_input: SMatrix::<f32, 3, CL>::zeros(),
+            blob_mass_center: SVector::<f32, 2>::zeros(),
+            blob_speed: SVector::<f32, 2>::zeros()
         }
     }
 }
@@ -153,6 +156,12 @@ impl BrainSignal{
             self.collision_vect = SVector::from_iterator(vect.into_iter());
             self.collision_mag = mag;
         }
+        self
+    }
+
+    pub fn with_blob_info(mut self, center:[f32;2], speed:[f32;2]) -> Self{
+        self.blob_mass_center = SVector::from_iterator(center.into_iter());
+        self.blob_speed = SVector::from_iterator(speed.into_iter());
         self
     }
 }

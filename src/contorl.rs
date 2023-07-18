@@ -2,24 +2,30 @@ use std::f32::consts::PI;
 
 use bevy::prelude::*;
 use bevy_rapier2d::{
-    prelude::{ContactForceEvent, ImpulseJoint, Velocity, Collider},
+    prelude::{Collider, ContactForceEvent, ImpulseJoint, Velocity},
     rapier::prelude::JointAxis,
 };
 
 use crate::{
-    blob::{block::{JointInfo, NeuronId, CenterBlockFlag, BlockDepth}, blob::{Blob, BlobInfo}},
-    brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler, BrainSignal}},
+    blob::{
+        blob::{Blob, BlobInfo},
+        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId},
+    },
+    brain::{
+        resource::BevyBlockNeurons,
+        signal::{BrainSignal, InwardNNInputSignal, SignalHandler},
+    },
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
 };
 
-/// select `Query<(&Parent, &mut ImpulseJoint)` 
+/// select `Query<(&Parent, &mut ImpulseJoint)`
 /// means the center block will not be selected
-/// 
+///
 /// Can not use `EventReader` multiple times each frame.
 /// Events been read will be marked as read.
 pub fn block_action(
-    mut brain_q: Query<Entity,With<CenterBlockFlag>>,
+    mut brain_q: Query<(&Parent, Entity), With<CenterBlockFlag>>,
     mut block_q: Query<(&Parent, &mut ImpulseJoint)>,
     nn_id_q: Query<&NeuronId>,
     bbn: ResMut<BevyBlockNeurons>,
@@ -27,9 +33,8 @@ pub fn block_action(
     collider_q: Query<&ColliderFlag>,
     joint_info_q: Query<&JointInfo>,
     depth_q: Query<&BlockDepth>,
-    blob_q: Query<&Parent, (Entity, With<CenterBlockFlag>)>
+    blob_q: Query<&BlobInfo>,
 ) {
-
     let mut signal_handler = SignalHandler::default();
 
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
@@ -51,25 +56,44 @@ pub fn block_action(
         let cf_singal = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q);
         let joint_motor = joint.data.motor(JointAxis::AngX).unwrap();
         let joint_info = joint_info_q.get(entity_id).unwrap();
-        let joint_signal = (joint_motor.target_pos,joint_motor.target_vel,joint_info.ang_pos,joint_info.ang_velocity);
-        let inward_signal = InwardNNInputSignal::default().with_cf_signal(cf_singal).with_joint_singal(joint_signal);
+        let joint_signal = (
+            joint_motor.target_pos,
+            joint_motor.target_vel,
+            joint_info.ang_pos,
+            joint_info.ang_velocity,
+        );
+        let inward_signal = InwardNNInputSignal::default()
+            .with_cf_signal(cf_singal)
+            .with_joint_singal(joint_signal);
 
         // push inward signals to signal handler
         // unwarp parent_id, since all inward signal should have parent
         // unwarp depth, since all inward signal should have depth
         signal_handler.push_inward(
-            inward_signal, *nn_id, parent_nn_id.unwrap(),depth_q.get(entity_id).unwrap()
+            inward_signal,
+            *nn_id,
+            parent_nn_id.unwrap(),
+            depth_q.get(entity_id).unwrap(),
         );
     }
 
     // push brains
-    for entity_id in brain_q.iter_mut(){
+    for (parent, entity_id) in brain_q.iter_mut() {
         // get id
         // should have id so unwrap
         let nn_id = nn_id_q.get(entity_id).unwrap().id;
-
+        // cf_signal
         let cf_signal = get_cf_signal(entity_id, &mut cf_events_vec, &collider_q);
-        signal_handler.push_brain(BrainSignal::default().with_cf_signal(cf_signal), nn_id);
+        // blob_signal
+        // should in blobinfo so unwrap
+        let blobinfo = blob_q.get(parent.get()).unwrap();
+
+        signal_handler.push_brain(
+            BrainSignal::default()
+                .with_cf_signal(cf_signal)
+                .with_blob_info(blobinfo.mass_center, blobinfo.velocity),
+            nn_id,
+        );
     }
 
     // run neuron
@@ -111,21 +135,17 @@ fn get_cf_signal(
     cf_events_vec: &mut Vec<ContactForceEvent>,
     blob_flag_q: &Query<&ColliderFlag>,
 ) -> Option<(bool, bool, [f32; 2], f32)> {
-
     // if contact
     if let Some(event) = get_cf_event(entity_id, cf_events_vec) {
-
         let other = if entity_id == event.collider1 {
             event.collider2
         } else {
             event.collider1
         };
 
-        if let (
-            Ok(ColliderFlag::BLOCK(BlobEntityIndex(Some(sid)))),
-            Ok(oflag)) =
-            (blob_flag_q.get(entity_id), blob_flag_q.get(other)
-        ) {
+        if let (Ok(ColliderFlag::BLOCK(BlobEntityIndex(Some(sid)))), Ok(oflag)) =
+            (blob_flag_q.get(entity_id), blob_flag_q.get(other))
+        {
             let (mut wall, mut blob, vect, mag) =
                 (false, false, event.total_force, event.total_force_magnitude);
             if let ColliderFlag::WALL = oflag {
@@ -184,25 +204,27 @@ fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
     (v1.angvel - v2.angvel) / PI * 180.0
 }
 
-
 pub fn update_blob_info(
     tc_q: Query<(&Transform, &Collider)>,
     mut blob_q: Query<(&mut BlobInfo, &Children)>,
-){
-    for (mut blob, children) in blob_q.iter_mut(){
-        let mut mass_vec = Vec::<[f32;3]>::new();
-        for child in children{
+) {
+    for (mut blob, children) in blob_q.iter_mut() {
+        let mut mass_vec = Vec::<[f32; 3]>::new();
+        for child in children {
             // unwrap since every child of blob should have transform and collider
-            let (transform,collider) = tc_q.get(*child).unwrap();
+            let (transform, collider) = tc_q.get(*child).unwrap();
             mass_vec.push([
                 transform.translation.x,
                 transform.translation.y,
-                collider.scale().x * collider.scale().y
+                collider.scale().x * collider.scale().y,
             ])
         }
         // unwrap since all blob should have at least one block
         let new_mass_center = get_mass_center(mass_vec).unwrap();
-        blob.velocity = [new_mass_center[0]-blob.mass_center[0],new_mass_center[1]-blob.mass_center[1]];
+        blob.velocity = [
+            new_mass_center[0] - blob.mass_center[0],
+            new_mass_center[1] - blob.mass_center[1],
+        ];
         blob.mass_center = new_mass_center;
     }
 }
