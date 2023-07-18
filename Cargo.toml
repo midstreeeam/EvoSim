@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.11"
-bevy_pancam = {git = "https://github.com/johanhelsing/bevy_pancam.git", branch = "bevy-0.11"}
+bevy_pancam = "0.9.0"
 bevy_rapier2d = {git = "https://github.com/midstreeeam/bevy_rapier.git", branch = "new_dependencies"}
 nalgebra = "0.32.3"
 rand = "0.8.5"
