@@ -10,27 +10,29 @@ pub struct Blob;
 // TODO: add the mass_center element (to track blob movement)
 #[derive(Component, Clone, Debug)]
 pub struct BlobInfo {
-    pub center: Vec2,
+    pub center_block_pos: Vec2,
     // bound: [min,max] to represent size
     pub xbound: [f32; 2],
     pub ybound: [f32; 2],
-    pub color: Color
+    pub color: Color,
+    pub mass_center: [f32;2]
 }
 
 impl Default for BlobInfo {
     fn default() -> Self {
         Self {
-            center: Vec2::NAN,
+            center_block_pos: Vec2::NAN,
             xbound: [NAN, NAN],
             ybound: [NAN, NAN],
             color: Color::LIME_GREEN,
+            mass_center: [NAN, NAN]
         }
     }
 }
 
 impl BlobInfo {
     pub fn init(&mut self, center: Vec2, size: Vec2) {
-        self.center = center;
+        self.center_block_pos = center;
         self.xbound = [center.x - size.x, center.x + size.x];
         self.ybound = [center.y - size.y, center.y + size.y];
     }

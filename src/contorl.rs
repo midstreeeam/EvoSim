@@ -2,12 +2,12 @@ use std::f32::consts::PI;
 
 use bevy::prelude::*;
 use bevy_rapier2d::{
-    prelude::{ContactForceEvent, ImpulseJoint, Velocity},
+    prelude::{ContactForceEvent, ImpulseJoint, Velocity, Collider},
     rapier::prelude::JointAxis,
 };
 
 use crate::{
-    blob::block::{JointInfo, NeuronId, CenterBlockFlag, BlockDepth},
+    blob::{block::{JointInfo, NeuronId, CenterBlockFlag, BlockDepth}, blob::{Blob, BlobInfo}},
     brain::{resource::BevyBlockNeurons, signal::{InwardNNInputSignal, SignalHandler, BrainSignal}},
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
@@ -26,7 +26,8 @@ pub fn block_action(
     mut cf_events: EventReader<ContactForceEvent>,
     collider_q: Query<&ColliderFlag>,
     joint_info_q: Query<&JointInfo>,
-    depth_q: Query<&BlockDepth>
+    depth_q: Query<&BlockDepth>,
+    blob_q: Query<&Parent, (Entity, With<CenterBlockFlag>)>
 ) {
 
     let mut signal_handler = SignalHandler::default();
@@ -181,4 +182,47 @@ fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32 
 
 fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
     (v1.angvel - v2.angvel) / PI * 180.0
+}
+
+
+pub fn update_blob_center(
+    tc_q: Query<(&Transform, &Collider)>,
+    mut blob_q: Query<(&mut BlobInfo, &Children)>,
+){
+    for (mut blob, children) in blob_q.iter_mut(){
+        let mut mass_vec = Vec::<[f32;3]>::new();
+        for child in children{
+            // unwrap since every child of blob should have transform and collider
+            let (transform,collider) = tc_q.get(*child).unwrap();
+            mass_vec.push([
+                transform.translation.x,
+                transform.translation.y,
+                collider.scale().x * collider.scale().y
+            ])
+        }
+        // unwrap since all blob should have at least one block
+        blob.mass_center = get_mass_center(mass_vec).unwrap();
+    }
+}
+
+fn get_mass_center(mass_points: Vec<[f32; 3]>) -> Option<[f32; 2]> {
+    if mass_points.is_empty() {
+        return None;
+    }
+
+    let mut total_mass = 0.0;
+    let mut weighted_sum = [0.0, 0.0];
+
+    for point in mass_points {
+        let mass = point[2];
+        weighted_sum[0] += point[0] * mass;
+        weighted_sum[1] += point[1] * mass;
+        total_mass += mass;
+    }
+
+    if total_mass == 0.0 {
+        None
+    } else {
+        Some([weighted_sum[0] / total_mass, weighted_sum[1] / total_mass])
+    }
 }
