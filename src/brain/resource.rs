@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use rand::prelude::*;
 
-use crate::{consts::MOTOR_MAX_TARGET_V, brain::{neuron::BlockNN, signal::InwardNNInputSignalUnit}};
+use crate::{consts::MOTOR_MAX_TARGET_V, brain::signal::InwardNNInputSignalUnit};
 
 use super::{neuron::GenericNN, signal::{SignalHandler, BrainSignalUnit}};
 
@@ -30,13 +30,13 @@ impl BevyBlockNeurons {
     pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<[f32; 2]> {
 
         // generate grouped signal
-        let mut grouped_signal = signal_handler.stratify();
+        let (mut grouped_signal,mut brain_signal) = signal_handler.get_sig_mut();
         
         for idx in (1..grouped_signal.len()).rev(){
             bulk_pass(&mut grouped_signal, &self.nnvec, idx)
         }
 
-        brain_pass(&mut signal_handler.brain_signal_vec, &grouped_signal[0], &self.nnvec);
+        brain_pass(&mut brain_signal, &grouped_signal[0], &self.nnvec);
 
         todo!()
     }
@@ -85,7 +85,7 @@ fn bulk_pass(
 
 /// pass the signal from last inward layer to brain
 fn brain_pass(
-    brain_signal: &mut Vec<BrainSignalUnit>,
+    brain_signal: &mut Vec<&mut BrainSignalUnit>,
     current_layer: &Vec<&mut InwardNNInputSignalUnit>,
     nnvec: &Vec<GenericNN>
 ){
