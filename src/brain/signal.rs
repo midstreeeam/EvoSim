@@ -165,7 +165,7 @@ impl Default for InwardNNInputSignal {
             cur_motor_v: 0.0,
             joint_ang_pos: 0.0,
             joint_ang_v: 0.0,
-            children_input: Array2::<f32>::zeros((4, CL).f()),
+            children_input: Array2::<f32>::zeros((4, CL)),
         }
     }
 }
@@ -206,6 +206,7 @@ impl InwardNNInputSignal {
 
 /// Input signal of center block,
 /// which do not have parent and joint
+#[derive(Debug)]
 pub struct BrainSignal {
     // collision signal
     collision_with_wall: bool,
@@ -214,7 +215,7 @@ pub struct BrainSignal {
     collision_mag: f32,
 
     /// input singal from children neurons.
-    /// Shape is (3,CL)
+    /// Shape is (4,CL)
     children_input: Array2<f32>,
 
     blob_mass_center: [f32; 2],
@@ -228,7 +229,7 @@ impl Default for BrainSignal {
             collision_with_other_blob: false,
             collision_vect: [0.0, 0.0],
             collision_mag: 0.0,
-            children_input: Array2::<f32>::zeros((3, CL)),
+            children_input: Array2::<f32>::zeros((4, CL)),
             blob_mass_center: [0.0, 0.0],
             blob_speed: [0.0, 0.0],
         }
@@ -274,5 +275,21 @@ pub struct BrainSignalUnit {
 impl BrainSignalUnit {
     pub fn get_signal_mut(&mut self) -> &mut BrainSignal {
         &mut self.signal
+    }
+}
+
+impl fmt::Debug for BrainSignalUnit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Display::fmt(self, f)
+    }
+}
+
+impl fmt::Display for BrainSignalUnit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Brain:  ID: {}",
+            self.nn_id
+        )
     }
 }

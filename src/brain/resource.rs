@@ -27,18 +27,25 @@ impl BevyBlockNeurons {
 
     // TODO: parallel, gpu
     /// start neuron computing and return outputs
-    pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<[f32; 2]> {
+    pub fn get_outputs(&self, mut signal_handler: SignalHandler) -> Vec<[f32; 2]> {
 
         // generate grouped signal
         let (mut grouped_signal,mut brain_signal) = signal_handler.get_sig_mut();
         
+        // println!("{:#?}",grouped_signal);
+        // println!("{:#?}",brain_signal);
+        // passing through all inward layers
         for idx in (1..grouped_signal.len()).rev(){
-            bulk_pass(&mut grouped_signal, &self.nnvec, idx)
+            // println!("{}",idx);
+            inward_bulk_pass(&mut grouped_signal, &self.nnvec, idx)
         }
 
+        // passing to brain
         brain_pass(&mut brain_signal, &grouped_signal[0], &self.nnvec);
+        // println!("{:#?}",brain_signal[0].signal);
 
-        todo!()
+        // return random yet
+        self.get_rand_outputs(signal_handler)
     }
 
     pub fn get_rand_outputs(&self, signal_handler: SignalHandler) -> Vec<[f32; 2]> {
@@ -55,7 +62,7 @@ impl BevyBlockNeurons {
 /// Pass the signal from the leaf to the root layer by layer
 /// 
 /// bulk_idx can not be 0
-fn bulk_pass(
+fn inward_bulk_pass(
     grouped_signal: &mut Vec<Vec<&mut InwardNNInputSignalUnit>>,
     nnvec: &Vec<GenericNN>, bulk_idx:usize
 ){
@@ -75,7 +82,7 @@ fn bulk_pass(
                 .find(|u| u.nn_id == unit.parent_nn_id)
                 .unwrap()
                 .get_signal_mut()
-                .push_child_signal(nn.get_output(&unit.signal), unit.anchor_pos);
+                .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
             panic!()
         }
@@ -95,7 +102,7 @@ fn brain_pass(
                 .find(|u| u.nn_id == unit.parent_nn_id)
                 .unwrap()
                 .get_signal_mut()
-                .push_child_signal(nn.get_output(&unit.signal), unit.anchor_pos);
+                .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
             panic!()
         }

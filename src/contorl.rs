@@ -100,7 +100,7 @@ pub fn block_action(
     }
 
     // run neuron
-    let output = bbn.get_rand_outputs(signal_handler);
+    let output = bbn.get_outputs(signal_handler);
 
     // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
     // update physical world

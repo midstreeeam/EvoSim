@@ -1,4 +1,5 @@
 use ndarray::prelude::*;
+use rand::prelude::*;
 
 use crate::consts::*;
 
@@ -32,11 +33,15 @@ impl BlockNN {
         Self { value: 0.0 }
     }
 
-    /// output the motor target pos and motor target v
+    /// output inward signal that passing to next layer
     /// Takes input layer's singal
-    pub fn get_output(&self, signal:&InwardNNInputSignal) -> Array1<f32> {
+    pub fn get_inward_output(&self, _:&InwardNNInputSignal) -> Array1<f32> {
+        self.get_rand_inward_output()
+    }
 
-        todo!()
+    pub fn get_rand_inward_output(&self) -> Array1<f32> {
+        let mut rng = thread_rng();
+        Array1::from_shape_fn((4,), |_| rng.gen::<f32>())
     }
 }
 

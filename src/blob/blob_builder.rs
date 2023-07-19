@@ -156,7 +156,9 @@ impl<'a> BlobBuilder<'a> {
     ) -> &mut Self {
         let nn = BrainNN::default();
         self.nnvec.push(GenericNN::BRAINNN(nn));
-        let nn_id = self.nnvec.len();
+        // push first so the real id should minus one
+        let nn_id = self.nnvec.len()-1;
+        println!("nnid={}",nn_id);
 
         let id = self
             .commands
@@ -221,7 +223,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::new();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len();
+        let nn_id = self.nnvec.len()-1;
 
         let spawn_x = block.translation.x - block.size.x - dx;
         let spawn_y = block.translation.y;
@@ -314,7 +316,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::new();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len();
+        let nn_id = self.nnvec.len()-1;
 
         let spawn_x = block.translation.x + block.size.x + dx;
         let spawn_y = block.translation.y;
@@ -407,7 +409,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::new();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len();
+        let nn_id = self.nnvec.len()-1;
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y + block.size.y + dy;
@@ -500,7 +502,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::new();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len();
+        let nn_id = self.nnvec.len()-1;
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y - block.size.y - dy;
