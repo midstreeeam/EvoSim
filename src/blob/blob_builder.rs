@@ -229,7 +229,8 @@ impl<'a> BlobBuilder<'a> {
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
             .with_nn_id(nn_id, Some(block.nn_id))
-            .with_blob(self.blob_bundle.index());
+            .with_blob(self.blob_bundle.index())
+            .with_parent_anchor(2);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -321,7 +322,8 @@ impl<'a> BlobBuilder<'a> {
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
             .with_nn_id(nn_id, Some(block.nn_id))
-            .with_blob(self.blob_bundle.index());
+            .with_blob(self.blob_bundle.index())
+            .with_parent_anchor(3);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -413,7 +415,8 @@ impl<'a> BlobBuilder<'a> {
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
             .with_nn_id(nn_id, Some(block.nn_id))
-            .with_blob(self.blob_bundle.index());
+            .with_blob(self.blob_bundle.index())
+            .with_parent_anchor(0);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())
@@ -505,7 +508,8 @@ impl<'a> BlobBuilder<'a> {
             .with_color(self.info.color)
             .with_density(DEFAULT_DENSITY)
             .with_nn_id(nn_id, Some(block.nn_id))
-            .with_blob(self.blob_bundle.index());
+            .with_blob(self.blob_bundle.index())
+            .with_parent_anchor(1);
         let id = self
             .commands
             .spawn(phy_block_bundle.clone())

@@ -32,6 +32,13 @@ impl BlockAnchors {
 #[derive(Component, Clone, Debug)]
 pub struct BlockDepth(pub u32);
 
+
+/// ParentAnchor can only be 0(up), 1(down), 2(left), 3(right)
+/// 
+/// Considering using enum
+#[derive(Component, Clone, Debug)]
+pub struct ParentAnchor(pub Option<usize>);
+
 /// id for relate Neuron
 #[derive(Component, Clone, Debug)]
 pub struct NeuronId{
@@ -83,6 +90,9 @@ pub struct PhysiBlockBundle {
     // helper componet for builder
     pub anchors: BlockAnchors,
 
+    // connect to which side of parent
+    pub parent_anchor: ParentAnchor,
+
     /// neuron id
     /// 
     /// id=0 is the default id, means random neuron output
@@ -124,6 +134,7 @@ impl Default for PhysiBlockBundle {
             // default JointInfo is all 0
             joint_info: JointInfo { ang_pos: 0.0, ang_velocity: 0.0 },
             type_falg: ColliderFlag::BLOCK(BlobEntityIndex(None)),
+            parent_anchor: ParentAnchor(None)
         }
     }
 }
@@ -175,6 +186,11 @@ impl PhysiBlockBundle {
 
     pub fn with_blob(mut self, blob_id: u32) -> Self{
         self.type_falg = ColliderFlag::BLOCK(BlobEntityIndex(Some(blob_id)));
+        self
+    }
+
+    pub fn with_parent_anchor(mut self, parent_anchor:usize) -> Self{
+        self.parent_anchor = ParentAnchor(Some(parent_anchor));
         self
     }
 }
