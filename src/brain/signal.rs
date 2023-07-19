@@ -1,6 +1,5 @@
-use bevy_rapier2d::na::{SMatrix, SVector};
-
 use crate::{consts::*, blob::block::BlockDepth};
+use ndarray::prelude::*;
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
 // TODO: test correctness of signal
@@ -67,7 +66,7 @@ pub struct InwardNNInputSignal {
     // collision signal
     collision_with_wall: bool,
     collision_with_other_blob: bool,
-    collision_vect: SVector<f32, 2>,
+    collision_vect: [f32;2],
     collision_mag: f32,
 
     // joint signal
@@ -77,7 +76,7 @@ pub struct InwardNNInputSignal {
     joint_ang_v: f32,
 
     /// input singal from children neurons
-    children_input: SMatrix<f32, 3, CL>,
+    children_input: Array2<f32>,
 }
 
 impl Default for InwardNNInputSignal {
@@ -85,13 +84,13 @@ impl Default for InwardNNInputSignal {
         Self {
             collision_with_wall: false,
             collision_with_other_blob: false,
-            collision_vect: SVector::<f32, 2>::zeros(),
+            collision_vect: [0.0,0.0],
             collision_mag: 0.0,
             cur_motor_pos: 0.0,
             cur_motor_v: 0.0,
             joint_ang_pos: 0.0,
             joint_ang_v: 0.0,
-            children_input: SMatrix::<f32, 3, CL>::zeros(),
+            children_input: Array2::<f32>::zeros((3,CL).f()),
         }
     }
 }
@@ -101,7 +100,7 @@ impl InwardNNInputSignal {
         if let Some((wall, blob, vect, mag)) = signal {
             self.collision_with_wall = wall;
             self.collision_with_other_blob = blob;
-            self.collision_vect = SVector::from_iterator(vect.into_iter());
+            self.collision_vect = vect;
             self.collision_mag = mag;
         }
         self
@@ -124,14 +123,15 @@ pub struct BrainSignal{
     // collision signal
     collision_with_wall: bool,
     collision_with_other_blob: bool,
-    collision_vect: SVector<f32, 2>,
+    collision_vect: [f32;2],
     collision_mag: f32,
 
-    /// input singal from children neurons
-    children_input: SMatrix<f32, 3, CL>,
+    /// input singal from children neurons.
+    /// Shape is (3,CL)
+    children_input: Array2<f32>,
 
-    blob_mass_center: SVector<f32, 2>,
-    blob_speed: SVector<f32, 2>
+    blob_mass_center: [f32;2],
+    blob_speed: [f32;2]
 }
 
 impl Default for BrainSignal {
@@ -139,11 +139,11 @@ impl Default for BrainSignal {
         Self {
             collision_with_wall: false,
             collision_with_other_blob: false,
-            collision_vect: SVector::<f32, 2>::zeros(),
+            collision_vect: [0.0,0.0],
             collision_mag: 0.0,
-            children_input: SMatrix::<f32, 3, CL>::zeros(),
-            blob_mass_center: SVector::<f32, 2>::zeros(),
-            blob_speed: SVector::<f32, 2>::zeros()
+            children_input: Array2::<f32>::zeros((3,CL)),
+            blob_mass_center: [0.0,0.0],
+            blob_speed: [0.0,0.0]
         }
     }
 }
@@ -153,15 +153,15 @@ impl BrainSignal{
         if let Some((wall, blob, vect, mag)) = signal {
             self.collision_with_wall = wall;
             self.collision_with_other_blob = blob;
-            self.collision_vect = SVector::from_iterator(vect.into_iter());
+            self.collision_vect = vect;
             self.collision_mag = mag;
         }
         self
     }
 
     pub fn with_blob_info(mut self, center:[f32;2], speed:[f32;2]) -> Self{
-        self.blob_mass_center = SVector::from_iterator(center.into_iter());
-        self.blob_speed = SVector::from_iterator(speed.into_iter());
+        self.blob_mass_center = center;
+        self.blob_speed = speed;
         self
     }
 }

@@ -8,7 +8,7 @@ use bevy_rapier2d::{
 
 use crate::{
     blob::{
-        blob::{Blob, BlobInfo},
+        blob::BlobInfo,
         block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId},
     },
     brain::{
