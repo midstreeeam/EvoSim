@@ -1,4 +1,8 @@
+use ndarray::prelude::*;
+
 use crate::consts::*;
+
+use super::signal::InwardNNInputSignal;
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
@@ -28,14 +32,10 @@ impl BlockNN {
         Self { value: 0.0 }
     }
 
-    pub fn thread_test(&self) {
-        let a = std::thread::current();
-        println!("{}", a.name().unwrap());
-    }
-
     /// output the motor target pos and motor target v
     /// Takes input layer's singal
-    pub fn get_output(&self) -> [f32; 2] {
+    pub fn get_output(&self, signal:&InwardNNInputSignal) -> Array1<f32> {
+
         todo!()
     }
 }

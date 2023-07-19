@@ -9,7 +9,7 @@ use bevy_rapier2d::{
 use crate::{
     blob::{
         blob::BlobInfo,
-        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId},
+        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId, ParentAnchor},
     },
     brain::{
         resource::BevyBlockNeurons,
@@ -34,6 +34,7 @@ pub fn block_action(
     joint_info_q: Query<&JointInfo>,
     depth_q: Query<&BlockDepth>,
     blob_q: Query<&BlobInfo>,
+    p_anchor_q: Query<&ParentAnchor>
 ) {
     let mut signal_handler = SignalHandler::default();
 
@@ -69,11 +70,13 @@ pub fn block_action(
         // push inward signals to signal handler
         // unwarp parent_id, since all inward signal should have parent
         // unwarp depth, since all inward signal should have depth
+        // unwrap p_anchor, since all inward signal should have parent_anchor
         signal_handler.push_inward(
             inward_signal,
             *nn_id,
             parent_nn_id.unwrap(),
             depth_q.get(entity_id).unwrap(),
+            p_anchor_q.get(entity_id).unwrap()
         );
     }
 

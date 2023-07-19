@@ -1,12 +1,16 @@
-use crate::{consts::*, blob::block::BlockDepth};
+use std::fmt;
+
+use crate::{consts::*, blob::block::{BlockDepth, ParentAnchor}};
 use ndarray::prelude::*;
+use itertools::Itertools;
+
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
 // TODO: test correctness of signal
 /// `SignalHandler` handles input signal from bevy
 pub struct SignalHandler {
-    inward_signal_vec: Vec<InwardNNInputSignalUnit>,
-    brain_signal_vec: Vec<BrainSignalUnit>
+    pub inward_signal_vec: Vec<InwardNNInputSignalUnit>,
+    pub brain_signal_vec: Vec<BrainSignalUnit>
 }
 
 impl Default for SignalHandler {
@@ -23,22 +27,46 @@ impl SignalHandler {
     pub fn len(&self) -> usize {
         self.inward_signal_vec.len()
     }
-}
 
-impl SignalHandler {
+    /// stratify signals base on depth.
+    /// 
+    /// Output order is positive-going,
+    /// which means groups with small depth have small index
+    /// 
+    /// Side effect: `inward_signal_vec` will be sorted
+    pub fn stratify(&mut self) -> Vec<Vec<&mut InwardNNInputSignalUnit>>{
+        // Sort by depth first
+        self.inward_signal_vec.sort_by(|a, b| a.depth.cmp(&b.depth));
+
+        // Group by depth
+        self.inward_signal_vec
+            .iter_mut()
+            .group_by(|item| item.depth)
+            .into_iter()
+            .map(|(_, group)| group.collect())
+            .collect()
+    }
+
+    pub fn get_brain_sig_mut(&mut self) -> Vec<&mut BrainSignalUnit>{
+        self.brain_signal_vec.iter_mut().collect()
+    }
+
     /// push inward signals and ids to handler
     pub fn push_inward(
         &mut self,
         signal: InwardNNInputSignal,
         nn_id: usize,
         parent_nn_id: usize,
-        depth: &BlockDepth
+        depth: &BlockDepth,
+        anchor: &ParentAnchor
     ) {
         self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
             nn_id: nn_id,
             parent_nn_id: parent_nn_id,
-            depth: depth.0 as usize
+            depth: depth.0 as usize,
+            // inward nn must have parent anchor so unwarp
+            anchor_pos: anchor.0.unwrap()
         })
     }
 
@@ -55,10 +83,30 @@ impl SignalHandler {
 }
 
 pub struct InwardNNInputSignalUnit {
-    signal: InwardNNInputSignal,
-    nn_id: usize,
-    parent_nn_id: usize,
-    depth: usize
+    pub signal: InwardNNInputSignal,
+    pub nn_id: usize,
+    pub parent_nn_id: usize,
+    pub depth: usize,
+    /// anchor point to parent
+    pub anchor_pos: usize
+}
+
+impl fmt::Debug for InwardNNInputSignalUnit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Display::fmt(self, f)
+    }
+}
+
+impl fmt::Display for InwardNNInputSignalUnit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "ID: {}, Parent: {}, Depth: {}", self.nn_id, self.parent_nn_id, self.depth)
+    }
+}
+
+impl InwardNNInputSignalUnit{
+    pub fn get_signal_mut(&mut self) -> &mut InwardNNInputSignal{
+        &mut self.signal
+    }
 }
 
 /// Input singal for single inward `BlockNeuron`
@@ -75,7 +123,9 @@ pub struct InwardNNInputSignal {
     joint_ang_pos: f32,
     joint_ang_v: f32,
 
-    /// input singal from children neurons
+    /// Input singal from children neurons.
+    /// 
+    /// Order of children inputs depends on children's parent_anchor.
     children_input: Array2<f32>,
 }
 
@@ -90,7 +140,7 @@ impl Default for InwardNNInputSignal {
             cur_motor_v: 0.0,
             joint_ang_pos: 0.0,
             joint_ang_v: 0.0,
-            children_input: Array2::<f32>::zeros((3,CL).f()),
+            children_input: Array2::<f32>::zeros((4,CL).f()),
         }
     }
 }
@@ -113,6 +163,14 @@ impl InwardNNInputSignal {
         self.joint_ang_pos = ang_pos;
         self.joint_ang_v = ang_v;
         self
+    }
+
+    pub fn push_child_signal(&mut self, signal: Array1<f32>, anchor:usize){
+        // anchor must in 0..=3
+        match anchor {
+            0..=3 => {self.children_input.slice_mut(s![anchor,..]).assign(&signal)},
+            _ => {panic!()}
+        }
     }
 }
 
@@ -164,9 +222,23 @@ impl BrainSignal{
         self.blob_speed = speed;
         self
     }
+
+    pub fn push_child_signal(&mut self, signal: Array1<f32>, anchor:usize){
+        // anchor must in 0..=3
+        match anchor {
+            0..=3 => {self.children_input.slice_mut(s![anchor,..]).assign(&signal)},
+            _ => {panic!()}
+        }
+    }
 }
 
 pub struct BrainSignalUnit{
-    signal: BrainSignal,
-    nn_id: usize
+    pub signal: BrainSignal,
+    pub nn_id: usize
+}
+
+impl BrainSignalUnit{
+    pub fn get_signal_mut(&mut self) -> &mut BrainSignal{
+        &mut self.signal
+    }
 }
