@@ -1,9 +1,11 @@
+use std::fmt;
+
 use ndarray::prelude::*;
 use rand::prelude::*;
 
 use crate::consts::*;
 
-use super::signal::{InwardNNInputSignal, BrainSignal, OutwardNNInputSignal};
+use super::{signal::{InwardNNInputSignal, BrainSignal, OutwardNNInputSignal}, nn::BaseNN};
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 
@@ -15,24 +17,26 @@ pub enum GenericNN{
 
 #[derive(Debug)]
 pub struct InwardNN{
-
+    nn: BaseNN
 }
 
 impl Default for InwardNN {
     fn default() -> Self {
-        Self {  }
+        Self {
+            nn: BaseNN::new_rand(Vec::from_iter(INWARD_NN_SHAPE.into_iter().clone()), ACTIVATION_FUNCTION)
+        }
     }
 }
 
 #[derive(Debug)]
 pub struct OutwardNN{
-
+    nn: BaseNN
 }
 
 impl Default for OutwardNN {
     fn default() -> Self {
         Self{
-
+            nn: BaseNN::new_rand(Vec::from_iter(OUTWARD_NN_SHAPE.into_iter().clone()), ACTIVATION_FUNCTION)
         }
     }
 }
@@ -75,22 +79,34 @@ impl BlockNN {
 /// NN for centeral brain
 #[derive(Debug)]
 pub struct BrainNN{
-    pub value: f32
+    nn: BaseNN
 }
 
 impl Default for BrainNN {
     fn default() -> Self {
-        Self { value: 0.0 }
+        Self {
+            nn: BaseNN::new_rand(Vec::from_iter(BRAIN_NN_SHAPE.into_iter().clone()), ACTIVATION_FUNCTION)
+        }
     }
 }
 
 impl BrainNN {
-    pub fn get_brain_output(signal: BrainSignal) {
-
+    pub fn forward(&self, signal: &BrainSignal) -> Array1<f32>{
+        self.nn.forward(signal.to_array())
     }
 
     pub fn get_rand_brain_output(&self) -> Array1<f32> {
         let mut rng = thread_rng();
         Array1::from_shape_fn((4,), |_| rng.gen::<f32>())
+    }
+}
+
+impl fmt::Display for BrainNN {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.nn
+        )
     }
 }

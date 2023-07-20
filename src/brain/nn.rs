@@ -4,7 +4,7 @@ use ndarray::prelude::*;
 use rand::{distributions::Uniform, prelude::Distribution};
 
 #[derive(Debug, Clone)]
-enum Activation {
+pub enum Activation {
     ReLU,
     Sigmoid,
 }
@@ -42,7 +42,7 @@ impl BaseLayer {
     }
 
     fn forward(&self, input: &Array1<f32>, activation: &Activation) -> Array1<f32> {
-        assert_eq!(input.len(),self.weights.len());
+        assert_eq!(input.len(),self.weights.shape()[1]);
         let z = self.weights.dot(input) + &self.bias;
         z.mapv(|x| activation.apply(x))
     }
@@ -52,17 +52,15 @@ impl fmt::Display for BaseLayer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "Weights shape: {:?}, Bias shape: {:?}\nWeights:\n{:?}\nBias:\n{:?}",
+            "Weights shape: {:?}, Bias shape: {:?}",
             self.weights.dim(),
-            self.bias.dim(),
-            self.weights,
-            self.bias
+            self.bias.dim()
         )
     }
 }
 
 #[derive(Debug, Clone)]
-struct BaseNN {
+pub struct BaseNN {
     layers: Vec<BaseLayer>,
     activation: Activation
 }

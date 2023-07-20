@@ -44,6 +44,8 @@ impl BevyBlockNeurons {
         brain_pass(&mut brain_signal, &grouped_signal[0], &self.nnvec);
         // println!("{:#?}",brain_signal[0].signal);
 
+        brain_forward(&brain_signal, &self.nnvec);
+
         // return random yet
         self.get_rand_outputs(signal_handler)
     }
@@ -103,6 +105,20 @@ fn brain_pass(
                 .unwrap()
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
+        } else {
+            panic!()
+        }
+    }
+}
+
+fn brain_forward(
+    brain_signal: &Vec<&mut BrainSignalUnit>,
+    nnvec: &Vec<GenericNN>
+) {
+    for signal in brain_signal{
+        if let Some(GenericNN::BRAINNN(brain)) = nnvec.get(signal.nn_id){
+            let output = brain.forward(&signal.signal);
+            println!("{}",output);
         } else {
             panic!()
         }

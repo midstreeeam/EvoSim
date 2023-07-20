@@ -1,3 +1,5 @@
+use crate::brain::nn::Activation;
+
 // timestep
 pub const RAPIER_DT:f32 = 1.0/60.0;
 pub const RAPIER_SUBSTEPS:usize = 1;
@@ -35,3 +37,26 @@ pub const RAND_SIZE_SCALER:[f32;2] = [0.5,2.0];
 pub const INWARD_NN_CHILDREN_INPUT_LEN:usize = 4;
 /// each parent passes 4 value to children in outward pass
 pub const OUTWARD_NN_PARENT_INPUT_LEN:usize = 4;
+/// currently it has 3 layers, the hidden layer has 8 nodes
+pub const INWARD_NN_SHAPE:[usize;3] = [
+    // input layer
+    INWARD_NN_CHILDREN_INPUT_LEN*4+8,
+    // hidden layer
+    8, 
+    // output layer
+    INWARD_NN_CHILDREN_INPUT_LEN
+];
+/// outward nn shape
+pub const OUTWARD_NN_SHAPE:[usize;3] = [
+    OUTWARD_NN_PARENT_INPUT_LEN + 8,
+    16,
+    OUTWARD_NN_PARENT_INPUT_LEN + 8
+];
+/// brain nn shape
+pub const BRAIN_NN_SHAPE:[usize;3] = [
+    INWARD_NN_CHILDREN_INPUT_LEN*4+9,
+    8,
+    OUTWARD_NN_PARENT_INPUT_LEN
+];
+/// activation function
+pub const ACTIVATION_FUNCTION:Activation = Activation::ReLU;
