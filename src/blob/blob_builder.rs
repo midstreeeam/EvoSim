@@ -158,7 +158,7 @@ impl<'a> BlobBuilder<'a> {
         self.nnvec.push(GenericNN::BRAINNN(nn));
         // push first so the real id should minus one
         let nn_id = self.nnvec.len()-1;
-        println!("nnid={}",nn_id);
+        // println!("nnid={}",nn_id);
 
         let id = self
             .commands
