@@ -49,8 +49,8 @@ pub const INWARD_NN_SHAPE:[usize;3] = [
 /// outward nn shape
 pub const OUTWARD_NN_SHAPE:[usize;3] = [
     OUTWARD_NN_PARENT_INPUT_LEN + 9,
-    16,
-    OUTWARD_NN_PARENT_INPUT_LEN + 9
+    8,
+    OUTWARD_NN_PARENT_INPUT_LEN + 2
 ];
 /// brain nn shape
 pub const BRAIN_NN_SHAPE:[usize;3] = [
@@ -59,4 +59,6 @@ pub const BRAIN_NN_SHAPE:[usize;3] = [
     OUTWARD_NN_PARENT_INPUT_LEN
 ];
 /// activation function
-pub const ACTIVATION_FUNCTION:Activation = Activation::ReLU;
+/// 
+/// ReLU will make all output positive
+pub const ACTIVATION_FUNCTION:Activation = Activation::Sigmoid;

@@ -1,14 +1,20 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
+use ndarray::prelude::*;
 use rand::prelude::*;
 
-use crate::{brain::signal::InwardNNInputSignalUnit, consts::MOTOR_MAX_TARGET_V};
+use crate::{
+    brain::signal::InwardNNInputSignalUnit,
+    consts::{MOTOR_MAX_TARGET_V, OUTWARD_NN_PARENT_INPUT_LEN},
+};
 
 use super::{
     neuron::GenericNN,
     signal::{BrainSignalUnit, SignalHandler},
 };
+
+const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
 /// Bevy resource, which make sure the neurons can be accessed
 /// and modified from bevy side
@@ -27,31 +33,47 @@ impl Default for BevyBlockNeurons {
 impl BevyBlockNeurons {
     // TODO: parallel, gpu
     /// start neuron computing and return outputs
-    pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<[f32; 2]> {
+    pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<(u32, f32, f32)> {
+        // store output value for joint motors
+        let mut outputs: Vec<(u32, f32, f32)> = Vec::new();
+        // store internal outward_nn's outputs, index is nn_id
+        let mut outward_passes = vec![Array1::<f32>::zeros(DL); self.nnvec.len()];
+
         // generate grouped signal
         let (mut grouped_signal, mut brain_signal) = signal_handler.get_sig_mut();
 
         // println!("{:#?}",grouped_signal);
         // println!("{:#?}",brain_signal);
         // passing through all inward layers
-        for idx in (1..grouped_signal.len()).rev() {
-            // println!("{}",idx);
+        for idx in (0..grouped_signal.len()).rev() {
             inward_bulk_pass(&mut grouped_signal, &mut self.nnvec, idx)
         }
 
         // passing to brain
         brain_pass(&mut brain_signal, &grouped_signal[0], &mut self.nnvec);
         // println!("{:#?}",brain_signal[0].signal);
+        brain_forward(
+            &brain_signal,
+            &mut self.nnvec,
+            &mut outward_passes
+        );
 
-        brain_forward(&brain_signal, &self.nnvec);
+        for idx in 1..grouped_signal.len() {
+            outward_bulk_pass(
+                &mut grouped_signal, 
+                &mut self.nnvec, 
+                idx,
+                &mut outputs,
+                &mut outward_passes
+            )
+        }
 
-        // return random yet
-        self.get_rand_outputs(signal_handler)
+        outputs
     }
 
     pub fn get_rand_outputs(&self, signal_handler: SignalHandler) -> Vec<[f32; 2]> {
         let mut rng = thread_rng();
-        let len = signal_handler.len();
+        let len = signal_handler.inward_len();
         vec![
             [
                 rng.gen_range(-PI..PI),
@@ -76,8 +98,8 @@ fn inward_bulk_pass(
 
     // aviod multiple borrow here
     let (left, right) = grouped_signal.split_at_mut(bulk_idx);
-    let passed_layer = &mut left[bulk_idx - 1];
-    let current_layer = &mut right[0];
+    let passed_layer: &mut Vec<&mut InwardNNInputSignalUnit> = &mut left[bulk_idx - 1];
+    let current_layer: &mut Vec<&mut InwardNNInputSignalUnit> = &mut right[0];
 
     // TODO: parallel this for loop
     for unit in current_layer {
@@ -104,7 +126,7 @@ fn brain_pass(
         if let GenericNN::BLOCKNN(nn) = &mut nnvec[unit.nn_id] {
             brain_signal
                 .iter_mut()
-                .find(|u| u.nn_id == unit.parent_nn_id)
+                .find(|u: &&mut &mut BrainSignalUnit| u.nn_id == unit.parent_nn_id)
                 .unwrap()
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
@@ -114,18 +136,42 @@ fn brain_pass(
     }
 }
 
-fn brain_forward(brain_signal: &Vec<&mut BrainSignalUnit>, nnvec: &Vec<GenericNN>) {
+/// run brain_nn and start outward pass
+fn brain_forward(
+    brain_signal: &Vec<&mut BrainSignalUnit>,
+    nnvec: &mut Vec<GenericNN>,
+    outward_passes: &mut Vec<Array1<f32>>,
+) {
     for signal in brain_signal {
         if let Some(GenericNN::BRAINNN(brain)) = nnvec.get(signal.nn_id) {
             // println!("{:#?}",signal.signal);
-            let output = brain.forward(&signal.signal);
-            // println!("{}",output);
+            // store forward result
+            outward_passes[signal.nn_id] = brain.forward(&signal.signal);
         } else {
             panic!()
         }
     }
 }
 
-fn outward_bulk_pass() {
-    
+fn outward_bulk_pass(
+    grouped_signal: &mut Vec<Vec<&mut InwardNNInputSignalUnit>>,
+    nnvec: &mut Vec<GenericNN>,
+    bulk_idx: usize,
+    outputs: &mut Vec<(u32, f32, f32)>,
+    outward_passes: &mut Vec<Array1<f32>>
+) {
+    let current_layer = &grouped_signal[bulk_idx];
+
+    // TODO: parallel this loop
+    for unit in current_layer {
+        if let GenericNN::BLOCKNN(nn) = &mut nnvec[unit.nn_id] {
+            // get result from parent and write output back
+            let a = nn.get_outward_output(&outward_passes[unit.parent_nn_id]);
+            outward_passes[unit.nn_id] = a.slice(s![..DL]).map(|x| *x).clone();
+            // push result
+            outputs.push((unit.entity_id,a[DL+1],a[DL+2]));
+        } else {
+            panic!()
+        }
+    }
 }

@@ -8,6 +8,7 @@ use crate::consts::*;
 use super::{signal::{InwardNNInputSignal, BrainSignal, OutwardNNInputSignal}, nn::BaseNN};
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
+const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
 #[derive(Debug)]
 pub enum GenericNN{
@@ -84,6 +85,13 @@ impl BlockNN {
         let mut rng = thread_rng();
         Array1::from_shape_fn((4,), |_| rng.gen::<f32>())
     }
+
+    pub fn get_outward_output(&mut self, parent_signal:&Array1<f32>) -> Array1<f32> {
+        assert_eq!(parent_signal.len(),DL);
+        self.outward_signal.parent_input = parent_signal.clone();
+        self.outward_nn.nn.forward(self.outward_signal.to_array())
+    }
+
 }
 
 

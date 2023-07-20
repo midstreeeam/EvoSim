@@ -27,9 +27,12 @@ impl Default for SignalHandler {
 }
 
 impl SignalHandler {
-    // TODO: use trait or other way to realise `len()`
-    pub fn len(&self) -> usize {
+    pub fn inward_len(&self) -> usize {
         self.inward_signal_vec.len()
+    }
+
+    pub fn brain_len(&self) -> usize {
+        self.brain_signal_vec.len()
     }
 
     // /// stratify signals base on depth.
@@ -84,6 +87,7 @@ impl SignalHandler {
         parent_nn_id: usize,
         depth: &BlockDepth,
         anchor: &ParentAnchor,
+        entity_id: u32
     ) {
         self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
@@ -92,6 +96,7 @@ impl SignalHandler {
             depth: depth.0 as usize,
             // inward nn must have parent anchor so unwarp
             anchor_pos: anchor.0.unwrap(),
+            entity_id: entity_id
         })
     }
 
@@ -110,6 +115,8 @@ pub struct InwardNNInputSignalUnit {
     pub depth: usize,
     /// anchor point to parent
     pub anchor_pos: usize,
+    /// bond the entity
+    pub entity_id: u32
 }
 
 impl fmt::Debug for InwardNNInputSignalUnit {
@@ -245,7 +252,7 @@ pub struct OutwardNNInputSignal {
 
     /// Input singal from parent neurons.
     /// Array length in constant
-    parent_input: Array1<f32>,
+    pub parent_input: Array1<f32>,
 }
 
 impl Default for OutwardNNInputSignal {
