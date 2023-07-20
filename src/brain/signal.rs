@@ -4,6 +4,7 @@ use crate::{
     blob::block::{BlockDepth, ParentAnchor},
     consts::*,
 };
+use bevy::prelude::Entity;
 use itertools::Itertools;
 use ndarray::{concatenate, prelude::*};
 
@@ -87,7 +88,7 @@ impl SignalHandler {
         parent_nn_id: usize,
         depth: &BlockDepth,
         anchor: &ParentAnchor,
-        entity_id: u32
+        entity_id: Entity
     ) {
         self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
@@ -116,7 +117,7 @@ pub struct InwardNNInputSignalUnit {
     /// anchor point to parent
     pub anchor_pos: usize,
     /// bond the entity
-    pub entity_id: u32
+    pub entity_id: Entity
 }
 
 impl fmt::Debug for InwardNNInputSignalUnit {

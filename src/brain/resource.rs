@@ -33,9 +33,9 @@ impl Default for BevyBlockNeurons {
 impl BevyBlockNeurons {
     // TODO: parallel, gpu
     /// start neuron computing and return outputs
-    pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<(u32, f32, f32)> {
+    pub fn get_outputs(&mut self, mut signal_handler: SignalHandler) -> Vec<(Entity, f32, f32)> {
         // store output value for joint motors
-        let mut outputs: Vec<(u32, f32, f32)> = Vec::new();
+        let mut outputs: Vec<(Entity, f32, f32)> = Vec::new();
         // store internal outward_nn's outputs, index is nn_id
         let mut outward_passes = vec![Array1::<f32>::zeros(DL); self.nnvec.len()];
 
@@ -45,7 +45,7 @@ impl BevyBlockNeurons {
         // println!("{:#?}",grouped_signal);
         // println!("{:#?}",brain_signal);
         // passing through all inward layers
-        for idx in (0..grouped_signal.len()).rev() {
+        for idx in (1..grouped_signal.len()).rev() {
             inward_bulk_pass(&mut grouped_signal, &mut self.nnvec, idx)
         }
 
@@ -58,7 +58,7 @@ impl BevyBlockNeurons {
             &mut outward_passes
         );
 
-        for idx in 1..grouped_signal.len() {
+        for idx in 0..grouped_signal.len() {
             outward_bulk_pass(
                 &mut grouped_signal, 
                 &mut self.nnvec, 
@@ -157,7 +157,7 @@ fn outward_bulk_pass(
     grouped_signal: &mut Vec<Vec<&mut InwardNNInputSignalUnit>>,
     nnvec: &mut Vec<GenericNN>,
     bulk_idx: usize,
-    outputs: &mut Vec<(u32, f32, f32)>,
+    outputs: &mut Vec<(Entity, f32, f32)>,
     outward_passes: &mut Vec<Array1<f32>>
 ) {
     let current_layer = &grouped_signal[bulk_idx];
@@ -169,7 +169,7 @@ fn outward_bulk_pass(
             let a = nn.get_outward_output(&outward_passes[unit.parent_nn_id]);
             outward_passes[unit.nn_id] = a.slice(s![..DL]).map(|x| *x).clone();
             // push result
-            outputs.push((unit.entity_id,a[DL+1],a[DL+2]));
+            outputs.push((unit.entity_id,a[DL],a[DL+1]));
         } else {
             panic!()
         }

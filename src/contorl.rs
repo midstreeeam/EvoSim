@@ -26,7 +26,7 @@ use crate::{
 /// Events been read will be marked as read.
 pub fn block_action(
     mut brain_q: Query<(&Parent, Entity), With<CenterBlockFlag>>,
-    mut block_q: Query<(&Parent, &mut ImpulseJoint)>,
+    mut block_q: Query<(Entity, &Parent, &mut ImpulseJoint)>,
     nn_id_q: Query<&NeuronId>,
     mut bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
@@ -34,14 +34,15 @@ pub fn block_action(
     joint_info_q: Query<&JointInfo>,
     depth_q: Query<&BlockDepth>,
     blob_q: Query<&BlobInfo>,
-    p_anchor_q: Query<&ParentAnchor>
+    p_anchor_q: Query<&ParentAnchor>,
+    // mut joint_q: Query<&mut ImpulseJoint>
 ) {
     let mut signal_handler = SignalHandler::default();
 
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
     // push inward
-    for (parent, joint) in block_q.iter_mut() {
+    for (child, parent, joint) in block_q.iter_mut() {
         let entity_id = parent.get();
 
         // get id
@@ -77,7 +78,7 @@ pub fn block_action(
             parent_nn_id.unwrap(),
             depth_q.get(entity_id).unwrap(),
             p_anchor_q.get(entity_id).unwrap(),
-            entity_id.index()
+            child
         );
     }
 
@@ -101,18 +102,29 @@ pub fn block_action(
     }
 
     // run neuron
-    let output = bbn.get_rand_outputs(signal_handler);
-
-    // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
-    // update physical world
-    for (signal, (_, mut joint)) in output.iter().zip(block_q.iter_mut()) {
+    let output: Vec<(Entity, f32, f32)> = bbn.get_outputs(signal_handler);
+    for (entity_id,target_pos,target_vel) in output{
+        let (_,_,mut joint) = block_q.get_mut(entity_id).unwrap();
         joint
             .data
-            .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
+            .set_motor_position(JointAxis::AngX, target_pos, MOTOR_STIFFNESS, MOTOR_DAMPING);
         joint
             .data
-            .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
+            .set_motor_velocity(JointAxis::AngX, target_vel, MOTOR_DAMPING);
     }
+
+    // let output = bbn.get_rand_outputs(signal_handler);
+    // // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
+    // // update physical world
+    // for (signal, (_, mut joint)) in output.iter().zip(block_q.iter_mut()) {
+    //     joint
+    //         .data
+    //         .set_motor_position(JointAxis::AngX, signal[0], MOTOR_STIFFNESS, MOTOR_DAMPING);
+    //     joint
+    //         .data
+    //         .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
+    // }
+
 }
 
 // TODO: test preformance and change to `get_bulk_cf_events()` if necessary
