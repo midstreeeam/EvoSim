@@ -203,6 +203,29 @@ impl InwardNNInputSignal {
             }
         }
     }
+
+    pub fn to_array(&self) -> Array1<f32> {
+        let bool_data = vec![
+            self.collision_with_wall as u8 as f32,
+            self.collision_with_other_blob as u8 as f32
+        ];
+
+        let vect_data = self.collision_vect.iter().cloned();
+        // flatten children_data
+        let children_data = self.children_input.rows().into_iter().flatten().map(|&x| x);
+
+
+        let all_data = bool_data.into_iter()
+            .chain(vect_data)
+            .chain(std::iter::once(self.collision_mag))
+            .chain(std::iter::once(self.cur_motor_pos))
+            .chain(std::iter::once(self.cur_motor_v))
+            .chain(std::iter::once(self.joint_ang_pos))
+            .chain(std::iter::once(self.joint_ang_v))
+            .chain(children_data);
+
+        Array1::from_iter(all_data)
+    }
 }
 
 /// Input singal for single outward `BlockNeuron`

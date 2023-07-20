@@ -117,8 +117,9 @@ fn brain_forward(
 ) {
     for signal in brain_signal{
         if let Some(GenericNN::BRAINNN(brain)) = nnvec.get(signal.nn_id){
+            // println!("{:#?}",signal.signal);
             let output = brain.forward(&signal.signal);
-            println!("{}",output);
+            // println!("{}",output);
         } else {
             panic!()
         }

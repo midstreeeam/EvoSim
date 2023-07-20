@@ -40,7 +40,7 @@ pub const OUTWARD_NN_PARENT_INPUT_LEN:usize = 4;
 /// currently it has 3 layers, the hidden layer has 8 nodes
 pub const INWARD_NN_SHAPE:[usize;3] = [
     // input layer
-    INWARD_NN_CHILDREN_INPUT_LEN*4+8,
+    INWARD_NN_CHILDREN_INPUT_LEN*4 + 9,
     // hidden layer
     8, 
     // output layer
@@ -48,9 +48,9 @@ pub const INWARD_NN_SHAPE:[usize;3] = [
 ];
 /// outward nn shape
 pub const OUTWARD_NN_SHAPE:[usize;3] = [
-    OUTWARD_NN_PARENT_INPUT_LEN + 8,
+    OUTWARD_NN_PARENT_INPUT_LEN + 9,
     16,
-    OUTWARD_NN_PARENT_INPUT_LEN + 8
+    OUTWARD_NN_PARENT_INPUT_LEN + 9
 ];
 /// brain nn shape
 pub const BRAIN_NN_SHAPE:[usize;3] = [
