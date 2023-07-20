@@ -5,7 +5,7 @@ use crate::{
     consts::*,
 };
 use itertools::Itertools;
-use ndarray::prelude::*;
+use ndarray::{concatenate, prelude::*};
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
@@ -50,7 +50,6 @@ impl SignalHandler {
     //         .map(|(_, group)| group.collect())
     //         .collect()
     // }
-
 
     /// stratify signals base on depth.
     ///
@@ -207,15 +206,15 @@ impl InwardNNInputSignal {
     pub fn to_array(&self) -> Array1<f32> {
         let bool_data = vec![
             self.collision_with_wall as u8 as f32,
-            self.collision_with_other_blob as u8 as f32
+            self.collision_with_other_blob as u8 as f32,
         ];
 
         let vect_data = self.collision_vect.iter().cloned();
         // flatten children_data
         let children_data = self.children_input.rows().into_iter().flatten().map(|&x| x);
 
-
-        let all_data = bool_data.into_iter()
+        let all_data = bool_data
+            .into_iter()
             .chain(vect_data)
             .chain(std::iter::once(self.collision_mag))
             .chain(std::iter::once(self.cur_motor_pos))
@@ -231,36 +230,49 @@ impl InwardNNInputSignal {
 /// Input singal for single outward `BlockNeuron`
 #[derive(Debug)]
 pub struct OutwardNNInputSignal {
-    // collision signal
-    collision_with_wall: bool,
-    collision_with_other_blob: bool,
-    collision_vect: [f32; 2],
-    collision_mag: f32,
+    // // collision signal
+    // collision_with_wall: bool,
+    // collision_with_other_blob: bool,
+    // collision_vect: [f32; 2],
+    // collision_mag: f32,
 
-    // joint signal
-    cur_motor_pos: f32,
-    cur_motor_v: f32,
-    joint_ang_pos: f32,
-    joint_ang_v: f32,
+    // // joint signal
+    // cur_motor_pos: f32,
+    // cur_motor_v: f32,
+    // joint_ang_pos: f32,
+    // joint_ang_v: f32,
+    inherited: Array1<f32>,
 
     /// Input singal from parent neurons.
     /// Array length in constant
     parent_input: Array1<f32>,
 }
 
-impl Default for OutwardNNInputSignal{
+impl Default for OutwardNNInputSignal {
     fn default() -> Self {
         Self {
-            collision_with_wall: false,
-            collision_with_other_blob: false,
-            collision_vect: [0.0, 0.0],
-            collision_mag: 0.0,
-            cur_motor_pos: 0.0,
-            cur_motor_v: 0.0,
-            joint_ang_pos: 0.0,
-            joint_ang_v: 0.0,
+            // collision_with_wall: false,
+            // collision_with_other_blob: false,
+            // collision_vect: [0.0, 0.0],
+            // collision_mag: 0.0,
+            // cur_motor_pos: 0.0,
+            // cur_motor_v: 0.0,
+            // joint_ang_pos: 0.0,
+            // joint_ang_v: 0.0,
+            inherited: Array1::<f32>::zeros(9),
             parent_input: Array1::<f32>::zeros(DL),
         }
+    }
+}
+
+impl OutwardNNInputSignal {
+    /// inherit processed signal from inward signal
+    pub fn inherit(&mut self, inward_signal_array: &Array1<f32>) {
+        self.inherited = inward_signal_array.slice(s![0..9]).to_owned()
+    }
+
+    pub fn to_array(&mut self) -> Array1<f32> {
+        concatenate(Axis(0), &[self.inherited.view(), self.parent_input.view()]).unwrap()
     }
 }
 
@@ -329,7 +341,7 @@ impl BrainSignal {
     pub fn to_array(&self) -> Array1<f32> {
         let bool_data = vec![
             self.collision_with_wall as u8 as f32,
-            self.collision_with_other_blob as u8 as f32
+            self.collision_with_other_blob as u8 as f32,
         ];
 
         let vect_data = self.collision_vect.iter().cloned();
@@ -338,8 +350,8 @@ impl BrainSignal {
         let mass_center_data = self.blob_mass_center.iter().cloned();
         let speed_data = self.blob_speed.iter().cloned();
 
-
-        let all_data = bool_data.into_iter()
+        let all_data = bool_data
+            .into_iter()
             .chain(vect_data)
             .chain(std::iter::once(self.collision_mag))
             .chain(children_data)
@@ -369,10 +381,6 @@ impl fmt::Debug for BrainSignalUnit {
 
 impl fmt::Display for BrainSignalUnit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Brain:  ID: {}",
-            self.nn_id
-        )
+        write!(f, "Brain:  ID: {}", self.nn_id)
     }
 }

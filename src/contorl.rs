@@ -28,7 +28,7 @@ pub fn block_action(
     mut brain_q: Query<(&Parent, Entity), With<CenterBlockFlag>>,
     mut block_q: Query<(&Parent, &mut ImpulseJoint)>,
     nn_id_q: Query<&NeuronId>,
-    bbn: ResMut<BevyBlockNeurons>,
+    mut bbn: ResMut<BevyBlockNeurons>,
     mut cf_events: EventReader<ContactForceEvent>,
     collider_q: Query<&ColliderFlag>,
     joint_info_q: Query<&JointInfo>,

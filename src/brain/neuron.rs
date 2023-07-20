@@ -63,14 +63,21 @@ impl Default for BlockNN {
 }
 
 impl BlockNN {
-    fn forward(&self, signal: &InwardNNInputSignal) -> Array1<f32> {
-        self.inward_nn.nn.forward(signal.to_array())
+
+    /// forward function for inward nn
+    /// 
+    /// also update the `inherited` element in outward nn
+    fn inward_forward(&mut self, signal: &InwardNNInputSignal) -> Array1<f32> {
+        let array_signal = signal.to_array();
+        // save duplicate signals for ourward usage
+        self.outward_signal.inherit(&array_signal);
+        self.inward_nn.nn.forward(array_signal.clone())
     }
 
     /// output inward signal that passing to next layer
     /// Takes input layer's singal
-    pub fn get_inward_output(&self, signal:&InwardNNInputSignal) -> Array1<f32> {
-        self.forward(signal)
+    pub fn get_inward_output(&mut self, signal:&InwardNNInputSignal) -> Array1<f32> {
+        self.inward_forward(signal)
     }
 
     pub fn get_rand_inward_output(&self) -> Array1<f32> {

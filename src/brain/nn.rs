@@ -89,6 +89,7 @@ impl BaseNN {
     }
 
     pub fn forward(&self, mut input: Array1<f32>) -> Array1<f32> {
+        // println!("{}",input.len());
         for layer in &self.layers {
             input = layer.forward(&input, &self.activation);
         }
