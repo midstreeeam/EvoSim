@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::componet::{ColliderFlag, BlobEntityIndex};
+use crate::{componet::{ColliderFlag, BlobEntityIndex}, consts::{DEFAULT_DAMPING_LINEAR, DEFAULT_DAMPING_ANGULAR}};
 
 #[derive(Component)]
 pub struct CenterBlockFlag;
@@ -126,7 +126,10 @@ impl Default for PhysiBlockBundle {
             massprop: ColliderMassProperties::Density(1.0),
             friction: Friction::default(),
             restitution: Restitution::default(),
-            damping: Damping::default(),
+            damping: Damping{
+                linear_damping: DEFAULT_DAMPING_LINEAR,
+                angular_damping: DEFAULT_DAMPING_ANGULAR
+            },
             ex_force: ExternalForce::default(),
             ex_impulse: ExternalImpulse::default(),
             // contact_force_events for sensor

@@ -52,19 +52,15 @@ impl BevyBlockNeurons {
         // passing to brain
         brain_pass(&mut brain_signal, &grouped_signal[0], &mut self.nnvec);
         // println!("{:#?}",brain_signal[0].signal);
-        brain_forward(
-            &brain_signal,
-            &mut self.nnvec,
-            &mut outward_passes
-        );
+        brain_forward(&brain_signal, &mut self.nnvec, &mut outward_passes);
 
         for idx in 0..grouped_signal.len() {
             outward_bulk_pass(
-                &mut grouped_signal, 
-                &mut self.nnvec, 
+                &mut grouped_signal,
+                &mut self.nnvec,
                 idx,
                 &mut outputs,
-                &mut outward_passes
+                &mut outward_passes,
             )
         }
 
@@ -158,7 +154,7 @@ fn outward_bulk_pass(
     nnvec: &mut Vec<GenericNN>,
     bulk_idx: usize,
     outputs: &mut Vec<(Entity, f32, f32)>,
-    outward_passes: &mut Vec<Array1<f32>>
+    outward_passes: &mut Vec<Array1<f32>>,
 ) {
     let current_layer = &grouped_signal[bulk_idx];
 
@@ -169,7 +165,7 @@ fn outward_bulk_pass(
             let a = nn.get_outward_output(&outward_passes[unit.parent_nn_id]);
             outward_passes[unit.nn_id] = a.slice(s![..DL]).map(|x| *x).clone();
             // push result
-            outputs.push((unit.entity_id,a[DL],a[DL+1]));
+            outputs.push((unit.entity_id, a[DL], a[DL + 1]));
         } else {
             panic!()
         }

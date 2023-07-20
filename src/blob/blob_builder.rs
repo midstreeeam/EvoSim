@@ -3,7 +3,10 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::{brain::neuron::{BlockNN, BrainNN, GenericNN}, consts::*};
+use crate::{
+    brain::neuron::{BlockNN, BrainNN, GenericNN},
+    consts::*,
+};
 
 use super::{blob::*, block::*};
 
@@ -48,10 +51,7 @@ impl<'a> BlobBuilder<'a> {
     ///
     /// To generate multiple blobs, or want to use BlobBuilder in loops,
     /// please use `clean()` so that there won't be joints connects.
-    pub fn from_commands(
-        mut commands: Commands<'a, 'a>, 
-        nnvec: &'a mut Vec<GenericNN>, 
-    ) -> Self {
+    pub fn from_commands(mut commands: Commands<'a, 'a>, nnvec: &'a mut Vec<GenericNN>) -> Self {
         Self {
             blob_bundle: commands.spawn(BlobBundle::default()).id(),
             commands: commands,
@@ -157,7 +157,7 @@ impl<'a> BlobBuilder<'a> {
         let nn = BrainNN::default();
         self.nnvec.push(GenericNN::BRAINNN(nn));
         // push first so the real id should minus one
-        let nn_id = self.nnvec.len()-1;
+        let nn_id = self.nnvec.len() - 1;
         // println!("nnid={}",nn_id);
 
         let id = self
@@ -223,7 +223,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len()-1;
+        let nn_id = self.nnvec.len() - 1;
 
         let spawn_x = block.translation.x - block.size.x - dx;
         let spawn_y = block.translation.y;
@@ -268,7 +268,7 @@ impl<'a> BlobBuilder<'a> {
         }
 
         // set joint limits
-        let mut limits = [-PI, PI];
+        let mut limits = [-PI * 0.9, PI * 0.9];
         if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
@@ -316,7 +316,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len()-1;
+        let nn_id = self.nnvec.len() - 1;
 
         let spawn_x = block.translation.x + block.size.x + dx;
         let spawn_y = block.translation.y;
@@ -361,7 +361,7 @@ impl<'a> BlobBuilder<'a> {
         }
 
         // set joint limits
-        let mut limits = [-PI, PI];
+        let mut limits = [-PI * 0.9, PI * 0.9];
         if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
@@ -409,7 +409,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len()-1;
+        let nn_id = self.nnvec.len() - 1;
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y + block.size.y + dy;
@@ -454,7 +454,7 @@ impl<'a> BlobBuilder<'a> {
         }
 
         // set joint limits
-        let mut limits = [-PI, PI];
+        let mut limits = [-PI * 0.9, PI * 0.9];
         if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }
@@ -502,7 +502,7 @@ impl<'a> BlobBuilder<'a> {
 
         let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
-        let nn_id = self.nnvec.len()-1;
+        let nn_id = self.nnvec.len() - 1;
 
         let spawn_x = block.translation.x;
         let spawn_y = block.translation.y - block.size.y - dy;
@@ -547,7 +547,7 @@ impl<'a> BlobBuilder<'a> {
         }
 
         // set joint limits
-        let mut limits = [-PI, PI];
+        let mut limits = [-PI * 0.9, PI * 0.9];
         if motor_limits.is_some() {
             limits = motor_limits.unwrap()
         }

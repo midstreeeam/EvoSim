@@ -176,7 +176,7 @@ impl BlobGeno {
                 [DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1], parent_size[1]];
 
             if rng.gen_bool(RAND_NODE_NOT_NONE) {
-                let joint_limits = [rng.gen_range(-PI..0.0), rng.gen_range(0.0..PI)];
+                let joint_limits = [rng.gen_range(-PI * 0.9..0.0), rng.gen_range(0.0..PI * 0.9)];
                 let mut size = [
                     rng.gen_range(
                         RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0],

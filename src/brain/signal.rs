@@ -88,7 +88,7 @@ impl SignalHandler {
         parent_nn_id: usize,
         depth: &BlockDepth,
         anchor: &ParentAnchor,
-        entity_id: Entity
+        entity_id: Entity,
     ) {
         self.inward_signal_vec.push(InwardNNInputSignalUnit {
             signal: signal,
@@ -97,7 +97,7 @@ impl SignalHandler {
             depth: depth.0 as usize,
             // inward nn must have parent anchor so unwarp
             anchor_pos: anchor.0.unwrap(),
-            entity_id: entity_id
+            entity_id: entity_id,
         })
     }
 
@@ -117,7 +117,7 @@ pub struct InwardNNInputSignalUnit {
     /// anchor point to parent
     pub anchor_pos: usize,
     /// bond the entity
-    pub entity_id: Entity
+    pub entity_id: Entity,
 }
 
 impl fmt::Debug for InwardNNInputSignalUnit {

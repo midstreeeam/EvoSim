@@ -103,7 +103,11 @@ pub fn block_action(
 
     // run neuron
     let output: Vec<(Entity, f32, f32)> = bbn.get_outputs(signal_handler);
+
+    // println!("{}",output[1].1);
+    // update joints base on nn's output
     for (entity_id,target_pos,target_vel) in output{
+        // println!("{},{}",target_pos,target_vel);
         let (_,_,mut joint) = block_q.get_mut(entity_id).unwrap();
         joint
             .data
@@ -112,6 +116,8 @@ pub fn block_action(
             .data
             .set_motor_velocity(JointAxis::AngX, target_vel, MOTOR_DAMPING);
     }
+
+    
 
     // let output = bbn.get_rand_outputs(signal_handler);
     // // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
