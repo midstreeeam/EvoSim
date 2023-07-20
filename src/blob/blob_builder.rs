@@ -221,7 +221,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNN::new();
+        let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
         let nn_id = self.nnvec.len()-1;
 
@@ -314,7 +314,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNN::new();
+        let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
         let nn_id = self.nnvec.len()-1;
 
@@ -407,7 +407,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNN::new();
+        let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
         let nn_id = self.nnvec.len()-1;
 
@@ -500,7 +500,7 @@ impl<'a> BlobBuilder<'a> {
             return self;
         }
 
-        let nn = BlockNN::new();
+        let nn = BlockNN::default();
         self.nnvec.push(GenericNN::BLOCKNN(nn));
         let nn_id = self.nnvec.len()-1;
 

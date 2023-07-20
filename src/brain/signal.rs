@@ -8,6 +8,7 @@ use itertools::Itertools;
 use ndarray::prelude::*;
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
+const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
 // TODO: test correctness of signal
 /// `SignalHandler` handles input signal from bevy
@@ -200,6 +201,42 @@ impl InwardNNInputSignal {
             _ => {
                 panic!()
             }
+        }
+    }
+}
+
+/// Input singal for single outward `BlockNeuron`
+#[derive(Debug)]
+pub struct OutwardNNInputSignal {
+    // collision signal
+    collision_with_wall: bool,
+    collision_with_other_blob: bool,
+    collision_vect: [f32; 2],
+    collision_mag: f32,
+
+    // joint signal
+    cur_motor_pos: f32,
+    cur_motor_v: f32,
+    joint_ang_pos: f32,
+    joint_ang_v: f32,
+
+    /// Input singal from parent neurons.
+    /// Array length in constant
+    parent_input: Array1<f32>,
+}
+
+impl Default for OutwardNNInputSignal{
+    fn default() -> Self {
+        Self {
+            collision_with_wall: false,
+            collision_with_other_blob: false,
+            collision_vect: [0.0, 0.0],
+            collision_mag: 0.0,
+            cur_motor_pos: 0.0,
+            cur_motor_v: 0.0,
+            joint_ang_pos: 0.0,
+            joint_ang_v: 0.0,
+            parent_input: Array1::<f32>::zeros(DL),
         }
     }
 }

@@ -29,7 +29,9 @@ pub const RAND_NODE_NOT_NONE:f64 = 0.9;
 pub const RAND_SIZE_SCALER:[f32;2] = [0.5,2.0];
 
 // nn
-/// each children has 4 input values
+/// each children has 4 input values during inward pass
 /// 
-/// shape is for nalgebra's matrix
+/// shape is for ndarray
 pub const INWARD_NN_CHILDREN_INPUT_LEN:usize = 4;
+/// each parent passes 4 value to children in outward pass
+pub const OUTWARD_NN_PARENT_INPUT_LEN:usize = 4;
