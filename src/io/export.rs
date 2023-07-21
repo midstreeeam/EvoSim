@@ -1,6 +1,10 @@
+use std::fs::File;
+use std::io::Write;
 use std::{fs, path::Path};
 
 use bevy::prelude::*;
+use serde::{Serialize, Deserialize};
+use chrono::{Local, NaiveDateTime, Datelike, Timelike};
 
 use crate::{
     blob::{block::NeuronId, geno_blob_builder::BlobGeno},
@@ -8,6 +12,7 @@ use crate::{
     consts::EXPORT_PATH,
 };
 
+#[derive(Serialize,Deserialize)]
 struct ExportFile{
     genovec: Vec<BlobGeno>,
     nnvec: Vec<Vec<GenericNN>>
@@ -30,7 +35,12 @@ impl ExportFile {
     }
 
     pub fn save(&self){
-        // info!("MODEL SAVED");
+        assert_eq!(self.genovec.len(),self.nnvec.len());
+        let file_str = serde_json::to_string(&self).unwrap();
+        let fname = format!("{}{}",EXPORT_PATH,current_time_filename());
+        let mut file = File::create(&fname).expect("Unable to create file");
+        file.write_all(file_str.as_bytes()).expect("Unable to write data");
+        info!("MODEL SAVED {}", &fname);
     }
 }
 
@@ -76,4 +86,11 @@ fn create_if_not_exist() {
             Err(e) => eprintln!("Error creating directory: {}", e),
         }
     }
+}
+
+fn current_time_filename() -> String {
+    let now: NaiveDateTime = Local::now().naive_local();
+    format!("{:04}-{:02}-{:02}T{:02}-{:02}-{:02}.json",
+            now.year(), now.month(), now.day(),
+            now.hour(), now.minute(), now.second())
 }

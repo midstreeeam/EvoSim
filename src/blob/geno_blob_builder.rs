@@ -3,6 +3,7 @@ use std::fmt::{self, Debug};
 
 use bevy::prelude::*;
 use rand::prelude::*;
+use serde::{Serialize, Deserialize};
 
 use crate::brain::neuron::GenericNN;
 use crate::consts::*;
@@ -117,7 +118,7 @@ impl<'a> GenoBlobBuilder<'a> {
 /// The Geno for morphyology of the blob.
 /// The Geno is a QuadTree (it can be represented as TernaryTree as well).
 /// index 0,1,2,3 means up,down,left,right (one of them can be ParentIndicator)
-#[derive(Debug, Component, Clone)]
+#[derive(Debug, Component, Clone, Serialize, Deserialize)]
 pub struct BlobGeno {
     pub vec_tree: QuadTree<GenericGenoNode>,
 }
@@ -285,14 +286,14 @@ impl BlobGeno {
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
 /// Representing morphyology of each block inside blob.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GenericGenoNode {
     /// parent indicator
     Parent,
     Child(GenoNode),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GenoNode {
     joint_limits: [f32; 2],
     size: [f32; 2],
@@ -317,7 +318,7 @@ impl GenoNode {
 }
 
 /// QuadTree, Helper struct
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct QuadTree<T> {
     pub nodes: Vec<Option<T>>,
     pub max_depth: u32,

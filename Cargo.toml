@@ -10,6 +10,9 @@ bevy = "0.11"
 bevy_pancam = "0.9.0"
 # bevy_rapier2d = "0.22.0"
 itertools = "0.11.0"
-ndarray = "0.15.6"
+ndarray = {version = "0.15.6", features = ["serde"]}
 rand = "0.8.5"
 bevy_rapier2d = {git = "https://github.com/midstreeeam/bevy_rapier.git", branch = "new_dependencies"}
+serde = "1.0.174"
+serde_json = "1.0.103"
+chrono = "0.4.26"

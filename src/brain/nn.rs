@@ -2,8 +2,9 @@ use std::fmt;
 
 use ndarray::prelude::*;
 use rand::{distributions::Uniform, prelude::Distribution};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Activation {
     ReLU,
     Sigmoid,
@@ -18,7 +19,7 @@ impl Activation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct BaseLayer {
     weights: Array2<f32>,
     bias: Array1<f32>,
@@ -61,7 +62,7 @@ impl fmt::Display for BaseLayer {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BaseNN {
     layers: Vec<BaseLayer>,
     activation: Activation,

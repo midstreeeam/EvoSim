@@ -7,6 +7,7 @@ use crate::{
 use bevy::prelude::Entity;
 use itertools::Itertools;
 use ndarray::{concatenate, prelude::*};
+use serde::{Serialize, Deserialize};
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
@@ -236,7 +237,7 @@ impl InwardNNInputSignal {
 }
 
 /// Input singal for single outward `BlockNeuron`
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutwardNNInputSignal {
     // // collision signal
     // collision_with_wall: bool,

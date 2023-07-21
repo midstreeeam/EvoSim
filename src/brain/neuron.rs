@@ -2,6 +2,7 @@ use std::fmt;
 
 use ndarray::prelude::*;
 use rand::prelude::*;
+use serde::{Serialize, Deserialize};
 
 use crate::consts::*;
 
@@ -13,13 +14,13 @@ use super::{
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GenericNN {
     BLOCKNN(BlockNN),
     BRAINNN(BrainNN),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InwardNN {
     nn: BaseNN,
 }
@@ -35,7 +36,7 @@ impl Default for InwardNN {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutwardNN {
     nn: BaseNN,
 }
@@ -55,7 +56,7 @@ impl Default for OutwardNN {
 ///
 /// Each block should have two independent neurons:
 /// InwardNN and OutwardNN
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockNN {
     pub inward_nn: InwardNN,
     pub outward_nn: OutwardNN,
@@ -102,7 +103,7 @@ impl BlockNN {
 }
 
 /// NN for centeral brain
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BrainNN {
     nn: BaseNN,
 }
