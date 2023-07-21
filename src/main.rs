@@ -14,6 +14,7 @@ use bevy_rapier2d::prelude::*;
 
 use blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder};
 use brain::resource::BevyBlockNeurons;
+// use consts::THREAD_COUNT;
 use contorl::{block_action, update_blob_info, update_joint_info};
 use graphics::*;
 use io::evoio::EvoIO;
@@ -29,6 +30,12 @@ fn main() {
         .add_plugins((
             // defualt
             DefaultPlugins,
+            // // set thread count
+            // DefaultPlugins.set(
+            //     TaskPoolPlugin{
+            //         task_pool_options: TaskPoolOptions::with_num_threads(THREAD_COUNT)
+            //     }
+            // ),
             // // no renderer
             // DefaultPlugins.set(RenderPlugin {
             //     wgpu_settings: WgpuSettings {
@@ -64,11 +71,11 @@ fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
 
-    // for i in -3..3 {
-    //     for j in -3..3 {
-    //         builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
-    //     }
-    // }
+    for i in -3..3 {
+        for j in -3..3 {
+            builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
+        }
+    }
 }
 
 fn test(q: Query<&BlobGeno>) {

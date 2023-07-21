@@ -2,6 +2,11 @@ use std::{f32::consts::PI, time::Duration};
 
 use crate::brain::nn::Activation;
 
+/// thread count
+/// 
+/// default is automatic
+pub const THREAD_COUNT:usize = 8;
+
 // timestep
 pub const RAPIER_DT: f32 = 1.0 / 60.0;
 pub const RAPIER_SUBSTEPS: usize = 1;
