@@ -1,4 +1,5 @@
 use std::f32::consts::PI;
+use std::time::Instant;
 
 use bevy::prelude::*;
 use bevy_rapier2d::{
@@ -37,6 +38,8 @@ pub fn block_action(
     p_anchor_q: Query<&ParentAnchor>,
     // mut joint_q: Query<&mut ImpulseJoint>
 ) {
+    let start_time = Instant::now();
+
     let mut signal_handler = SignalHandler::default();
 
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
@@ -130,7 +133,10 @@ pub fn block_action(
     //         .data
     //         .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
     // }
-
+    let duration = Instant::now() - start_time;
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+        println!("block_action: {:?}", duration);
+    }
 }
 
 // TODO: test preformance and change to `get_bulk_cf_events()` if necessary
@@ -191,6 +197,7 @@ pub fn update_joint_info(
     trans_q: Query<&Transform>,
     veloc_q: Query<&Velocity>,
 ) {
+    let start_time = Instant::now();
     for (parent, joint) in parent_joint_q.iter() {
         let parent_id = parent.get();
         let child_id = joint.parent;
@@ -214,6 +221,10 @@ pub fn update_joint_info(
             panic!("update joint info failed!")
         }
     }
+    let duration = Instant::now() - start_time;
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+        println!("update_joint_info: {:?}", duration);
+    }
 }
 
 fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32 {
@@ -230,6 +241,7 @@ pub fn update_blob_info(
     tc_q: Query<(&Transform, &Collider)>,
     mut blob_q: Query<(&mut BlobInfo, &Children)>,
 ) {
+    let start_time = Instant::now();
     for (mut blob, children) in blob_q.iter_mut() {
         let mut mass_vec = Vec::<[f32; 3]>::new();
         for child in children {
@@ -248,6 +260,10 @@ pub fn update_blob_info(
             new_mass_center[1] - blob.mass_center[1],
         ];
         blob.mass_center = new_mass_center;
+    }
+    let duration = Instant::now() - start_time;
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+        println!("update_blob_info: {:?}", duration);
     }
 }
 

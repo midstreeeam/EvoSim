@@ -1,10 +1,15 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, time::Duration};
 
 use crate::brain::nn::Activation;
 
 // timestep
 pub const RAPIER_DT: f32 = 1.0 / 60.0;
 pub const RAPIER_SUBSTEPS: usize = 1;
+
+// debug
+pub const PRINT_FUNCTION_TIME:bool = true;
+/// min time cost each frame to be print
+pub const MIN_PRINT_DURATION:Duration = Duration::from_micros(500);
 
 // scale world size
 pub const WORLD_WIDTH: f32 = 10000.0;
