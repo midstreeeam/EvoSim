@@ -7,6 +7,7 @@ mod consts;
 mod contorl;
 mod graphics;
 mod physics;
+mod io;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -15,6 +16,7 @@ use blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder};
 use brain::resource::BevyBlockNeurons;
 use contorl::{block_action, update_blob_info, update_joint_info};
 use graphics::*;
+use io::evoio::EvoIO;
 use physics::physical_world;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
@@ -44,6 +46,7 @@ fn main() {
             // cost
             physical_world::PhysiWorld,
             Graphics,
+            EvoIO
         ))
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
@@ -69,8 +72,8 @@ fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
 }
 
 fn test(q: Query<&BlobGeno>) {
-    for i in q.iter(){
-        println!("{:#?}",i);
+    for _ in q.iter(){
+        // println!("{:#?}",i);
     }
 }
 

@@ -13,13 +13,13 @@ use super::{
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum GenericNN {
     BLOCKNN(BlockNN),
     BRAINNN(BrainNN),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InwardNN {
     nn: BaseNN,
 }
@@ -35,7 +35,7 @@ impl Default for InwardNN {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OutwardNN {
     nn: BaseNN,
 }
@@ -55,7 +55,7 @@ impl Default for OutwardNN {
 ///
 /// Each block should have two independent neurons:
 /// InwardNN and OutwardNN
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BlockNN {
     pub inward_nn: InwardNN,
     pub outward_nn: OutwardNN,
@@ -102,7 +102,7 @@ impl BlockNN {
 }
 
 /// NN for centeral brain
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BrainNN {
     nn: BaseNN,
 }

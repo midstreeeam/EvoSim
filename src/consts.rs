@@ -75,3 +75,6 @@ pub const BRAIN_NN_SHAPE: [usize; 3] = [
 ///
 /// ReLU will make all output positive
 pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
+
+// io
+pub const EXPORT_PATH: &'static str = "./export/";

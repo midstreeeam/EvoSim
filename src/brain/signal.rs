@@ -236,7 +236,7 @@ impl InwardNNInputSignal {
 }
 
 /// Input singal for single outward `BlockNeuron`
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OutwardNNInputSignal {
     // // collision signal
     // collision_with_wall: bool,
