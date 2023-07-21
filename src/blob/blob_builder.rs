@@ -8,7 +8,7 @@ use crate::{
     consts::*,
 };
 
-use super::{blob::*, block::*};
+use super::{blob::*, block::*, geno_blob_builder::BlobGeno};
 
 #[derive(Debug)]
 pub struct BlobBlock {
@@ -73,13 +73,18 @@ impl<'a> BlobBuilder<'a> {
     ///
     /// Equvalent to drop the old builder and generate a new one
     ///
-    /// `nnvec` and `bnnvec` will be kept
+    /// `nnvec` will be kept
     pub fn clean(&mut self) -> &mut Self {
         self.blob_bundle = self.commands.spawn(BlobBundle::default()).id();
         self.blocks = Vec::new();
         self.current_pos = None;
         self.info = BlobInfo::default();
         self
+    }
+
+    /// send geno to blob so geno can be kept
+    pub fn update_geno(&mut self, geno: BlobGeno) {
+        self.commands.entity(self.blob_bundle).insert(geno);
     }
 
     /// move one step left from the current position

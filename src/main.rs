@@ -48,26 +48,31 @@ fn main() {
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
         // .add_systems(Update, res_test)
-        .add_systems(Update, (block_action, update_joint_info, update_blob_info))
+        .add_systems(Update, (
+            block_action, 
+            update_joint_info, 
+            update_blob_info,
+            test
+        ))
         .run();
 }
 
 fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    // builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
+    builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
 
-    for i in -3..3 {
-        for j in -3..3 {
-            builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
-        }
-    }
+    // for i in -3..3 {
+    //     for j in -3..3 {
+    //         builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
+    //     }
+    // }
 }
 
-// fn res_test(res: Res<BevyBlockNeurons>, block_q: Query<&NeuronId>) {
-//     for NeuronId { id, parent_id } in block_q.iter() {
-//         let _ = &res.nnvec[*id];
-//     }
-// }
+fn test(q: Query<&BlobGeno>) {
+    for i in q.iter(){
+        println!("{:#?}",i);
+    }
+}
 
 /// Generate 100 random blobs.
 /// Pressure test for Rapier

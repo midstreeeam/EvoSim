@@ -7,7 +7,7 @@ pub const RAPIER_DT: f32 = 1.0 / 60.0;
 pub const RAPIER_SUBSTEPS: usize = 1;
 
 // debug
-pub const PRINT_FUNCTION_TIME:bool = true;
+pub const PRINT_FUNCTION_TIME:bool = false;
 /// min time cost each frame to be print
 pub const MIN_PRINT_DURATION:Duration = Duration::from_micros(500);
 

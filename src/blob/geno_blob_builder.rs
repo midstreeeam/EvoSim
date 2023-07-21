@@ -93,6 +93,9 @@ impl<'a> GenoBlobBuilder<'a> {
             }
         }
 
+        // save geno to blob
+        self.builder.update_geno(geno.clone());
+
         // create first
         let builder = &mut self.builder;
         builder.create_first(
@@ -114,7 +117,7 @@ impl<'a> GenoBlobBuilder<'a> {
 /// The Geno for morphyology of the blob.
 /// The Geno is a QuadTree (it can be represented as TernaryTree as well).
 /// index 0,1,2,3 means up,down,left,right (one of them can be ParentIndicator)
-#[derive(Debug)]
+#[derive(Debug, Component, Clone)]
 pub struct BlobGeno {
     pub vec_tree: QuadTree<GenericGenoNode>,
 }
@@ -314,6 +317,7 @@ impl GenoNode {
 }
 
 /// QuadTree, Helper struct
+#[derive(Clone)]
 pub struct QuadTree<T> {
     pub nodes: Vec<Option<T>>,
     pub max_depth: u32,
