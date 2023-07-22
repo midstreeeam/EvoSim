@@ -13,7 +13,7 @@ use crate::{
 };
 
 #[derive(Serialize,Deserialize)]
-struct ExportFile{
+pub struct ExportFile{
     genovec: Vec<BlobGeno>,
     nnvec: Vec<Vec<GenericNN>>
 }

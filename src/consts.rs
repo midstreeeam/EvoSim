@@ -83,3 +83,5 @@ pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
+/// temperary
+pub const LOAD_FNAME: &'static str = "./export/2023-07-21T14-45-48.json";

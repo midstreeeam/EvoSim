@@ -57,19 +57,18 @@ fn main() {
         ))
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
-        // .add_systems(Update, res_test)
         .add_systems(Update, (
             block_action, 
             update_joint_info, 
             update_blob_info,
-            test
+            // test
         ))
         .run();
 }
 
 fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
+    // builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
 
     for i in -3..3 {
         for j in -3..3 {
