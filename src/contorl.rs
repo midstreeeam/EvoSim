@@ -38,10 +38,15 @@ pub fn block_action(
     p_anchor_q: Query<&ParentAnchor>,
     // mut joint_q: Query<&mut ImpulseJoint>
 ) {
+
     let start_time = Instant::now();
 
-    let mut signal_handler = SignalHandler::default();
+    if block_q.is_empty() {
+        assert!(brain_q.is_empty());
+        return
+    }
 
+    let mut signal_handler = SignalHandler::default();
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
     // push inward
