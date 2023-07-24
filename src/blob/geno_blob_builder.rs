@@ -426,6 +426,19 @@ impl<T> QuadTree<T> {
             }
         }
     }
+
+    pub fn leaf_nodes(&self) -> Vec<usize> {
+        let mut result = Vec::new();
+        for i in 0..self.nodes.len() {
+            if self.nodes[i].is_some() && self.children(i).iter().all(
+                |&child_idx| 
+                child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
+            ) {
+                result.push(i);
+            }
+        }
+        result
+    }
 }
 
 impl<T: Debug> Debug for QuadTree<T> {
