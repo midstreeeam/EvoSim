@@ -66,12 +66,12 @@ fn main() {
         .run();
 }
 
-fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
+pub fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     // builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
 
-    for i in -3..3 {
-        for j in -3..3 {
+    for i in -2..2 {
+        for j in -2..2 {
             builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
         }
     }

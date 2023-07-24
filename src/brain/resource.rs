@@ -78,6 +78,11 @@ impl BevyBlockNeurons {
             len
         ]
     }
+
+    /// drop all the values inside
+    pub fn clear(&mut self) {
+        self.nnvec.clear();
+    }
 }
 
 /// Pass the signal from the leaf to the root layer by layer
