@@ -55,6 +55,7 @@ impl BlobInfo {
     }
 }
 
+/// also contains blobgeno, but been added in `BlobBuilder::update_geno` function
 #[derive(Bundle)]
 pub struct BlobBundle {
     // flag
