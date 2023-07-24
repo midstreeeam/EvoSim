@@ -282,6 +282,55 @@ impl BlobGeno {
             GenericGenoNode::Child(child) => Some(child),
         })
     }
+
+    /// The genotype is valid or not.
+    /// 
+    /// Not valid means self-conflit limbs
+    pub fn is_valid(&self) -> bool {
+        let mut occupied_region: Vec<[f32; 4]> = Vec::new();
+
+        fn is_overlapped(
+            center: [f32; 2],
+            size: [f32; 2],
+            occupied_region: &mut Vec<[f32; 4]>,
+        ) -> bool {
+            let x_min = center[0] - size[0];
+            let x_max = center[0] + size[0];
+            let y_min = center[1] - size[1];
+            let y_max = center[1] + size[1];
+
+            for region in occupied_region.iter() {
+                let x_overlap = x_min <= region[1] && x_max >= region[0];
+                let y_overlap = y_min <= region[3] && y_max >= region[2];
+                if x_overlap && y_overlap {
+                    occupied_region.push([x_min, x_max, y_min, y_max]);
+                    return true;
+                }
+            }
+            occupied_region.push([x_min, x_max, y_min, y_max]);
+            return false;
+        }
+
+        /// recursively add to `occupied_region`
+        fn check (
+            tree: &QuadTree<GenericGenoNode>,
+            mut occupied_region: &mut Vec<[f32; 4]>,
+            idx: usize
+        ) -> bool {
+            if let Some(Some(GenericGenoNode::Child(cur))) = tree.nodes.get(idx) {
+                if !is_overlapped(cur.center, cur.size, &mut occupied_region) {
+                    tree.children(idx).iter().all(|&i| check(tree, occupied_region, i))
+                } else {
+                    false
+                }
+            } else {
+                true
+            }
+        }
+
+        check(&self.vec_tree, &mut occupied_region, 0)
+
+    }
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
@@ -311,7 +360,7 @@ impl Default for GenoNode {
 }
 
 impl GenoNode {
-    /// generate [`PhysiBlockBundle`] from GenoNode
+    /// generate `PhysiBlockBundle` from GenoNode
     fn to_bundle(&self, center: [f32; 2]) -> PhysiBlockBundle {
         PhysiBlockBundle::from_xy_dx_dy(center[0], center[1], self.size[0], self.size[1])
     }
