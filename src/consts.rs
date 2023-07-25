@@ -33,6 +33,7 @@ pub const MAX_MOTOR_VEL_ABS: f32 = 1.0;
 
 // math
 pub const EPSILON: f32 = 0.0001; // max error
+pub const POSITION_EPSILON: f32 = 0.001; // max eorror in position validation
 
 // physics
 pub const DRAG_COEFF: f32 = 1.0; // drag coefficient in fluid simulation
@@ -86,10 +87,10 @@ pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 /// 
 /// if the tree structure is going to mutate, maximumly 1 node will mutate
 /// since single node blob can't lose a node anymore
-pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.01;
+pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 1.0;
 /// probablity for the choosen node to gain a child node,
 /// otherwise the blob gonna lose a limb
-pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
+pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.0;
 /// max times to retry to add a new limb if last one cause self-conflict
 /// 
 /// condition of impossible new limb exist (the parent indicator was dropped)

@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use rand::prelude::*;
 
-use crate::{blob::geno_blob_builder::{BlobGeno, GenoNode, GenericGenoNode}, consts::{MUTATE_TREE_STRUCTURE_PROB, MUTATE_GAIN_LIMB_PROB, DEFAULT_BLOCK_SIZE, RAND_SIZE_SCALER}};
+use crate::{blob::geno_blob_builder::{BlobGeno, GenoNode, GenericGenoNode}, consts::{MUTATE_TREE_STRUCTURE_PROB, MUTATE_GAIN_LIMB_PROB, DEFAULT_BLOCK_SIZE, RAND_SIZE_SCALER, MUTATE_GAIN_LIMB_MAX_TRY}};
 
 pub fn mutate_geno (
     geno_q: Query<&mut BlobGeno>
@@ -22,13 +22,22 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
     if rng.gen_bool(MUTATE_GAIN_LIMB_PROB as f64) {
         // gain limb
         let mut candidates = geno.vec_tree.branch_nodes();
+        // println!("{:?}",candidates);
         if candidates.is_empty() {
             // the root is leaf, add it to candidates
             candidates.push(0);
         }
-        if let Some(idx) = candidates.iter().choose(&mut rand::thread_rng()) {
-            gain_limb(geno, *idx);
+
+        for _ in 0..MUTATE_GAIN_LIMB_MAX_TRY {
+            if let Some(idx) = candidates.iter().choose(&mut rand::thread_rng()) {
+                // loop till get validate limb
+                if gain_limb(geno, *idx) {
+                    break;
+                }
+            }
         }
+
+
     } else {
         // TODO: it is better not lose parent indicator, which might cause self-confilt if a node
         // without parent indicator gain four limbs
@@ -65,7 +74,12 @@ fn gain_limb(geno: &mut BlobGeno, idx: usize) -> bool {
     if let Some(Some(GenericGenoNode::Child(parent))) = geno.vec_tree.nodes.get(idx) {
         // TODO: new nodes should also have parent indicator
         geno.vec_tree.nodes[choosen.1] = Some(new_rand_node(parent,choosen.0));
-        return geno.is_valid()
+        if geno.is_valid() {
+            return true
+        } else {
+            geno.vec_tree.nodes[choosen.1] = None;
+            return false
+        }
     } else {
         false
     }
