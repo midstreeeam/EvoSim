@@ -43,7 +43,8 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
         // without parent indicator gain four limbs
         //
         // lose limb
-        let candidates = geno.vec_tree.leaf_nodes();
+        let candidates = geno.leaf_nodes();
+        // println!("{:?}",candidates);
         if candidates.is_empty() {
             // the only leaf is root, which cannot lose limb
             return;
@@ -153,7 +154,8 @@ fn new_rand_node(
 
 /// drop the indexed node
 fn lose_limb(geno: &mut BlobGeno, idx:usize) {
-    geno.vec_tree.nodes[idx] = None;
+    geno.vec_tree.clean_subtree(idx);
+    // geno.vec_tree.nodes[idx] = None;
 }
 
 pub fn mutate_block_size (geno: &BlobGeno) {

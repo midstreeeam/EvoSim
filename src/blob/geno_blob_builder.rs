@@ -336,6 +336,31 @@ impl BlobGeno {
         check(&self.vec_tree, &mut occupied_region, 0)
 
     }
+
+
+    /// all nodes don't have child, used for mutate to lose limb
+    /// 
+    /// can not return root, can not return parent indicator
+    pub fn leaf_nodes(&self) -> Vec<usize> {
+        let mut result = Vec::new();
+        for i in 1..self.vec_tree.nodes.len() {
+            if let Some(GenericGenoNode::Parent) = self.vec_tree.nodes[i] {
+                continue; // Skip if the node is of type GenericGenoNode::Parent
+            }
+            if self.vec_tree.nodes[i].is_some() && self.vec_tree.children(i).iter().all(
+                |&child_idx| 
+                child_idx >= self.vec_tree.nodes.len() || 
+                self.vec_tree.nodes[child_idx].is_none() || 
+                matches!(
+                    self.vec_tree.nodes[child_idx], 
+                    Some(GenericGenoNode::Parent)
+                )
+            ) {
+                result.push(i);
+            }
+        }
+        result
+    }
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
@@ -430,22 +455,6 @@ impl<T> QuadTree<T> {
                 self.clean_subtree(child_index);
             }
         }
-    }
-
-    /// all nodes don't have child, using for mutate to lose limb
-    /// 
-    /// can not return root
-    pub fn leaf_nodes(&self) -> Vec<usize> {
-        let mut result = Vec::new();
-        for i in 1..self.nodes.len() {
-            if self.nodes[i].is_some() && self.children(i).iter().all(
-                |&child_idx| 
-                child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
-            ) {
-                result.push(i);
-            }
-        }
-        result
     }
 
     /// all nodes have at least one `none` child, using for mutate to gain limb
