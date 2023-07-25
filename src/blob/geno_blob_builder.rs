@@ -25,39 +25,42 @@ impl<'a> GenoBlobBuilder<'a> {
     }
 
     /// generate blob according to its genotype
-    pub fn build(&mut self, geno: &BlobGeno, center: [f32; 2]) {
+    pub fn build(&mut self, geno: &mut BlobGeno, center: [f32; 2]) {
         // Lambda function to use in child extraction
-        fn lambda(node: &Option<GenericGenoNode>) -> Option<&GenoNode> {
-            node.as_ref().and_then(|node| match node {
+        fn lambda(node: &mut Option<GenericGenoNode>) -> Option<&mut GenoNode> {
+            node.as_mut().and_then(|node| match node {
                 GenericGenoNode::Parent => None,
                 GenericGenoNode::Child(child) => Some(child),
             })
         }
 
-        fn build_node(builder: &mut BlobBuilder, tree: &QuadTree<GenericGenoNode>, index: usize) {
-            if let Some(Some(_)) = tree.nodes.get(index) {
+        fn build_node(builder: &mut BlobBuilder, tree: &mut QuadTree<GenericGenoNode>, index: usize) {
+            if let Some(Some(_)) = tree.nodes.get_mut(index) {
                 let children = tree.children(index);
-                let (top_child, bottom_child, left_child, right_child) = (
-                    tree.nodes.get(children[0]).and_then(lambda),
-                    tree.nodes.get(children[1]).and_then(lambda),
-                    tree.nodes.get(children[2]).and_then(lambda),
-                    tree.nodes.get(children[3]).and_then(lambda),
-                );
+                // let (top_child, bottom_child, left_child, right_child) = (
+                //     tree.nodes.get(children[0]).and_then(lambda),
+                //     tree.nodes.get(children[1]).and_then(lambda),
+                //     tree.nodes.get(children[2]).and_then(lambda),
+                //     tree.nodes.get(children[3]).and_then(lambda),
+                // );
 
-                if let Some(node) = top_child {
-                    builder.add_to_top(
+                // top
+                if let Some(mut node) = tree.nodes.get_mut(children[0]).and_then(lambda) {
+                    node.nn_id = builder.add_to_top(
                         node.size[0],
                         node.size[1],
                         None,
                         Some(node.joint_limits),
                         (),
                     );
+                    
                     build_node(builder, tree, children[0]);
                     builder.bottom();
                 }
 
-                if let Some(node) = bottom_child {
-                    builder.add_to_bottom(
+                // bottom
+                if let Some(mut node) = tree.nodes.get_mut(children[1]).and_then(lambda) {
+                    node.nn_id = builder.add_to_bottom(
                         node.size[0],
                         node.size[1],
                         None,
@@ -68,8 +71,9 @@ impl<'a> GenoBlobBuilder<'a> {
                     builder.top();
                 }
 
-                if let Some(node) = left_child {
-                    builder.add_to_left(
+                // left
+                if let Some(node) = tree.nodes.get_mut(children[2]).and_then(lambda) {
+                    node.nn_id = builder.add_to_left(
                         node.size[0],
                         node.size[1],
                         None,
@@ -80,8 +84,9 @@ impl<'a> GenoBlobBuilder<'a> {
                     builder.right();
                 }
 
-                if let Some(node) = right_child {
-                    builder.add_to_right(
+                // right
+                if let Some(node) = tree.nodes.get_mut(children[3]).and_then(lambda) {
+                    node.nn_id = builder.add_to_right(
                         node.size[0],
                         node.size[1],
                         None,
@@ -99,16 +104,17 @@ impl<'a> GenoBlobBuilder<'a> {
 
         // create first
         let builder = &mut self.builder;
-        builder.create_first(
+        geno.assign_nn_id_to_root(
+            builder.create_first(
             geno.get_first()
                 .unwrap()
                 .to_bundle(center)
                 .with_color(Color::BLUE),
-            (),
+            (),).unwrap()
         );
 
         // start recursion
-        build_node(&mut self.builder, &geno.vec_tree, 0);
+        build_node(&mut self.builder, &mut geno.vec_tree, 0);
 
         // reset builder
         self.builder.clean();
@@ -228,6 +234,7 @@ impl BlobGeno {
                         joint_limits,
                         size,
                         center,
+                        nn_id: None
                     }));
                 }
             };
@@ -361,6 +368,14 @@ impl BlobGeno {
         }
         result
     }
+
+    pub fn assign_nn_id_to_root(&mut self, id: usize) {
+        if let Some(Some(GenericGenoNode::Child(node))) = self.vec_tree.nodes.get_mut(0) {
+            node.nn_id = Some(id);
+        } else {
+            panic!()
+        }
+    }
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
@@ -377,6 +392,7 @@ pub struct GenoNode {
     pub joint_limits: [f32; 2],
     pub size: [f32; 2],
     pub center: [f32; 2],
+    pub nn_id: Option<usize>,
 }
 
 impl Default for GenoNode {
@@ -385,11 +401,20 @@ impl Default for GenoNode {
             joint_limits: [-PI, PI],
             size: DEFAULT_BLOCK_SIZE,
             center: [0.0, 0.0],
+            nn_id: None
         }
     }
 }
 
 impl GenoNode {
+    pub fn from_nn_id(nn_id: usize) -> Self {
+        Self {
+            joint_limits: [-PI, PI],
+            size: DEFAULT_BLOCK_SIZE,
+            center: [0.0, 0.0],
+            nn_id: Some(nn_id)
+        }
+    }
     /// generate `PhysiBlockBundle` from GenoNode
     fn to_bundle(&self, center: [f32; 2]) -> PhysiBlockBundle {
         PhysiBlockBundle::from_xy_dx_dy(center[0], center[1], self.size[0], self.size[1])

@@ -158,7 +158,7 @@ impl<'a> BlobBuilder<'a> {
         &mut self,
         phy_block_bundle: PhysiBlockBundle,
         others: T,
-    ) -> &mut Self {
+    ) -> Option<usize> {
         let nn = BrainNN::default();
         self.nnvec.push(GenericNN::BRAINNN(nn));
         // push first so the real id should minus one
@@ -202,7 +202,7 @@ impl<'a> BlobBuilder<'a> {
         self.blocks.push(block);
         self.current_pos = Some(0);
 
-        self
+        Some(nn_id)
     }
 
     /// add a new block to the left of the current block and move the current position to that block
@@ -213,17 +213,17 @@ impl<'a> BlobBuilder<'a> {
         motor_pos: Option<f32>,
         motor_limits: Option<[f32; 2]>,
         others: T,
-    ) -> &mut Self {
+    ) -> Option<usize> {
         if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
-            return self;
+            return None;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
         if block.left.is_some() {
             warn!("trying to add a block to an occupied position");
-            return self;
+            return None;
         }
 
         let nn = BlockNN::default();
@@ -295,7 +295,7 @@ impl<'a> BlobBuilder<'a> {
             .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
-        self
+        Some(nn_id)
     }
 
     /// add a new block to the right of the current block and move the current position to that block
@@ -306,17 +306,17 @@ impl<'a> BlobBuilder<'a> {
         motor_pos: Option<f32>,
         motor_limits: Option<[f32; 2]>,
         others: T,
-    ) -> &mut Self {
+    ) -> Option<usize> {
         if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
-            return self;
+            return None;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
         if block.right.is_some() {
             warn!("trying to add a block to an occupied position");
-            return self;
+            return None;
         }
 
         let nn = BlockNN::default();
@@ -388,7 +388,7 @@ impl<'a> BlobBuilder<'a> {
             .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
-        self
+        Some(nn_id)
     }
 
     /// add a new block to the top of the current block and move the current position to that block
@@ -399,17 +399,17 @@ impl<'a> BlobBuilder<'a> {
         motor_pos: Option<f32>,
         motor_limits: Option<[f32; 2]>,
         others: T,
-    ) -> &mut Self {
+    ) -> Option<usize> {
         if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
-            return self;
+            return None;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
         if block.top.is_some() {
             warn!("trying to add a block to an occupied position");
-            return self;
+            return None;
         }
 
         let nn = BlockNN::default();
@@ -481,7 +481,7 @@ impl<'a> BlobBuilder<'a> {
             .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
-        self
+        Some(nn_id)
     }
 
     /// add a new block to the bottom of the current block and move the current position to that block
@@ -492,17 +492,17 @@ impl<'a> BlobBuilder<'a> {
         motor_pos: Option<f32>,
         motor_limits: Option<[f32; 2]>,
         others: T,
-    ) -> &mut Self {
+    ) -> Option<usize> {
         if self.current_pos.is_none() {
             warn!("trying to add a block while no parent block exist");
-            return self;
+            return None;
         }
         let pos = self.current_pos.unwrap();
         let block = &mut self.blocks[pos];
 
         if block.bottom.is_some() {
             warn!("trying to add a block to an occupied position");
-            return self;
+            return None;
         }
 
         let nn = BlockNN::default();
@@ -574,7 +574,7 @@ impl<'a> BlobBuilder<'a> {
             .push_children(&[new_block.id]);
         self.blocks.push(new_block);
 
-        self
+        Some(nn_id)
     }
 
     /// update info inside the blob_bundle

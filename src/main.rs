@@ -20,6 +20,7 @@ use contorl::{block_action, update_blob_info, update_joint_info};
 use graphics::*;
 use io::evoio::EvoIO;
 use physics::physical_world;
+use mutate::mutate::MutatePlugin;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
@@ -55,6 +56,7 @@ fn main() {
             physical_world::PhysiWorld,
             Graphics,
             EvoIO,
+            MutatePlugin
         ))
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
@@ -72,7 +74,9 @@ fn main() {
 
 pub fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    builder.build(&BlobGeno::new_rand(), [0.0, 0.0]);
+    let mut geno = BlobGeno::new_rand();
+    builder.build(&mut geno, [0.0, 0.0]);
+    println!("{:#?}",geno);
 
     // for i in -2..2 {
     //     for j in -2..2 {
@@ -93,7 +97,7 @@ fn pressure_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     for i in -5..5 {
         for j in -5..5 {
-            builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
+            builder.build(&mut BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
         }
     }
 }

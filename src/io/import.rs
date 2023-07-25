@@ -78,11 +78,11 @@ pub fn clean(
 
 /// ignore and overwrite all blobs and NNs that exist
 /// despawn all the entities except wall
-fn overwrite(ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons) {
+fn overwrite(mut ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbn.nnvec);
 
     // build loaded blobs
-    for (geno, pos, _nnvec) in ef.iter() {
+    for (geno, pos, _nnvec) in ef.iter_mut() {
         builder.build(geno, *pos)
     }
 

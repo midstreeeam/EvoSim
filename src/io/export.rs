@@ -61,6 +61,14 @@ impl ExportFile {
         }
     }
 
+    pub fn iter_mut(&mut self) -> ExportFileIterMut {
+        ExportFileIterMut { 
+            geno_iter: self.genovec.iter_mut(), 
+            nn_iter: self.nnvec.iter_mut(), 
+            pos_iter: self.posvec.iter_mut()
+        }
+    }
+
     pub fn check(&self) {
         assert_eq!(self.genovec.len(),self.nnvec.len());
         assert_eq!(self.genovec.len(),self.posvec.len());
@@ -82,6 +90,23 @@ pub struct ExportFileIter<'a> {
 
 impl<'a> Iterator for ExportFileIter<'a> {
     type Item = (&'a BlobGeno, &'a [f32;2], &'a Vec<(GenericNN,usize)>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let geno = self.geno_iter.next()?;
+        let nn = self.nn_iter.next()?;
+        let pos = self.pos_iter.next()?;
+        Some((geno, pos, nn))
+    }
+}
+
+pub struct ExportFileIterMut<'a> {
+    geno_iter: std::slice::IterMut<'a, BlobGeno>,
+    nn_iter: std::slice::IterMut<'a, Vec<(GenericNN,usize)>>,
+    pos_iter: std::slice::IterMut<'a, [f32;2]>,
+}
+
+impl<'a> Iterator for ExportFileIterMut<'a> {
+    type Item = (&'a mut BlobGeno, &'a mut [f32;2], &'a mut Vec<(GenericNN,usize)>);
 
     fn next(&mut self) -> Option<Self::Item> {
         let geno = self.geno_iter.next()?;
