@@ -344,9 +344,9 @@ pub enum GenericGenoNode {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GenoNode {
-    joint_limits: [f32; 2],
-    size: [f32; 2],
-    center: [f32; 2],
+    pub joint_limits: [f32; 2],
+    pub size: [f32; 2],
+    pub center: [f32; 2],
 }
 
 impl Default for GenoNode {
@@ -427,10 +427,27 @@ impl<T> QuadTree<T> {
         }
     }
 
+    /// all nodes don't have child, using for mutate to lose limb
+    /// 
+    /// can not return root
     pub fn leaf_nodes(&self) -> Vec<usize> {
         let mut result = Vec::new();
-        for i in 0..self.nodes.len() {
+        for i in 1..self.nodes.len() {
             if self.nodes[i].is_some() && self.children(i).iter().all(
+                |&child_idx| 
+                child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
+            ) {
+                result.push(i);
+            }
+        }
+        result
+    }
+
+    /// all nodes have at least one `none` child, using for mutate to gain limb
+    pub fn branch_nodes(&self) -> Vec<usize> {
+        let mut result = Vec::new();
+        for i in 0..self.nodes.len() {
+            if self.nodes[i].is_some() && self.children(i).iter().any(
                 |&child_idx| 
                 child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
             ) {

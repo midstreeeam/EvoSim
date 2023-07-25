@@ -81,6 +81,20 @@ pub const BRAIN_NN_SHAPE: [usize; 3] = [
 /// ReLU will make all output positive
 pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 
+// mutate
+/// probablity of having tree structure mutate
+/// 
+/// if the tree structure is going to mutate, maximumly 1 node will mutate
+/// since single node blob can't lose a node anymore
+pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.01;
+/// probablity for the choosen node to gain a child node,
+/// otherwise the blob gonna lose a limb
+pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
+/// max times to retry to add a new limb if last one cause self-conflict
+/// 
+/// condition of impossible new limb exist (the parent indicator was dropped)
+pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
+
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
 /// temperary
