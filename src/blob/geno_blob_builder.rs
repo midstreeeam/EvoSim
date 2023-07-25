@@ -120,9 +120,6 @@ impl<'a> GenoBlobBuilder<'a> {
             }
         }
 
-        // save geno to blob
-        self.builder.update_geno(geno.clone());
-
         // create first
         let builder = &mut self.builder;
         geno.assign_nn_id_to_root(
@@ -136,6 +133,9 @@ impl<'a> GenoBlobBuilder<'a> {
 
         // start recursion
         build_node(&mut self.builder, &mut geno.vec_tree, 0);
+
+        // save geno to blob
+        self.builder.update_geno(geno.clone());
 
         // reset builder
         self.builder.clean();

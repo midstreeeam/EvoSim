@@ -99,4 +99,4 @@ pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
 /// temperary
-pub const LOAD_FNAME: &'static str = "./export/2023-07-24T11-42-27.json";
+pub const LOAD_FNAME: &'static str = "./export/2023-07-25T15-28-56.json";

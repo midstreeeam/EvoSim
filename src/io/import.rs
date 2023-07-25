@@ -83,8 +83,11 @@ fn overwrite(mut ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons)
 
     // build loaded blobs
     for (geno, pos, _nnvec) in ef.iter_mut() {
-        builder.build(geno, *pos)
+        // println!("{:#?}",geno);
+        builder.build(geno, *pos);
+        // println!("\n{:#?}",geno);
     }
+
 
     // set resource
     bbn.nnvec = ef.flatten_nnvec();
