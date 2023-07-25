@@ -46,13 +46,19 @@ impl<'a> GenoBlobBuilder<'a> {
 
                 // top
                 if let Some(mut node) = tree.nodes.get_mut(children[0]).and_then(lambda) {
-                    node.nn_id = builder.add_to_top(
+                    let nn_id = builder.add_to_top(
                         node.size[0],
                         node.size[1],
                         None,
                         Some(node.joint_limits),
                         (),
                     );
+
+                    // don't overwrite nn_id if it is not None
+                    // which means they have already had bounded NN
+                    if node.nn_id.is_none() {
+                        node.nn_id = nn_id
+                    }
                     
                     build_node(builder, tree, children[0]);
                     builder.bottom();
@@ -60,39 +66,54 @@ impl<'a> GenoBlobBuilder<'a> {
 
                 // bottom
                 if let Some(mut node) = tree.nodes.get_mut(children[1]).and_then(lambda) {
-                    node.nn_id = builder.add_to_bottom(
+                    let nn_id = builder.add_to_bottom(
                         node.size[0],
                         node.size[1],
                         None,
                         Some(node.joint_limits),
                         (),
                     );
+
+                    if node.nn_id.is_none() {
+                        node.nn_id = nn_id
+                    }
+
                     build_node(builder, tree, children[1]);
                     builder.top();
                 }
 
                 // left
                 if let Some(node) = tree.nodes.get_mut(children[2]).and_then(lambda) {
-                    node.nn_id = builder.add_to_left(
+                    let nn_id = builder.add_to_left(
                         node.size[0],
                         node.size[1],
                         None,
                         Some(node.joint_limits),
                         (),
                     );
+
+                    if node.nn_id.is_none() {
+                        node.nn_id = nn_id
+                    }
+
                     build_node(builder, tree, children[2]);
                     builder.right();
                 }
 
                 // right
                 if let Some(node) = tree.nodes.get_mut(children[3]).and_then(lambda) {
-                    node.nn_id = builder.add_to_right(
+                    let nn_id = builder.add_to_right(
                         node.size[0],
                         node.size[1],
                         None,
                         Some(node.joint_limits),
                         (),
                     );
+
+                    if node.nn_id.is_none() {
+                        node.nn_id = nn_id
+                    }
+
                     build_node(builder, tree, children[3]);
                     builder.left();
                 }
@@ -371,7 +392,9 @@ impl BlobGeno {
 
     pub fn assign_nn_id_to_root(&mut self, id: usize) {
         if let Some(Some(GenericGenoNode::Child(node))) = self.vec_tree.nodes.get_mut(0) {
-            node.nn_id = Some(id);
+            if node.nn_id.is_none() {
+                node.nn_id = Some(id);
+            }
         } else {
             panic!()
         }
