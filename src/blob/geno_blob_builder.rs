@@ -287,7 +287,6 @@ impl BlobGeno {
     /// 
     /// Not valid means self-conflit limbs
     pub fn is_valid(&self) -> bool {
-        let mut occupied_region: Vec<[f32; 4]> = Vec::new();
 
         fn is_overlapped(
             center: [f32; 2],
@@ -299,9 +298,11 @@ impl BlobGeno {
             let y_min = center[1] - size[1];
             let y_max = center[1] + size[1];
 
+            // println!("{},{},{},{}",x_min,x_max,y_min,y_max);
+
             for region in occupied_region.iter() {
-                let x_overlap = x_min <= region[1] && x_max >= region[0];
-                let y_overlap = y_min <= region[3] && y_max >= region[2];
+                let x_overlap = x_min < region[1] - POSITION_EPSILON && x_max - POSITION_EPSILON > region[0];
+                let y_overlap = y_min < region[3] - POSITION_EPSILON && y_max - POSITION_EPSILON > region[2];
                 if x_overlap && y_overlap {
                     occupied_region.push([x_min, x_max, y_min, y_max]);
                     return true;
@@ -317,10 +318,13 @@ impl BlobGeno {
             mut occupied_region: &mut Vec<[f32; 4]>,
             idx: usize
         ) -> bool {
+            // println!("is_valid checking {}", idx);
+            // println!("occupied_region {:?}", occupied_region);
             if let Some(Some(GenericGenoNode::Child(cur))) = tree.nodes.get(idx) {
                 if !is_overlapped(cur.center, cur.size, &mut occupied_region) {
                     tree.children(idx).iter().all(|&i| check(tree, occupied_region, i))
                 } else {
+                    // println!("not valid {}", idx);
                     false
                 }
             } else {
@@ -328,6 +332,7 @@ impl BlobGeno {
             }
         }
 
+        let mut occupied_region: Vec<[f32; 4]> = Vec::new();
         check(&self.vec_tree, &mut occupied_region, 0)
 
     }
@@ -375,7 +380,7 @@ pub struct QuadTree<T> {
 
 impl<T> QuadTree<T> {
     pub fn new(max_depth: u32) -> Self {
-        let capacity = usize::pow(4, max_depth);
+        let capacity = usize::pow(4, max_depth)+1;
         let nodes = (0..capacity).map(|_| None).collect();
         Self { max_depth, nodes }
     }
@@ -447,10 +452,12 @@ impl<T> QuadTree<T> {
     pub fn branch_nodes(&self) -> Vec<usize> {
         let mut result = Vec::new();
         for i in 0..self.nodes.len() {
-            if self.nodes[i].is_some() && self.children(i).iter().any(
-                |&child_idx| 
-                child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
-            ) {
+            if self.nodes[i].is_some() 
+                && self.depth(i) < self.max_depth - 1 // Ensure the node is not at the last layer
+                && self.children(i).iter().any(
+                    |&child_idx| 
+                    child_idx >= self.nodes.len() || self.nodes[child_idx].is_none()
+                ) {
                 result.push(i);
             }
         }
@@ -483,5 +490,19 @@ impl<T: Debug> Debug for QuadTree<T> {
         writeln!(f, "QuadTree {{")?;
         print_node(self, 0, "  ", f)?;
         writeln!(f, "}}")
+    }
+}
+
+
+#[cfg(test)]
+mod builder_validation_test {
+    use super::*;
+
+    #[test]
+    fn test_geno_builder_validation() {
+        for _ in 0..100 {
+            let geno = BlobGeno::new_rand();
+            assert!(geno.is_valid());
+        }
     }
 }
