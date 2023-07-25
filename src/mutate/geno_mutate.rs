@@ -6,9 +6,11 @@ use rand::prelude::*;
 use crate::{blob::geno_blob_builder::{BlobGeno, GenoNode, GenericGenoNode}, consts::{MUTATE_TREE_STRUCTURE_PROB, MUTATE_GAIN_LIMB_PROB, DEFAULT_BLOCK_SIZE, RAND_SIZE_SCALER, MUTATE_GAIN_LIMB_MAX_TRY}};
 
 pub fn mutate_geno (
-    geno_q: Query<&mut BlobGeno>
+    mut geno_q: Query<&mut BlobGeno>
 ) {
-
+    for mut geno in geno_q.iter_mut(){
+        mutate_tree_structure(&mut geno);
+    }
 }
 
 /// gain or lose limbs
@@ -149,9 +151,12 @@ fn new_rand_node(
         joint_limits,
         size,
         center,
+        nn_id: None
     });
 }
 
+// TODO: lose limb means an NN is dead, 
+// need to be delete and can not influcen other NN's index
 /// drop the indexed node
 fn lose_limb(geno: &mut BlobGeno, idx:usize) {
     geno.vec_tree.clean_subtree(idx);

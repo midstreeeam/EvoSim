@@ -399,6 +399,29 @@ impl BlobGeno {
             panic!()
         }
     }
+
+    pub fn all_nn_ids_mut(&mut self) -> Vec<&mut Option<usize>> {
+        self.vec_tree.nodes.iter_mut()
+            .filter_map(|node_option| {
+                match node_option {
+                    Some(GenericGenoNode::Child(child_node)) => Some(&mut child_node.nn_id),
+                    _ => None,
+                }
+            })
+            .collect()
+    }
+
+    pub fn all_nn_ids_indices(&self) -> Vec<usize> {
+        self.vec_tree.nodes.iter().enumerate()
+            .filter_map(|(idx, node_option)| {
+                match node_option {
+                    Some(GenericGenoNode::Child(_)) => Some(idx),
+                    _ => None,
+                }
+            })
+            .collect()
+    }
+
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
