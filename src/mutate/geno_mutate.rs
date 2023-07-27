@@ -26,10 +26,8 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
     }
 
     if rng.gen_bool(MUTATE_GAIN_LIMB_PROB as f64) {
-        println!("gainlimb");
         // gain limb
         let mut candidates = geno.vec_tree.branch_nodes();
-        // println!("{:?}",candidates);
         if candidates.is_empty() {
             // the root is leaf, add it to candidates
             candidates.push(0);
@@ -44,15 +42,14 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
             }
         }
     } else {
-        println!("loselimb");
         // TODO: it is better not lose parent indicator, which might cause self-confilt if a node
         // without parent indicator gain four limbs
         //
         // lose limb
         let candidates = geno.leaf_nodes();
-        // println!("{:?}",candidates);
-        if candidates.is_empty() {
+        if candidates.len() <= 1 {
             // the only leaf is root, which cannot lose limb
+            // or the root only have one limb left
             return;
         }
         if let Some(idx) = candidates.iter().choose(&mut rand::thread_rng()) {

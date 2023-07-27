@@ -31,10 +31,6 @@ pub fn refresh(
     collider_q: Query<Entity, (With<ColliderFlag>, Without<Wall>)>,
     joint_q: Query<Entity, With<ImpulseJoint>>,
 ) {
-
-    println!("=====================");
-    println!("{:#?}",geno_q.single());
-    println!("{:#?}",bbn.nnvec.len());
     mutate_geno(geno_q.iter_mut());
 
     let (genovec,nnvec) = sync_mutate(geno_q, &mut bbn);
@@ -54,8 +50,6 @@ pub fn refresh(
 
     // update nnvec
     bbn.nnvec = nnvec;
-
-    println!("{:#?}",bbn.nnvec.len());
 }
 
 // TODO: test & debug this function, haven't been tested after coded
@@ -116,8 +110,6 @@ fn sync_mutate(
             *option_id = Some(copied_id - count_smaller_gaps);
         }
     }
-
-    println!("{:#?}",geno_q.single());
 
     // copy geno
     (Vec::from_iter(geno_q.iter().cloned()),bbn.nnvec.clone())

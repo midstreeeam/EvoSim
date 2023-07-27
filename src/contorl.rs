@@ -14,7 +14,7 @@ use crate::{
     },
     brain::{
         resource::BevyBlockNeurons,
-        signal::{BrainSignal, InwardNNInputSignal, SignalHandler},
+        signal::{BrainSignal, InwardNNInputSignal, SignalHandler}, self,
     },
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
@@ -38,7 +38,6 @@ pub fn block_action(
     p_anchor_q: Query<&ParentAnchor>,
     // mut joint_q: Query<&mut ImpulseJoint>
 ) {
-
     let start_time = Instant::now();
 
     if block_q.is_empty() {
@@ -46,10 +45,14 @@ pub fn block_action(
         return
     }
 
+    if brain_q.is_empty() {
+        assert!(block_q.is_empty());
+        return
+    }
+
     let mut signal_handler = SignalHandler::default();
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
-    println!("block_q len = {}",block_q.iter().len());
     // push inward
     for (child, parent, joint) in block_q.iter_mut() {
         let entity_id = parent.get();
