@@ -49,6 +49,7 @@ pub fn block_action(
     let mut signal_handler = SignalHandler::default();
     let mut cf_events_vec = Vec::from_iter(cf_events.into_iter().cloned());
 
+    println!("block_q len = {}",block_q.iter().len());
     // push inward
     for (child, parent, joint) in block_q.iter_mut() {
         let entity_id = parent.get();

@@ -1,14 +1,18 @@
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, ecs::query::QueryIter};
 use rand::prelude::*;
 
-use crate::{blob::geno_blob_builder::{BlobGeno, GenoNode, GenericGenoNode}, consts::{MUTATE_TREE_STRUCTURE_PROB, MUTATE_GAIN_LIMB_PROB, DEFAULT_BLOCK_SIZE, RAND_SIZE_SCALER, MUTATE_GAIN_LIMB_MAX_TRY}};
+use crate::{
+    blob::geno_blob_builder::{BlobGeno, GenericGenoNode, GenoNode, self},
+    consts::{
+        DEFAULT_BLOCK_SIZE, MUTATE_GAIN_LIMB_MAX_TRY, MUTATE_GAIN_LIMB_PROB,
+        MUTATE_TREE_STRUCTURE_PROB, RAND_SIZE_SCALER,
+    },
+};
 
-pub fn mutate_geno (
-    mut geno_q: Query<&mut BlobGeno>
-) {
-    for mut geno in geno_q.iter_mut(){
+pub fn mutate_geno(geno_q: QueryIter<'_, '_, &mut geno_blob_builder::BlobGeno, ()>) {
+    for mut geno in geno_q {
         mutate_tree_structure(&mut geno);
     }
 }
@@ -16,12 +20,13 @@ pub fn mutate_geno (
 /// gain or lose limbs
 pub fn mutate_tree_structure(geno: &mut BlobGeno) {
     let mut rng = thread_rng();
-    
+
     if !rng.gen_bool(MUTATE_TREE_STRUCTURE_PROB as f64) {
         return;
     }
 
     if rng.gen_bool(MUTATE_GAIN_LIMB_PROB as f64) {
+        println!("gainlimb");
         // gain limb
         let mut candidates = geno.vec_tree.branch_nodes();
         // println!("{:?}",candidates);
@@ -38,9 +43,8 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
                 }
             }
         }
-
-
     } else {
+        println!("loselimb");
         // TODO: it is better not lose parent indicator, which might cause self-confilt if a node
         // without parent indicator gain four limbs
         //
@@ -57,41 +61,39 @@ pub fn mutate_tree_structure(geno: &mut BlobGeno) {
     }
 }
 
-
 /// gain a new limb as the child of the index node
 /// return type means success or fail
 fn gain_limb(geno: &mut BlobGeno, idx: usize) -> bool {
     // direction and index of node
     // slots are nodes has `none` as value
-    let slots: Vec<(usize,usize)> = geno.vec_tree.children(idx)
+    let slots: Vec<(usize, usize)> = geno
+        .vec_tree
+        .children(idx)
         .iter()
         .enumerate()
-        .filter(|&(_,&child_idx)| geno.vec_tree.nodes[child_idx].is_none())
+        .filter(|&(_, &child_idx)| geno.vec_tree.nodes[child_idx].is_none())
         .map(|(index, &child_idx)| (index, child_idx))
         .collect();
 
     if slots.is_empty() {
-        return false
+        return false;
     }
     let choosen = *slots.iter().choose(&mut rand::thread_rng()).unwrap();
     if let Some(Some(GenericGenoNode::Child(parent))) = geno.vec_tree.nodes.get(idx) {
         // TODO: new nodes should also have parent indicator
-        geno.vec_tree.nodes[choosen.1] = Some(new_rand_node(parent,choosen.0));
+        geno.vec_tree.nodes[choosen.1] = Some(new_rand_node(parent, choosen.0));
         if geno.is_valid() {
-            return true
+            return true;
         } else {
             geno.vec_tree.nodes[choosen.1] = None;
-            return false
+            return false;
         }
     } else {
         false
     }
 }
 
-fn new_rand_node(
-    parent: &GenoNode,
-    direction: usize
-) -> GenericGenoNode{
+fn new_rand_node(parent: &GenoNode, direction: usize) -> GenericGenoNode {
     let mut rng = thread_rng();
 
     let parent_size = parent.size;
@@ -100,28 +102,18 @@ fn new_rand_node(
     // set limitation
     // limitation can only avoid block conflict
     // it can not avoid conflict caused by tree structure
-    let dx_dy_limits_top_bottom =
-        [parent_size[0], DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1]];
-    let dx_dy_limits_left_right =
-        [DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1], parent_size[1]];
+    let dx_dy_limits_top_bottom = [parent_size[0], DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1]];
+    let dx_dy_limits_left_right = [DEFAULT_BLOCK_SIZE[0] * RAND_SIZE_SCALER[1], parent_size[1]];
 
     let joint_limits = [rng.gen_range(-PI * 0.9..0.0), rng.gen_range(0.0..PI * 0.9)];
     let mut size = [
-        rng.gen_range(
-            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0],
-        ),
-        rng.gen_range(
-            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_top_bottom[1],
-        ),
+        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_top_bottom[0]),
+        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_top_bottom[1]),
     ];
     if direction == 2 || direction == 3 {
         size = [
-            rng.gen_range(
-                RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_left_right[0],
-            ),
-            rng.gen_range(
-                RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_left_right[1],
-            ),
+            rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..dx_dy_limits_left_right[0]),
+            rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..dx_dy_limits_left_right[1]),
         ];
     }
 
@@ -151,18 +143,16 @@ fn new_rand_node(
         joint_limits,
         size,
         center,
-        nn_id: None
+        nn_id: None,
     });
 }
 
-// TODO: lose limb means an NN is dead, 
+// TODO: lose limb means an NN is dead,
 // need to be delete and can not influcen other NN's index
 /// drop the indexed node
-fn lose_limb(geno: &mut BlobGeno, idx:usize) {
+fn lose_limb(geno: &mut BlobGeno, idx: usize) {
     geno.vec_tree.clean_subtree(idx);
     // geno.vec_tree.nodes[idx] = None;
 }
 
-pub fn mutate_block_size (geno: &BlobGeno) {
-
-}
+pub fn mutate_block_size(geno: &BlobGeno) {}

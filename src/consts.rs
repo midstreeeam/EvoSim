@@ -87,7 +87,7 @@ pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 /// 
 /// if the tree structure is going to mutate, maximumly 1 node will mutate
 /// since single node blob can't lose a node anymore
-pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.01;
+pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 1.0;
 /// probablity for the choosen node to gain a child node,
 /// otherwise the blob gonna lose a limb
 pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
