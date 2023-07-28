@@ -105,7 +105,11 @@ pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
 pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
 /// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
 pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
-/// porbablity of an single nn to mutate
+/// porbablity of a signle joint limit to mutate
+pub const MUTATE_JOINT_LIMIT_PROB: f32 = 0.5;
+pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
+pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
+/// porbablity of a single nn to mutate
 pub const MUTATE_NN_PORB: f32 = 0.5;
 /// standard deviation for normal distribution mutation
 pub const MUTATE_NN_STD: f32 = 0.1;

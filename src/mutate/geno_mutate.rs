@@ -15,6 +15,7 @@ pub fn mutate_geno(
     for mut geno in geno_q {
         mutate_tree_structure(&mut geno);
         mutate_block_size(&mut geno);
+        mutate_joint_limit(&mut geno)
     }
 }
 
@@ -253,4 +254,21 @@ fn get_movevec(
         }
     }
     
+}
+
+pub fn mutate_joint_limit(geno: &mut BlobGeno){
+    let mut rng: ThreadRng = thread_rng();
+
+    for i in geno.vec_tree.nodes.iter_mut(){
+        if !rng.gen_bool(MUTATE_JOINT_LIMIT_PROB as f64) {
+            continue;
+        }
+        if let Some(GenericGenoNode::Child(node)) = i {
+            let mutation_factor_0 = rng.gen_range(0.9..=1.1);
+            let mutation_factor_1 = rng.gen_range(0.9..=1.1);
+            let new_limit_0 = (node.joint_limits[0] * mutation_factor_0).clamp(MUTATE_JOINT_LIMIT_MIN, 0.0);
+            let new_limit_1 = (node.joint_limits[1] * mutation_factor_1).clamp(0.0, MUTATE_JOINT_LIMIT_MAX);
+            node.joint_limits = [new_limit_0,new_limit_1];
+        }
+    }
 }
