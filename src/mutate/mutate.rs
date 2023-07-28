@@ -11,7 +11,7 @@ use crate::{
     physics::world::Wall, contorl::block_action,
 };
 
-use super::geno_mutate::mutate_geno;
+use super::{geno_mutate::mutate_geno, nn_mutate::mutate_nn};
 
 pub struct MutatePlugin;
 
@@ -41,6 +41,7 @@ pub fn mutate_and_refresh(
 
     if input.just_pressed(KeyCode::R) {
         mutate_geno(&mut geno_vec);
+        mutate_nn(&mut bbn);
 
         let (mut genovec,nnvec) = sync_mutate(&mut geno_vec, &mut bbn);
     

@@ -22,7 +22,7 @@ pub enum GenericNN {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InwardNN {
-    nn: BaseNN,
+    pub nn: BaseNN,
 }
 
 impl Default for InwardNN {
@@ -38,7 +38,7 @@ impl Default for InwardNN {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutwardNN {
-    nn: BaseNN,
+    pub nn: BaseNN,
 }
 
 impl Default for OutwardNN {
@@ -105,7 +105,7 @@ impl BlockNN {
 /// NN for centeral brain
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BrainNN {
-    nn: BaseNN,
+    pub nn: BaseNN,
 }
 
 impl Default for BrainNN {

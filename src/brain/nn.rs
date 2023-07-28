@@ -20,9 +20,9 @@ impl Activation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct BaseLayer {
-    weights: Array2<f32>,
-    bias: Array1<f32>,
+pub struct BaseLayer {
+    pub weights: Array2<f32>,
+    pub bias: Array1<f32>,
 }
 
 impl BaseLayer {
@@ -64,7 +64,7 @@ impl fmt::Display for BaseLayer {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BaseNN {
-    layers: Vec<BaseLayer>,
+    pub layers: Vec<BaseLayer>,
     activation: Activation,
 }
 

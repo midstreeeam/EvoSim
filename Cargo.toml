@@ -16,3 +16,4 @@ bevy_rapier2d = {git = "https://github.com/midstreeeam/bevy_rapier.git", branch 
 serde = "1.0.174"
 serde_json = "1.0.103"
 chrono = "0.4.26"
+rand_distr = "0.4.3"

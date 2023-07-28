@@ -42,7 +42,7 @@ pub const DEFAULT_DAMPING_LINEAR: f32 = 0.0;
 pub const DEFAULT_DAMPING_ANGULAR: f32 = 2.0;
 
 // Geno
-pub const GENO_MAX_DEPTH: u32 = 4; // max recursion depth of Geno type
+pub const GENO_MAX_DEPTH: u32 = 3; // max recursion depth of Geno type
 pub const DEFAULT_BLOCK_SIZE: [f32; 2] = [50.0, 50.0];
 
 // Rand
@@ -105,6 +105,10 @@ pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
 pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
 /// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
 pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
+/// porbablity of an single nn to mutate
+pub const MUTATE_NN_PORB: f32 = 0.5;
+/// standard deviation for normal distribution mutation
+pub const MUTATE_NN_STD: f32 = 0.1;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";

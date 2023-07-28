@@ -20,7 +20,7 @@ pub fn mutate_geno(
 
 /// gain or lose limbs
 pub fn mutate_tree_structure(geno: &mut BlobGeno) {
-    let mut rng = thread_rng();
+    let mut rng: ThreadRng = thread_rng();
 
     if !rng.gen_bool(MUTATE_TREE_STRUCTURE_PROB as f64) {
         return;
