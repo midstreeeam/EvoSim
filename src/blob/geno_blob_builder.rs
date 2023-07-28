@@ -422,36 +422,77 @@ impl BlobGeno {
             .collect()
     }
 
-    // TODO: bug -- only one side of the root will move 2 unit, other two side will move 1 unit
-    /// root_index node move 1 unit, other nodes in subtree move 2 units, root_index can not be root of tree
-    pub fn move_subtree_nodes(&mut self, root_index: usize, move_vec: [f32;2]) {
+    pub fn move_subtree_nodes(&mut self, root_index: usize, move_vec: ([f32;2],[f32;2],[f32;2])) {
         if root_index == 0 {
             panic!()
         }
 
+        let forward = move_vec.0;
+        let left_movec = move_vec.1;
+        let right_movec = move_vec.2;
+
         let subtree_indices: Vec<usize> = self.vec_tree.subtree_indices(root_index);
     
-        // move 2 units of all nodes
+        // move 1 units of all nodes
         for &i in &subtree_indices {
             if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
                 if let GenericGenoNode::Child(node) = genericnode{
-                    node.center[0] += 2.0 * move_vec[0];
-                    node.center[1] += 2.0 * move_vec[1];
+                    node.center[0] += forward[0];
+                    node.center[1] += forward[1];
                 }
             } else {
                 panic!()
             }
         }
 
-        // move back 1 unit of root_index
-        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(root_index) {
-            if let GenericGenoNode::Child(node) = genericnode {
-                node.center[0] -= move_vec[0];
-                node.center[1] -= move_vec[1];
+        let direction = self.vec_tree.child_direction(root_index).unwrap();
+        let children = self.vec_tree.children(root_index);
+
+        // root of subtree that need to move 1 unit more
+        let forward_root = children[direction];
+        let subtree_indices: Vec<usize> = self.vec_tree.subtree_indices(forward_root);
+
+
+        // move 1 more unit for selected nodes
+        for &i in &subtree_indices {
+            if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                if let GenericGenoNode::Child(node) = genericnode{
+                    node.center[0] += forward[0];
+                    node.center[1] += forward[1];
+                }
+            } else {
+                panic!()
             }
-        } else {
-            panic!()
         }
+
+        // move left
+        let left_root_index = children[get_left_right_direction(direction).0];
+        let subtree_indices = self.vec_tree.subtree_indices(left_root_index);
+        for &i in &subtree_indices {
+            if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                if let GenericGenoNode::Child(node) = genericnode{
+                    node.center[0] += left_movec[0];
+                    node.center[1] += left_movec[1];
+                }
+            } else {
+                panic!()
+            }
+        }
+
+        // move right
+        let right_root_index = children[get_left_right_direction(direction).1];
+        let subtree_indices = self.vec_tree.subtree_indices(right_root_index);
+        for &i in &subtree_indices {
+            if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                if let GenericGenoNode::Child(node) = genericnode{
+                    node.center[0] += right_movec[0];
+                    node.center[1] += right_movec[1];
+                }
+            } else {
+                panic!()
+            }
+        }
+
     }
 
     pub fn change_node_size(&mut self, index: usize, new_size: [f32;2]) {
@@ -603,11 +644,8 @@ impl<T> QuadTree<T> {
         result
     }
 
-    pub fn child_number(&self, index: usize) -> Option<usize>{
-        assert!(index < self.nodes.len(), "Index out of range");
-        assert!(self.nodes[index].is_some(), "Node at given index is None");
-
-        if index == 0 {
+    pub fn child_direction(&self, index: usize) -> Option<usize>{
+        if index == 0 || index > self.nodes.len() || self.nodes[index].is_none(){
             None
         } else {
             Some((index - 1) % 4)
@@ -640,6 +678,16 @@ impl<T: Debug> Debug for QuadTree<T> {
         writeln!(f, "QuadTree {{")?;
         print_node(self, 0, "  ", f)?;
         writeln!(f, "}}")
+    }
+}
+
+fn get_left_right_direction(direction:usize) -> (usize,usize) {
+    match direction {
+        0 => (2,3),
+        1 => (3,2),
+        2 => (1,0),
+        3 => (0,1),
+        _ => {panic!()}
     }
 }
 

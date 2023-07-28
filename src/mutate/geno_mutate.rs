@@ -218,7 +218,6 @@ fn mutate_single_block_size(
         // mutate block index must be valid
         panic!()
     }
-    
     // validation check
     if !geno.is_valid() {
         *geno = temp_geno;
@@ -228,7 +227,6 @@ fn mutate_single_block_size(
         //     panic!()
         // }
     }
-    println!("{}",geno.is_valid())
     // *geno = temp_geno;
 }
 
@@ -261,33 +259,51 @@ pub fn mutate_single_block_size_debug(
         // mutate block index must be valid
         // panic!()
     }
-    
-    // validation check
-    if !geno.is_valid() {
-        *geno = temp_geno;
-        // if let Some(Some(GenericGenoNode::Child(node))) = geno.vec_tree.nodes.get_mut(index) {
-        //     node.size = org_size
-        // } else {
-        //     panic!()
-        // }
-    }
-    // println!("{}",geno.is_valid())
+    println!("{}",geno.is_valid());
+
+    // // validation check
+    // if !geno.is_valid() {
+    //     *geno = temp_geno;
+    //     // if let Some(Some(GenericGenoNode::Child(node))) = geno.vec_tree.nodes.get_mut(index) {
+    //     //     node.size = org_size
+    //     // } else {
+    //     //     panic!()
+    //     // }
+    // }
     // *geno = temp_geno;
 }
 
+/// outputs front, left, right movement vector for input node (facing outward to the root node)
 fn get_movevec(
     index: usize,
     old_size: [f32;2],
     new_size: [f32;2]
-) -> Option<[f32;2]> {
+) -> Option<([f32;2],[f32;2],[f32;2])> {
     if index == 0 {
         return None
     } else {
+        let top = [0.0, new_size[1]-old_size[1]];
+        let bottom = [0.0, old_size[1]-new_size[1]];
+        let left = [old_size[0]-new_size[0], 0.0];
+        let right = [new_size[0]-old_size[0], 0.0];
+
         match (index - 1) % 4 {
-            0 => Some([0.0, new_size[1]-old_size[1]]),
-            1 => Some([new_size[0]-old_size[0], 0.0]),
-            2 => Some([0.0, old_size[1]-new_size[1]]),
-            3 => Some([old_size[0]-new_size[0], 0.0]),
+            0 => Some((
+                top,
+                left,
+                right
+            )),
+            1 => Some((
+                bottom,
+                right,
+                left
+            )),
+            2 => Some((
+                left,bottom,top
+            )),
+            3 => Some((
+                right,top,bottom
+            )),
             _ => {panic!()}
         }
     }

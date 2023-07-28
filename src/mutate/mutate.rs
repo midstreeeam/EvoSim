@@ -32,9 +32,9 @@ pub fn refresh(
     joint_q: Query<Entity, With<ImpulseJoint>>,
     input: Res<Input<KeyCode>>,
 ) {
-    if input.just_pressed(KeyCode::R) {
-        // mutate_geno(geno_q.iter_mut());
-        conflict_mutate(geno_q.iter_mut());
+    if input.pressed(KeyCode::R) {
+        mutate_geno(geno_q.iter_mut());
+        // conflict_mutate(geno_q.iter_mut());
 
         let (genovec,nnvec) = sync_mutate(geno_q, &mut bbn);
     
@@ -124,7 +124,9 @@ fn conflict_mutate(
     geno_q: QueryIter<'_, '_, &mut crate::blob::geno_blob_builder::BlobGeno, ()>
 ) {
     for mut geno in geno_q {
-        mutate_single_block_size_debug(&mut geno, 1, [10.0,10.0]);
         println!("{:#?}",geno);
+        mutate_single_block_size_debug(&mut geno, 3, [50.0,50.0]);
+        println!("{:#?}",geno);
+        break;
     }
 }
