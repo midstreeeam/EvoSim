@@ -37,3 +37,10 @@
 
 - blob construction & rules
 - random blob rules, self-conflict situation (block size, tree structure)
+- self-confliction in mutation
+
+## brain structure
+
+### Centrol, Inward, Ourward
+
+### Brain parallel compute management
