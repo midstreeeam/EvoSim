@@ -195,11 +195,6 @@ fn mutate_single_block_size(
     index: usize,
     new_size: [f32;2]
 ) {
-
-    if index==0 {
-        return
-    }
-
     let temp_geno = geno.clone();
 
     if let Some(Some(GenericGenoNode::Child(node))) = temp_geno.vec_tree.nodes.get(index) {
@@ -212,8 +207,8 @@ fn mutate_single_block_size(
             geno.move_subtree_nodes(index, move_vec);
         } else {
             // if mutate block is root
+            geno.move_subtree_nodes_root(node.size, new_size)
         }
-
     } else {
         // mutate block index must be valid
         panic!()
@@ -221,56 +216,7 @@ fn mutate_single_block_size(
     // validation check
     if !geno.is_valid() {
         *geno = temp_geno;
-        // if let Some(Some(GenericGenoNode::Child(node))) = geno.vec_tree.nodes.get_mut(index) {
-        //     node.size = org_size
-        // } else {
-        //     panic!()
-        // }
     }
-    // *geno = temp_geno;
-}
-
-
-pub fn mutate_single_block_size_debug(
-    geno: &mut BlobGeno,
-    index: usize,
-    new_size: [f32;2]
-) {
-
-    if index==0 {
-        return
-    }
-
-    let temp_geno = geno.clone();
-
-    if let Some(Some(GenericGenoNode::Child(node))) = temp_geno.vec_tree.nodes.get(index) {
-        // TODO: modify the center of self and all children nodes if size changed
-        geno.change_node_size(index, new_size);
-
-        if let Some(move_vec) = get_movevec(index, node.size, new_size) {
-            // if muated block is not root
-            // println!("{:?}", move_vec);
-            geno.move_subtree_nodes(index, move_vec);
-        } else {
-            // if mutate block is root
-        }
-
-    } else {
-        // mutate block index must be valid
-        // panic!()
-    }
-    println!("{}",geno.is_valid());
-
-    // // validation check
-    // if !geno.is_valid() {
-    //     *geno = temp_geno;
-    //     // if let Some(Some(GenericGenoNode::Child(node))) = geno.vec_tree.nodes.get_mut(index) {
-    //     //     node.size = org_size
-    //     // } else {
-    //     //     panic!()
-    //     // }
-    // }
-    // *geno = temp_geno;
 }
 
 /// outputs front, left, right movement vector for input node (facing outward to the root node)

@@ -422,6 +422,68 @@ impl BlobGeno {
             .collect()
     }
 
+    pub fn move_subtree_nodes_root(&mut self, old_size: [f32;2], new_size: [f32;2]) {
+        let root_index: usize = 0;
+        let xmove = new_size[0]-old_size[0];
+        let ymove = new_size[1]-old_size[1];
+
+        let children = self.vec_tree.children(root_index);
+        for (direction, subtree_root_index) in children.iter().enumerate() {
+            let subtree_indices: Vec<usize> = self.vec_tree.subtree_indices(*subtree_root_index);
+            match direction {
+                0 => {
+                    for &i in &subtree_indices {
+                        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                            if let GenericGenoNode::Child(node) = genericnode{
+                                node.center[1] += ymove;
+                            }
+                        } else {
+                            panic!()
+                        }
+                    }
+                },
+                1 => {
+                    for &i in &subtree_indices {
+                        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                            if let GenericGenoNode::Child(node) = genericnode{
+                                node.center[1] -= ymove;
+                            }
+                        } else {
+                            panic!()
+                        }
+                    }
+                },
+                2 => {
+                    for &i in &subtree_indices {
+                        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                            if let GenericGenoNode::Child(node) = genericnode{
+                                node.center[1] -= xmove;
+                            }
+                        } else {
+                            panic!()
+                        }
+                    }
+                },
+                3 => {
+                    for &i in &subtree_indices {
+                        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                            if let GenericGenoNode::Child(node) = genericnode{
+                                node.center[1] += xmove;
+                            }
+                        } else {
+                            panic!()
+                        }
+                    }
+                }
+                _ => {panic!()}
+            }
+        }
+    }
+
+    /// only used for morphyology mutation, update the `center` in each genonode, 
+    /// so that the validation check can preform
+    /// 
+    /// this function only works for non-root block's mutation
     pub fn move_subtree_nodes(&mut self, root_index: usize, move_vec: ([f32;2],[f32;2],[f32;2])) {
         if root_index == 0 {
             panic!()

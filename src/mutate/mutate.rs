@@ -1,4 +1,4 @@
-use bevy::{prelude::*, ecs::query::QueryIter};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::ImpulseJoint;
 
 use crate::{
@@ -11,7 +11,7 @@ use crate::{
     physics::world::Wall, contorl::block_action,
 };
 
-use super::geno_mutate::{mutate_geno, mutate_single_block_size_debug};
+use super::geno_mutate::mutate_geno;
 
 pub struct MutatePlugin;
 
@@ -34,7 +34,6 @@ pub fn refresh(
 ) {
     if input.pressed(KeyCode::R) {
         mutate_geno(geno_q.iter_mut());
-        // conflict_mutate(geno_q.iter_mut());
 
         let (genovec,nnvec) = sync_mutate(geno_q, &mut bbn);
     
@@ -117,16 +116,4 @@ fn sync_mutate(
 
     // copy geno
     (Vec::from_iter(geno_q.iter().cloned()),bbn.nnvec.clone())
-}
-
-
-fn conflict_mutate(
-    geno_q: QueryIter<'_, '_, &mut crate::blob::geno_blob_builder::BlobGeno, ()>
-) {
-    for mut geno in geno_q {
-        println!("{:#?}",geno);
-        mutate_single_block_size_debug(&mut geno, 3, [50.0,50.0]);
-        println!("{:#?}",geno);
-        break;
-    }
 }

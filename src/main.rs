@@ -80,7 +80,7 @@ pub fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
 
     // for i in -2..2 {
     //     for j in -2..2 {
-    //         builder.build(&BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
+    //         builder.build(&mut BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
     //     }
     // }
 }
