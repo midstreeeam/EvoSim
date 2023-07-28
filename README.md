@@ -2,4 +2,4 @@
 
 ## mutation
 
-![](.\assets\mutation.gif)
+![](https://github.com/midstreeeam/EvoSim/blob/main/assets/mutation.gif)
