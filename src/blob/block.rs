@@ -52,6 +52,12 @@ impl Default for NeuronId {
     }
 }
 
+impl NeuronId {
+    pub fn new(id:usize, parent_id:Option<usize>) -> Self {
+        Self { id: id, parent_id: parent_id }
+    }
+}
+
 /// JointInfor for joint sensors
 #[derive(Component, Clone)]
 pub struct JointInfo{

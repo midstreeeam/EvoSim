@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 
+use crate::blob::block::NeuronId;
 use crate::brain::neuron::GenericNN;
 use crate::consts::*;
 
@@ -26,119 +27,224 @@ impl<'a> GenoBlobBuilder<'a> {
 
     /// generate blob according to its genotype
     pub fn build(&mut self, geno: &mut BlobGeno, center: [f32; 2]) {
-        // Lambda function to use in child extraction
-        fn lambda(node: &mut Option<GenericGenoNode>) -> Option<&mut GenoNode> {
-            node.as_mut().and_then(|node| match node {
-                GenericGenoNode::Parent => None,
-                GenericGenoNode::Child(child) => Some(child),
-            })
-        }
-
-        fn build_node(builder: &mut BlobBuilder, tree: &mut QuadTree<GenericGenoNode>, index: usize) {
-            if let Some(Some(_)) = tree.nodes.get_mut(index) {
-                let children = tree.children(index);
-                // let (top_child, bottom_child, left_child, right_child) = (
-                //     tree.nodes.get(children[0]).and_then(lambda),
-                //     tree.nodes.get(children[1]).and_then(lambda),
-                //     tree.nodes.get(children[2]).and_then(lambda),
-                //     tree.nodes.get(children[3]).and_then(lambda),
-                // );
-
-                // top
-                if let Some(mut node) = tree.nodes.get_mut(children[0]).and_then(lambda) {
-                    let nn_id = builder.add_to_top(
-                        node.size[0],
-                        node.size[1],
-                        None,
-                        Some(node.joint_limits),
-                        (),
-                    );
-
-                    // don't overwrite nn_id if it is not None
-                    // which means they have already had bounded NN
-                    if node.nn_id.is_none() {
-                        node.nn_id = nn_id
-                    }
-                    
-                    build_node(builder, tree, children[0]);
-                    builder.bottom();
-                }
-
-                // bottom
-                if let Some(mut node) = tree.nodes.get_mut(children[1]).and_then(lambda) {
-                    let nn_id = builder.add_to_bottom(
-                        node.size[0],
-                        node.size[1],
-                        None,
-                        Some(node.joint_limits),
-                        (),
-                    );
-
-                    if node.nn_id.is_none() {
-                        node.nn_id = nn_id
-                    }
-
-                    build_node(builder, tree, children[1]);
-                    builder.top();
-                }
-
-                // left
-                if let Some(node) = tree.nodes.get_mut(children[2]).and_then(lambda) {
-                    let nn_id = builder.add_to_left(
-                        node.size[0],
-                        node.size[1],
-                        None,
-                        Some(node.joint_limits),
-                        (),
-                    );
-
-                    if node.nn_id.is_none() {
-                        node.nn_id = nn_id
-                    }
-
-                    build_node(builder, tree, children[2]);
-                    builder.right();
-                }
-
-                // right
-                if let Some(node) = tree.nodes.get_mut(children[3]).and_then(lambda) {
-                    let nn_id = builder.add_to_right(
-                        node.size[0],
-                        node.size[1],
-                        None,
-                        Some(node.joint_limits),
-                        (),
-                    );
-
-                    if node.nn_id.is_none() {
-                        node.nn_id = nn_id
-                    }
-
-                    build_node(builder, tree, children[3]);
-                    builder.left();
-                }
-            }
-        }
 
         // create first
         let builder = &mut self.builder;
-        geno.assign_nn_id_to_root(
-            builder.create_first(
-            geno.get_first()
-                .unwrap()
-                .to_bundle(center)
-                .with_color(Color::BLUE),
-            (),).unwrap()
-        );
 
-        // start recursion
-        build_node(&mut self.builder, &mut geno.vec_tree, 0);
+        if let Some(nn_id) = geno.get_first().unwrap().nn_id {
+            // if the geno is exported geno or mutated geno (with nn inside)
+            let root_nn = NeuronId::new(nn_id,None);
+            
+            builder.create_first(
+                geno.get_first()
+                .unwrap()
+                .to_bundle(center),
+                root_nn);
+            
+            // start recursion
+            build_node_with_nn(builder, &mut geno.vec_tree, 0, nn_id)
+
+        } else {
+            // if the geno is new rand geno (without nn inside)
+            geno.assign_nn_id_to_root(
+                builder.create_first(
+                geno.get_first()
+                    .unwrap()
+                    .to_bundle(center)
+                    .with_color(Color::BLUE),
+                (),).unwrap()
+            );
+
+            // start recursion
+            build_node(&mut self.builder, &mut geno.vec_tree, 0);
+        }
 
         // save geno to blob
         self.builder.update_geno(geno.clone());
 
         // reset builder
         self.builder.clean();
+    }
+}
+
+// Lambda function to use in child extraction
+fn lambda(node: &mut Option<GenericGenoNode>) -> Option<&mut GenoNode> {
+    node.as_mut().and_then(|node| match node {
+        GenericGenoNode::Parent => None,
+        GenericGenoNode::Child(child) => Some(child),
+    })
+}
+
+fn build_node(
+    builder: &mut BlobBuilder, 
+    tree: &mut QuadTree<GenericGenoNode>, 
+    index: usize, 
+) {
+    if let Some(Some(_)) = tree.nodes.get_mut(index) {
+        let children = tree.children(index);
+        // let (top_child, bottom_child, left_child, right_child) = (
+        //     tree.nodes.get(children[0]).and_then(lambda),
+        //     tree.nodes.get(children[1]).and_then(lambda),
+        //     tree.nodes.get(children[2]).and_then(lambda),
+        //     tree.nodes.get(children[3]).and_then(lambda),
+        // );
+
+        // top
+        if let Some(mut node) = tree.nodes.get_mut(children[0]).and_then(lambda) {
+
+            let nn_id = builder.add_to_top(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                (),
+            );
+
+            // don't overwrite nn_id if it is not None
+            // which means they have already had bounded NN
+            if node.nn_id.is_none() {
+                node.nn_id = nn_id
+            }
+            
+            build_node(builder, tree, children[0]);
+            builder.bottom();
+        }
+
+        // bottom
+        if let Some(mut node) = tree.nodes.get_mut(children[1]).and_then(lambda) {
+            let nn_id = builder.add_to_bottom(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                (),
+            );
+
+            if node.nn_id.is_none() {
+                node.nn_id = nn_id
+            }
+
+            build_node(builder, tree, children[1]);
+            builder.top();
+        }
+
+        // left
+        if let Some(node) = tree.nodes.get_mut(children[2]).and_then(lambda) {
+            let nn_id = builder.add_to_left(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                (),
+            );
+
+            if node.nn_id.is_none() {
+                node.nn_id = nn_id
+            }
+
+            build_node(builder, tree, children[2]);
+            builder.right();
+        }
+
+        // right
+        if let Some(node) = tree.nodes.get_mut(children[3]).and_then(lambda) {
+            let nn_id = builder.add_to_right(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                (),
+            );
+
+            if node.nn_id.is_none() {
+                node.nn_id = nn_id
+            }
+
+            build_node(builder, tree, children[3]);
+            builder.left();
+        }
+    }
+}
+
+
+/// build node that inherit `NeuronId` from geno
+fn build_node_with_nn(
+    builder: &mut BlobBuilder, 
+    tree: &mut QuadTree<GenericGenoNode>, 
+    index: usize,
+    parent_nn_id: usize
+) {
+    if let Some(Some(_)) = tree.nodes.get_mut(index) {
+        let children = tree.children(index);
+
+        // top
+        if let Some(node) = tree.nodes.get_mut(children[0]).and_then(lambda) {
+
+            let nn_id = node.nn_id.unwrap();
+            let neuron_id = NeuronId::new(nn_id,Some(parent_nn_id));
+
+            builder.add_to_top(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                neuron_id,
+            );
+            
+            build_node_with_nn(builder, tree, children[0],nn_id);
+            builder.bottom();
+        }
+
+        // bottom
+        if let Some(node) = tree.nodes.get_mut(children[1]).and_then(lambda) {
+            let nn_id = node.nn_id.unwrap();
+            let neuron_id = NeuronId::new(nn_id,Some(parent_nn_id));
+            
+            builder.add_to_bottom(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                neuron_id,
+            );
+
+            build_node_with_nn(builder, tree, children[1],nn_id);
+            builder.top();
+        }
+
+        // left
+        if let Some(node) = tree.nodes.get_mut(children[2]).and_then(lambda) {
+            let nn_id = node.nn_id.unwrap();
+            let neuron_id = NeuronId::new(nn_id,Some(parent_nn_id));
+
+            builder.add_to_left(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                neuron_id,
+            );
+
+            build_node_with_nn(builder, tree, children[2], nn_id);
+            builder.right();
+        }
+
+        // right
+        if let Some(node) = tree.nodes.get_mut(children[3]).and_then(lambda) {
+            let nn_id = node.nn_id.unwrap();
+            let neuron_id = NeuronId::new(nn_id,Some(parent_nn_id));
+
+            builder.add_to_right(
+                node.size[0],
+                node.size[1],
+                None,
+                Some(node.joint_limits),
+                neuron_id,
+            );
+
+            build_node_with_nn(builder, tree, children[3], nn_id);
+            builder.left();
+        }
     }
 }
 

@@ -153,7 +153,7 @@ impl<'a> BlobBuilder<'a> {
         self
     }
 
-    /// create the first block and return itself
+    /// create the first block and return the nn_id of it
     pub fn create_first<T: Bundle>(
         &mut self,
         phy_block_bundle: PhysiBlockBundle,

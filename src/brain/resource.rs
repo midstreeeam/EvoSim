@@ -42,8 +42,8 @@ impl BevyBlockNeurons {
         // generate grouped signal
         let (mut grouped_signal, mut brain_signal) = signal_handler.get_sig_mut();
 
-        // println!("{:#?}",grouped_signal);
-        // println!("{:#?}",brain_signal);
+        // println!("grouped signal {:#?}",grouped_signal);
+        // println!("brain signal {:#?}",brain_signal);
         // passing through all inward layers
         for idx in (1..grouped_signal.len()).rev() {
             inward_bulk_pass(&mut grouped_signal, &mut self.nnvec, idx)
@@ -112,7 +112,7 @@ fn inward_bulk_pass(
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
-            panic!()
+            panic!("nn with id {} is expected to be BLOCKNN, but found BRAINNN", unit.nn_id)
         }
     }
 }
@@ -132,7 +132,7 @@ fn brain_pass(
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
-            panic!()
+            panic!("nn with id {} is expected to be BLOCKNN, but found BRAINNN", unit.nn_id)
         }
     }
 }

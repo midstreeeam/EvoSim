@@ -1,17 +1,16 @@
 use std::f32::consts::PI;
 
-use bevy::ecs::query::QueryIter;
 use rand::prelude::*;
 
 use crate::{
-    blob::geno_blob_builder::{BlobGeno, GenericGenoNode, GenoNode, self},
+    blob::geno_blob_builder::{BlobGeno, GenericGenoNode, GenoNode},
     consts::*,
 };
 
 const CLAMP: [f32;2] = MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER;
 
 pub fn mutate_geno(
-    geno_q: QueryIter<'_, '_, &mut geno_blob_builder::BlobGeno, ()>
+    geno_q: &mut Vec<BlobGeno>
 ) {
     for mut geno in geno_q {
         mutate_tree_structure(&mut geno);

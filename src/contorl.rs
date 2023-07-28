@@ -14,7 +14,7 @@ use crate::{
     },
     brain::{
         resource::BevyBlockNeurons,
-        signal::{BrainSignal, InwardNNInputSignal, SignalHandler}, self,
+        signal::{BrainSignal, InwardNNInputSignal, SignalHandler}
     },
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,

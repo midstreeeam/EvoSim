@@ -74,15 +74,15 @@ fn main() {
 
 pub fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    let mut geno = BlobGeno::new_rand();
-    builder.build(&mut geno, [0.0, 0.0]);
-    println!("{:#?}",geno);
+    // let mut geno = BlobGeno::new_rand();
+    // builder.build(&mut geno, [-500.0, 0.0]);
+    // println!("{:#?}",geno);
 
-    // for i in -2..2 {
-    //     for j in -2..2 {
-    //         builder.build(&mut BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
-    //     }
-    // }
+    for i in -2..2 {
+        for j in -2..2 {
+            builder.build(&mut BlobGeno::new_rand(), [1500.0 * i as f32, 1500.0 * j as f32]);
+        }
+    }
 }
 
 fn test(q: Query<&BlobGeno>) {
