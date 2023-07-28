@@ -422,6 +422,44 @@ impl BlobGeno {
             .collect()
     }
 
+    // TODO: bug -- only one side of the root will move 2 unit, other two side will move 1 unit
+    /// root_index node move 1 unit, other nodes in subtree move 2 units, root_index can not be root of tree
+    pub fn move_subtree_nodes(&mut self, root_index: usize, move_vec: [f32;2]) {
+        if root_index == 0 {
+            panic!()
+        }
+
+        let subtree_indices: Vec<usize> = self.vec_tree.subtree_indices(root_index);
+    
+        // move 2 units of all nodes
+        for &i in &subtree_indices {
+            if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(i) {
+                if let GenericGenoNode::Child(node) = genericnode{
+                    node.center[0] += 2.0 * move_vec[0];
+                    node.center[1] += 2.0 * move_vec[1];
+                }
+            } else {
+                panic!()
+            }
+        }
+
+        // move back 1 unit of root_index
+        if let Some(Some(genericnode)) = self.vec_tree.nodes.get_mut(root_index) {
+            if let GenericGenoNode::Child(node) = genericnode {
+                node.center[0] -= move_vec[0];
+                node.center[1] -= move_vec[1];
+            }
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn change_node_size(&mut self, index: usize, new_size: [f32;2]) {
+        if let Some(Some(GenericGenoNode::Child(node))) = self.vec_tree.nodes.get_mut(index) {
+            node.size = new_size;
+        }
+    }
+    
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
@@ -542,6 +580,38 @@ impl<T> QuadTree<T> {
             }
         }
         result
+    }
+
+    /// all the not-None indices of the subtree
+    pub fn subtree_indices(&self, index: usize) -> Vec<usize> {
+        let mut result = Vec::new();
+
+        // Recursive function to collect indices
+        fn collect_indices<T>(quad_tree: &QuadTree<T>, index: usize, result: &mut Vec<usize>) {
+            if quad_tree.nodes.get(index).is_some() && quad_tree.nodes[index].is_some() {
+                result.push(index);
+
+                for &child_index in &quad_tree.children(index) {
+                    if child_index < quad_tree.nodes.len() {
+                        collect_indices(quad_tree, child_index, result);
+                    }
+                }
+            }
+        }
+
+        collect_indices(self, index, &mut result);
+        result
+    }
+
+    pub fn child_number(&self, index: usize) -> Option<usize>{
+        assert!(index < self.nodes.len(), "Index out of range");
+        assert!(self.nodes[index].is_some(), "Node at given index is None");
+
+        if index == 0 {
+            None
+        } else {
+            Some((index - 1) % 4)
+        }
     }
 }
 

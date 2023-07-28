@@ -22,7 +22,7 @@ use io::evoio::EvoIO;
 use physics::physical_world;
 use mutate::mutate::MutatePlugin;
 
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+// use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 // TODO: Inconsistant usize and u32 usage
 // TODO: Headless mode causing panic
@@ -46,9 +46,9 @@ fn main() {
             //     }
             // }),
 
-            // log frame rate
-            LogDiagnosticsPlugin::default(),
-            FrameTimeDiagnosticsPlugin::default(),
+            // // log frame rate
+            // LogDiagnosticsPlugin::default(),
+            // FrameTimeDiagnosticsPlugin::default(),
             // raiper
             RapierPhysicsPlugin::<NoUserData>::default(),
             RapierDebugRenderPlugin::default(),

@@ -118,16 +118,16 @@ pub fn block_action(
 
     // println!("{}",output[1].1);
     // update joints base on nn's output
-    for (entity_id,target_pos,target_vel) in output{
-        // println!("{},{}",target_pos,target_vel);
-        let (_,_,mut joint) = block_q.get_mut(entity_id).unwrap();
-        joint
-            .data
-            .set_motor_position(JointAxis::AngX, target_pos, MOTOR_STIFFNESS, MOTOR_DAMPING);
-        joint
-            .data
-            .set_motor_velocity(JointAxis::AngX, target_vel, MOTOR_DAMPING);
-    }
+    // for (entity_id,target_pos,target_vel) in output{
+    //     // println!("{},{}",target_pos,target_vel);
+    //     let (_,_,mut joint) = block_q.get_mut(entity_id).unwrap();
+    //     joint
+    //         .data
+    //         .set_motor_position(JointAxis::AngX, target_pos, MOTOR_STIFFNESS, MOTOR_DAMPING);
+    //     joint
+    //         .data
+    //         .set_motor_velocity(JointAxis::AngX, target_vel, MOTOR_DAMPING);
+    // }
 
     
 

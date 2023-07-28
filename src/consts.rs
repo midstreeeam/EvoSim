@@ -87,7 +87,7 @@ pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 /// 
 /// if the tree structure is going to mutate, maximumly 1 node will mutate
 /// since single node blob can't lose a node anymore
-pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 1.0;
+pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.0;
 /// probablity for the choosen node to gain a child node,
 /// otherwise the blob gonna lose a limb
 pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
@@ -95,6 +95,16 @@ pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
 /// 
 /// condition of impossible new limb exist (the parent indicator was dropped)
 pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
+/// probablity of having limb size mutate
+pub const MUTATE_BLOCK_SIZE_PROB: f32 = 1.0;
+/// probablity for each signle block to mutate
+/// 
+/// mutation is not garenteed since it might cause self-confliction
+pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
+/// scaler for block mutation
+pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
+/// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
+pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";

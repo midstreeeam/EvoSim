@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, ecs::query::QueryIter};
 use bevy_rapier2d::prelude::ImpulseJoint;
 
 use crate::{
@@ -11,7 +11,7 @@ use crate::{
     physics::world::Wall, contorl::block_action,
 };
 
-use super::geno_mutate::mutate_geno;
+use super::geno_mutate::{mutate_geno, mutate_single_block_size_debug};
 
 pub struct MutatePlugin;
 
@@ -30,26 +30,30 @@ pub fn refresh(
     blob_q: Query<Entity, With<Blob>>,
     collider_q: Query<Entity, (With<ColliderFlag>, Without<Wall>)>,
     joint_q: Query<Entity, With<ImpulseJoint>>,
+    input: Res<Input<KeyCode>>,
 ) {
-    mutate_geno(geno_q.iter_mut());
+    if input.just_pressed(KeyCode::R) {
+        // mutate_geno(geno_q.iter_mut());
+        conflict_mutate(geno_q.iter_mut());
 
-    let (genovec,nnvec) = sync_mutate(geno_q, &mut bbn);
-
-    // despawn
-    for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
-        commands.entity(entity).despawn()
+        let (genovec,nnvec) = sync_mutate(geno_q, &mut bbn);
+    
+        // despawn
+        for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
+            commands.entity(entity).despawn()
+        }
+    
+        // temp empty vector for builder
+        let mut temp_nnvec = Vec::<GenericNN>::new();
+        let mut builder = GenoBlobBuilder::from_commands(commands, &mut temp_nnvec);
+    
+        for mut geno in genovec {
+            builder.build(&mut geno, [0.0,0.0])
+        }
+    
+        // update nnvec
+        bbn.nnvec = nnvec;
     }
-
-    // temp empty vector for builder
-    let mut temp_nnvec = Vec::<GenericNN>::new();
-    let mut builder = GenoBlobBuilder::from_commands(commands, &mut temp_nnvec);
-
-    for mut geno in genovec {
-        builder.build(&mut geno, [0.0,0.0])
-    }
-
-    // update nnvec
-    bbn.nnvec = nnvec;
 }
 
 // TODO: test & debug this function, haven't been tested after coded
@@ -113,4 +117,14 @@ fn sync_mutate(
 
     // copy geno
     (Vec::from_iter(geno_q.iter().cloned()),bbn.nnvec.clone())
+}
+
+
+fn conflict_mutate(
+    geno_q: QueryIter<'_, '_, &mut crate::blob::geno_blob_builder::BlobGeno, ()>
+) {
+    for mut geno in geno_q {
+        mutate_single_block_size_debug(&mut geno, 1, [10.0,10.0]);
+        println!("{:#?}",geno);
+    }
 }
