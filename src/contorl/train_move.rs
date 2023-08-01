@@ -12,37 +12,44 @@ pub fn train_move(
     entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
     nn_q: Query<(&Parent, &NeuronId)>,
     mut bbn: ResMut<BevyBlockNeurons>,
-    mut pipe: ResMut<TrainMutPipe>
+    mut pipe: ResMut<TrainMutPipe>,
+    input: Res<Input<KeyCode>>,
 ) {
-    let nnvec = &mut bbn.nnvec;
-    let mut blob_vec: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
-    for (e, (geno, info)) in entity_geno_info_q.iter() {
-        blob_vec.push((e, (geno.clone(), info.clone())));
+    if input.just_pressed(KeyCode::R) {
+        let nnvec = &mut bbn.nnvec;
+        let mut blob_vec: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
+        for (e, (geno, info)) in entity_geno_info_q.iter() {
+            blob_vec.push((e, (geno.clone(), info.clone())));
+        }
+    
+        blob_vec.sort_by(|a, b| {
+            let mag_a =
+                a.1 .1
+                    .move_distance
+                    .iter()
+                    .fold(0.0, |acc, &x| acc + x * x)
+                    .sqrt();
+            let mag_b =
+                b.1 .1
+                    .move_distance
+                    .iter()
+                    .fold(0.0, |acc, &x| acc + x * x)
+                    .sqrt();
+            mag_b
+                .partial_cmp(&mag_a)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+    
+        let split_idx = (blob_vec.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
+        let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
+    
+        let (new_genovec, infovec, new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
+        
+        // println!("{:#?}",new_genovec);
+        // println!("nnveclen: {:#?}",new_nnvec.len());
+        
+        pipe.push(new_genovec, infovec, new_nnvec);
     }
-
-    blob_vec.sort_by(|a, b| {
-        let mag_a =
-            a.1 .1
-                .move_distance
-                .iter()
-                .fold(0.0, |acc, &x| acc + x * x)
-                .sqrt();
-        let mag_b =
-            b.1 .1
-                .move_distance
-                .iter()
-                .fold(0.0, |acc, &x| acc + x * x)
-                .sqrt();
-        mag_b
-            .partial_cmp(&mag_a)
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-
-    let split_idx = (blob_vec.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
-    let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
-
-    let (new_genovec, new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
-    pipe.push(new_genovec, new_nnvec);
 }
 
 // TODO: test and debug this function
@@ -51,8 +58,9 @@ fn clean_outcast(
     surviers: &mut [(Entity, (BlobGeno, BlobInfo))],
     nn_q: Query<(&Parent, &NeuronId)>,
     nnvec: &mut Vec<GenericNN>,
-) -> (Vec<BlobGeno>, Vec<GenericNN>) {
+) -> (Vec<BlobGeno>, Vec<BlobInfo>, Vec<GenericNN>) {
     let mut new_geno_vec = Vec::<BlobGeno>::new();
+    let mut infovec = Vec::<BlobInfo>::new();
 
     let mut existed_nn_ids = Vec::<usize>::new();
 
@@ -103,9 +111,10 @@ fn clean_outcast(
         }
     }
 
-    for (_, (geno, _)) in surviers.iter() {
+    for (_, (geno, info)) in surviers.iter() {
         new_geno_vec.push(geno.clone());
+        infovec.push(info.clone());
     }
 
-    (new_geno_vec, nnvec.clone())
+    (new_geno_vec, infovec, nnvec.clone())
 }

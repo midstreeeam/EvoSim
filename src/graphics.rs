@@ -5,7 +5,7 @@ use bevy::{
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+// use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 use crate::consts::{AUTO_NO_VSYNC_KEYCODE, RAPIER_DT, RAPIER_SUBSTEPS};
 
@@ -18,9 +18,9 @@ impl Plugin for EvoGraphicsPlugin {
         app.add_systems(Startup, setup_graphics)
             .add_plugins((
                 PanCamPlugin::default(),
-                // log frame rate
-                LogDiagnosticsPlugin::default(),
-                FrameTimeDiagnosticsPlugin::default(),
+                // // log frame rate
+                // LogDiagnosticsPlugin::default(),
+                // FrameTimeDiagnosticsPlugin::default(),
             ))
             .add_systems(Update, toggle_vsync)
             // using Fixed timestep so that the simulation can speed up
