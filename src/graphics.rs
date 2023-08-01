@@ -1,10 +1,13 @@
-use bevy::{prelude::*, window::PresentMode, render::{RenderPlugin, settings::WgpuSettings}};
+use bevy::{
+    prelude::*,
+    window::PresentMode,
+};
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
-use crate::consts::{RAPIER_DT, RAPIER_SUBSTEPS, AUTO_NO_VSYNC_KEYCODE};
+use crate::consts::{AUTO_NO_VSYNC_KEYCODE, RAPIER_DT, RAPIER_SUBSTEPS};
 
 #[derive(Component)]
 pub struct MainCamera;
