@@ -17,7 +17,10 @@ pub struct BlobInfo {
     pub color: Color,
     pub mass_center: [f32;2],
     /// velocity is base on `mass_center`
-    pub velocity: [f32;2]
+    pub velocity: [f32;2],
+    /// cumulated moving distance,
+    /// base on `mass_center`
+    pub move_distance: [f32;2]
 }
 
 impl Default for BlobInfo {
@@ -28,7 +31,8 @@ impl Default for BlobInfo {
             ybound: [NAN, NAN],
             color: Color::LIME_GREEN,
             mass_center: [0.0, 0.0],
-            velocity: [0.0,0.0]
+            velocity: [0.0,0.0],
+            move_distance: [0.0,0.0]
         }
     }
 }

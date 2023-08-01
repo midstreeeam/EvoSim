@@ -139,7 +139,7 @@ pub fn export(
                 if parent_id.get() != blob_id {
                     continue;
                 }
-                // unwrap since neuron mush in nnvec
+                // unwrap since neuron must in nnvec
                 blob_nn.push((nnvec.get(neuron.id).unwrap().clone(), neuron.id))
             }
             ef.push_nn(blob_nn);

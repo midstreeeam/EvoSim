@@ -268,6 +268,12 @@ pub fn update_blob_info(
             new_mass_center[0] - blob.mass_center[0],
             new_mass_center[1] - blob.mass_center[1],
         ];
+        
+        // update move_distance
+        blob.move_distance[0] += blob.velocity[0];
+        blob.move_distance[1] += blob.velocity[1];
+
+        // update mass_center
         blob.mass_center = new_mass_center;
     }
     let duration = Instant::now() - start_time;

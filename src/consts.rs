@@ -116,6 +116,10 @@ pub const MUTATE_NN_PORB: f32 = 0.5;
 /// standard deviation for normal distribution mutation
 pub const MUTATE_NN_STD: f32 = 0.1;
 
+// training
+/// survival rate in `train_move.rs`
+pub const TRAIN_MOVE_SURVIVAL_RATE: f32 = 0.5;
+
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
 /// temperary

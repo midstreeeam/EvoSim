@@ -12,7 +12,7 @@ chrono = "0.4.26"
 rand_distr = "0.4.3"
 
 [features]
-default = ["demo"]
+default = ["move"]
 demo = [] # default feature, simple rand demo
 move = [] # training to learn to move
 
