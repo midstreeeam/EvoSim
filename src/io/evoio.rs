@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
-use crate::contorl::block_action;
+use crate::contorl::update::block_action;
 
 use super::{export::export, import::{load_blobs, clean}};
 
-pub struct EvoIO;
+pub struct EvoIOPlugin;
 
-impl Plugin for EvoIO {
+impl Plugin for EvoIOPlugin {
     fn build(&self, app: &mut App) {
         app
         .add_systems(Update, (

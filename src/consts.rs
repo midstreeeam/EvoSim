@@ -1,5 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
+use bevy::prelude::KeyCode;
+
 use crate::brain::nn::Activation;
 
 /// thread count
@@ -118,3 +120,10 @@ pub const MUTATE_NN_STD: f32 = 0.1;
 pub const EXPORT_PATH: &'static str = "./export/";
 /// temperary
 pub const LOAD_FNAME: &'static str = "./export/2023-07-25T15-28-56.json";
+
+// user contorl
+pub const MUTATE_AND_REFRESH_KEYCODE: KeyCode = KeyCode::R;
+pub const AUTO_NO_VSYNC_KEYCODE: KeyCode = KeyCode::V;
+pub const SAVE_ALL_BLOBS_TO_JSON: KeyCode = KeyCode::S;
+pub const LOAD_ALL_BLOBS_FROM_JSON: KeyCode = KeyCode::L;
+pub const CLEAN_ALL_BLOBS: KeyCode = KeyCode::X;

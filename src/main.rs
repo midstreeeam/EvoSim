@@ -16,13 +16,11 @@ use bevy_rapier2d::prelude::*;
 use blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder};
 use brain::resource::BevyBlockNeurons;
 // use consts::THREAD_COUNT;
-use contorl::{block_action, update_blob_info, update_joint_info};
+use contorl::contorl::BlobContorlPlugin;
 use graphics::*;
-use io::evoio::EvoIO;
-use physics::physical_world;
+use io::evoio::EvoIOPlugin;
+use physics::physical_world::PhysiWorldPlugin;
 use mutate::mutate::MutatePlugin;
-
-// use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 // TODO: Inconsistant usize and u32 usage
 // TODO: Headless mode causing panic
@@ -45,30 +43,18 @@ fn main() {
             //         ..default()
             //     }
             // }),
-
-            // // log frame rate
-            // LogDiagnosticsPlugin::default(),
-            // FrameTimeDiagnosticsPlugin::default(),
             // raiper
             RapierPhysicsPlugin::<NoUserData>::default(),
             RapierDebugRenderPlugin::default(),
             // cost
-            physical_world::PhysiWorld,
-            Graphics,
-            EvoIO,
-            MutatePlugin
+            PhysiWorldPlugin, // init physical world
+            EvoGraphicsPlugin, // vsync and camera
+            EvoIOPlugin, // import and export
+            MutatePlugin, // mutation contorl
+            BlobContorlPlugin // update blob each frame
         ))
         .add_systems(Startup, setup_test)
         .init_resource::<BevyBlockNeurons>()
-        .add_systems(
-            Update,
-            (
-                block_action,
-                update_joint_info,
-                update_blob_info,
-                // test
-            ),
-        )
         .run();
 }
 
@@ -81,23 +67,6 @@ pub fn setup_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     for i in -2..2 {
         for j in -2..2 {
             builder.build(&mut BlobGeno::new_rand(), [1500.0 * i as f32, 1500.0 * j as f32]);
-        }
-    }
-}
-
-fn test(q: Query<&BlobGeno>) {
-    for _ in q.iter() {
-        // println!("{:#?}",i);
-    }
-}
-
-/// Generate 100 random blobs.
-/// Pressure test for Rapier
-fn pressure_test(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
-    let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
-    for i in -5..5 {
-        for j in -5..5 {
-            builder.build(&mut BlobGeno::new_rand(), [700.0 * i as f32, 700.0 * j as f32]);
         }
     }
 }

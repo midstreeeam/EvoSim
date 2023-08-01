@@ -1,17 +1,24 @@
-use bevy::{prelude::*, window::PresentMode};
+use bevy::{prelude::*, window::PresentMode, render::{RenderPlugin, settings::WgpuSettings}};
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
-use crate::consts::{RAPIER_DT, RAPIER_SUBSTEPS};
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+
+use crate::consts::{RAPIER_DT, RAPIER_SUBSTEPS, AUTO_NO_VSYNC_KEYCODE};
 
 #[derive(Component)]
 pub struct MainCamera;
-pub struct Graphics;
+pub struct EvoGraphicsPlugin;
 
-impl Plugin for Graphics {
+impl Plugin for EvoGraphicsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_graphics)
-            .add_plugins(PanCamPlugin::default())
+            .add_plugins((
+                PanCamPlugin::default(),
+                // log frame rate
+                LogDiagnosticsPlugin::default(),
+                FrameTimeDiagnosticsPlugin::default(),
+            ))
             .add_systems(Update, toggle_vsync)
             // using Fixed timestep so that the simulation can speed up
             .insert_resource(RapierConfiguration {
@@ -31,7 +38,7 @@ pub fn setup_graphics(mut commands: Commands) {
 /// This system toggles the vsync mode when pressing the button V.
 /// You'll see fps increase displayed in the console.
 fn toggle_vsync(input: Res<Input<KeyCode>>, mut windows: Query<&mut Window>) {
-    if input.just_pressed(KeyCode::V) {
+    if input.just_pressed(AUTO_NO_VSYNC_KEYCODE) {
         let mut window = windows.single_mut();
 
         window.present_mode = if matches!(window.present_mode, PresentMode::AutoVsync) {

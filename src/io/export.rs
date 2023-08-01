@@ -7,6 +7,7 @@ use serde::{Serialize, Deserialize};
 use chrono::{Local, NaiveDateTime, Datelike, Timelike};
 
 use crate::blob::blob::BlobInfo;
+use crate::consts::SAVE_ALL_BLOBS_TO_JSON;
 use crate::{
     blob::{block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{resource::BevyBlockNeurons, neuron::GenericNN},
@@ -126,7 +127,7 @@ pub fn export(
         return;
     }
 
-    if input.just_pressed(KeyCode::S) {
+    if input.just_pressed(SAVE_ALL_BLOBS_TO_JSON) {
         create_if_not_exist();
         let mut ef = ExportFile::new();
         let nnvec = &bbn.nnvec;

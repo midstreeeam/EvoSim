@@ -3,9 +3,9 @@ use bevy::prelude::*;
 use crate::physics::rules::*;
 use crate::physics::world::setup_walls;
 
-pub struct PhysiWorld;
+pub struct PhysiWorldPlugin;
 
-impl Plugin for PhysiWorld {
+impl Plugin for PhysiWorldPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Startup,

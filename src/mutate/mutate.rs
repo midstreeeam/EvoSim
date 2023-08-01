@@ -8,7 +8,7 @@ use crate::{
         resource::BevyBlockNeurons,
     },
     componet::ColliderFlag,
-    physics::world::Wall, contorl::block_action,
+    physics::world::Wall, contorl::update::block_action, consts::MUTATE_AND_REFRESH_KEYCODE,
 };
 
 use super::{geno_mutate::mutate_geno, nn_mutate::mutate_nn};
@@ -39,7 +39,7 @@ pub fn mutate_and_refresh(
         info_vec.push(info);
     }
 
-    if input.just_pressed(KeyCode::R) {
+    if input.just_pressed(MUTATE_AND_REFRESH_KEYCODE) {
         mutate_geno(&mut geno_vec);
         mutate_nn(&mut bbn);
 
@@ -63,7 +63,6 @@ pub fn mutate_and_refresh(
     }
 }
 
-// TODO: test & debug this function, haven't been tested after coded
 /// mutated blob may gain or lose NN, sync it with resource
 fn sync_mutate(
     geno_q: &mut Vec<BlobGeno>, 

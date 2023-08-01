@@ -9,7 +9,7 @@ use crate::blob::blob::Blob;
 use crate::blob::geno_blob_builder::GenoBlobBuilder;
 use crate::brain::resource::BevyBlockNeurons;
 use crate::componet::ColliderFlag;
-use crate::consts::LOAD_FNAME;
+use crate::consts::{LOAD_FNAME, LOAD_ALL_BLOBS_FROM_JSON, CLEAN_ALL_BLOBS};
 use crate::physics::world::Wall;
 
 use super::export::ExportFile;
@@ -19,19 +19,8 @@ pub fn load_blobs(
     mut bbn: ResMut<BevyBlockNeurons>,
     input: Res<Input<KeyCode>>,
 ) {
-    // if input.just_pressed(KeyCode::L){
-    //     if let Ok(mut file) = File::open(LOAD_FNAME){
-    //         let mut file_str = String::new();
-    //         file.read_to_string(&mut file_str).unwrap();
-    //         let ef: ExportFile = serde_json::from_str(&file_str).unwrap();
-    //         ef.check();
-    //         overwrite(ef, commands, &mut bbn);
-    //     } else {
-    //         warn!("Fail to open file {}", LOAD_FNAME)
-    //     }
-    // }
-
-    if input.just_pressed(KeyCode::L) {
+    
+    if input.just_pressed(LOAD_ALL_BLOBS_FROM_JSON) {
         match File::open(LOAD_FNAME) {
             Ok(mut file) => {
                 let mut file_str = String::new();
@@ -68,7 +57,7 @@ pub fn clean(
     joint_q: Query<Entity, With<ImpulseJoint>>,
     input: Res<Input<KeyCode>>,
 ) {
-    if input.just_pressed(KeyCode::L) || input.just_pressed(KeyCode::X) {
+    if input.just_pressed(LOAD_ALL_BLOBS_FROM_JSON) || input.just_pressed(CLEAN_ALL_BLOBS) {
         for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
             commands.entity(entity).despawn()
         }
