@@ -20,6 +20,8 @@ use crate::{
     consts::*,
 };
 
+use super::resource::Frames;
+
 /// select `Query<(&Parent, &mut ImpulseJoint)`
 /// means the center block will not be selected
 ///
@@ -300,4 +302,8 @@ fn get_mass_center(mass_points: Vec<[f32; 3]>) -> Option<[f32; 2]> {
     } else {
         Some([weighted_sum[0] / total_mass, weighted_sum[1] / total_mass])
     }
+}
+
+pub fn update_iteration_frames(mut frames: ResMut<Frames>) {
+    frames.0 += 1;
 }

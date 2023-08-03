@@ -85,37 +85,77 @@ pub const BRAIN_NN_SHAPE: [usize; 3] = [
 /// ReLU will make all output positive
 pub const ACTIVATION_FUNCTION: Activation = Activation::Sigmoid;
 
-// mutate
-/// probablity of having tree structure mutate
-/// 
-/// if the tree structure is going to mutate, maximumly 1 node will mutate
-/// since single node blob can't lose a node anymore
-pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.9;
-/// probablity for the choosen node to gain a child node,
-/// otherwise the blob gonna lose a limb
-pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
-/// max times to retry to add a new limb if last one cause self-conflict
-/// 
-/// condition of impossible new limb exist (the parent indicator was dropped)
-pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
-/// probablity of having limb size mutate
-pub const MUTATE_BLOCK_SIZE_PROB: f32 = 1.0;
-/// probablity for each signle block to mutate
-/// 
-/// mutation is not garenteed since it might cause self-confliction
-pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
-/// scaler for block mutation
-pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
-/// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
-pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
-/// porbablity of a signle joint limit to mutate
-pub const MUTATE_JOINT_LIMIT_PROB: f32 = 0.5;
-pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
-pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
-/// porbablity of a single nn to mutate
-pub const MUTATE_NN_PORB: f32 = 0.5;
-/// standard deviation for normal distribution mutation
-pub const MUTATE_NN_STD: f32 = 0.1;
+#[cfg(feature = "demo")]
+// mutate for demo
+pub mod mutate_consts{
+    use std::f32::consts::PI;
+    /// probablity of having tree structure mutate
+    /// 
+    /// if the tree structure is going to mutate, maximumly 1 node will mutate
+    /// since single node blob can't lose a node anymore
+    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.9;
+    /// probablity for the choosen node to gain a child node,
+    /// otherwise the blob gonna lose a limb
+    pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
+    /// max times to retry to add a new limb if last one cause self-conflict
+    /// 
+    /// condition of impossible new limb exist (the parent indicator was dropped)
+    pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
+    /// probablity of having limb size mutate
+    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 1.0;
+    /// probablity for each signle block to mutate
+    /// 
+    /// mutation is not garenteed since it might cause self-confliction
+    pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
+    /// scaler for block mutation
+    pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
+    /// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
+    pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
+    /// porbablity of a signle joint limit to mutate
+    pub const MUTATE_JOINT_LIMIT_PROB: f32 = 0.5;
+    pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
+    pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
+    /// porbablity of a single nn to mutate
+    pub const MUTATE_NN_PORB: f32 = 0.5;
+    /// standard deviation for normal distribution mutation
+    pub const MUTATE_NN_STD: f32 = 0.1;
+}
+
+#[cfg(feature = "move")]
+// mutate for move training
+pub mod mutate_consts{
+    use std::f32::consts::PI;
+    /// probablity of having tree structure mutate
+    /// 
+    /// if the tree structure is going to mutate, maximumly 1 node will mutate
+    /// since single node blob can't lose a node anymore
+    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.02;
+    /// probablity for the choosen node to gain a child node,
+    /// otherwise the blob gonna lose a limb
+    pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
+    /// max times to retry to add a new limb if last one cause self-conflict
+    /// 
+    /// condition of impossible new limb exist (the parent indicator was dropped)
+    pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
+    /// probablity of having limb size mutate
+    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 0.1;
+    /// probablity for each signle block to mutate
+    /// 
+    /// mutation is not garenteed since it might cause self-confliction
+    pub const MUTATE_SINGLE_BLOCK_SIZE_PROB: f32 = 0.5;
+    /// scaler for block mutation
+    pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.9,1.1];
+    /// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
+    pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.5,2.0];
+    /// porbablity of a signle joint limit to mutate
+    pub const MUTATE_JOINT_LIMIT_PROB: f32 = 0.1;
+    pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
+    pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
+    /// porbablity of a single nn to mutate
+    pub const MUTATE_NN_PORB: f32 = 0.1;
+    /// standard deviation for normal distribution mutation
+    pub const MUTATE_NN_STD: f32 = 0.1;
+}
 
 // training
 /// survival rate in `train_move.rs`
@@ -128,6 +168,8 @@ pub const POPULATION: usize = 10;
 pub const SCATTER_RATIO: f32 = 0.5;
 /// min distance between two spawn point
 pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
+/// how long a signle iteration, counted in frame
+pub const ITERATION_LENGTH: usize = 600;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";

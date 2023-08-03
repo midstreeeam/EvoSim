@@ -4,11 +4,11 @@ use rand::prelude::*;
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
+    consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
     contorl::contorl::get_center,
 };
 
-use super::resource::TrainMutPipe;
+use super::resource::{Frames, TrainMutPipe};
 
 pub fn train_move(
     entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
@@ -16,8 +16,9 @@ pub fn train_move(
     mut bbn: ResMut<BevyBlockNeurons>,
     mut pipe: ResMut<TrainMutPipe>,
     input: Res<Input<KeyCode>>,
+    frames: Res<Frames>,
 ) {
-    if input.just_pressed(KeyCode::R) {
+    if input.just_pressed(NEW_ITERATION_KEYCODE) || iteration_end(frames) {
         let nnvec = &mut bbn.nnvec;
         let mut blob_vec: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
         for (e, (geno, info)) in entity_geno_info_q.iter() {
@@ -46,7 +47,6 @@ pub fn train_move(
 
         // tournament selection
         let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
-
         let (mut new_genovec, mut infovec, mut new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
 
         // reproduce
@@ -168,5 +168,14 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
     assert_eq!(infovec.len(), rand_centers.len());
     for (center, info) in rand_centers.iter().zip(infovec.iter_mut()) {
         info.center_block_pos = Vec2::from_array([center.0, center.1])
+    }
+}
+
+fn iteration_end(frames: Res<Frames>) -> bool {
+    let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
+    if cur_gen_frame_cnt == 0 && frames.0 != 0 {
+        true
+    } else {
+        false
     }
 }

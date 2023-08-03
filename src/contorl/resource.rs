@@ -5,6 +5,16 @@ use crate::{
     brain::neuron::GenericNN,
 };
 
+/// count how many frames been passed since simulation start
+#[derive(Resource)]
+pub struct Frames(pub u128);
+
+impl Default for Frames {
+    fn default() -> Self {
+        Self(0)
+    }
+}
+
 #[derive(Resource)]
 pub struct TrainMutPipe {
     genovec: Vec<BlobGeno>,
