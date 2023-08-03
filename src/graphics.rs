@@ -1,7 +1,4 @@
-use bevy::{
-    prelude::*,
-    window::PresentMode,
-};
+use bevy::{prelude::*, window::PresentMode};
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
@@ -38,8 +35,7 @@ pub fn setup_graphics(mut commands: Commands) {
     commands.spawn((Camera2dBundle::default(), PanCam::default(), MainCamera));
 }
 
-/// This system toggles the vsync mode when pressing the button V.
-/// You'll see fps increase displayed in the console.
+/// This system toggles the vsync mode when pressing the button.
 fn toggle_vsync(input: Res<Input<KeyCode>>, mut windows: Query<&mut Window>) {
     if input.just_pressed(AUTO_NO_VSYNC_KEYCODE) {
         let mut window = windows.single_mut();

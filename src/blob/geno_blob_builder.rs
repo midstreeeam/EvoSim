@@ -506,6 +506,19 @@ impl BlobGeno {
         }
     }
 
+    /// get reference for all nn_id, in usize rather than `Option<usize>`
+    pub fn all_usize_nn_ids(&self) -> Vec<usize> {
+        self.vec_tree.nodes.iter()
+            .filter_map(|node_option|{
+                match node_option {
+                    Some(GenericGenoNode::Child(node)) => Some(node.nn_id.unwrap()),
+                    _ => None
+                }
+            })
+            .collect()
+    }
+
+    /// get mut reference for all nn_id in the geno
     pub fn all_nn_ids_mut(&mut self) -> Vec<&mut Option<usize>> {
         self.vec_tree.nodes.iter_mut()
             .filter_map(|node_option| {

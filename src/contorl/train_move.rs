@@ -1,9 +1,10 @@
 use bevy::prelude::*;
+use rand::prelude::*;
 
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::TRAIN_MOVE_SURVIVAL_RATE,
+    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
 };
 
 use super::resource::TrainMutPipe;
@@ -21,7 +22,7 @@ pub fn train_move(
         for (e, (geno, info)) in entity_geno_info_q.iter() {
             blob_vec.push((e, (geno.clone(), info.clone())));
         }
-    
+
         blob_vec.sort_by(|a, b| {
             let mag_a =
                 a.1 .1
@@ -39,20 +40,21 @@ pub fn train_move(
                 .partial_cmp(&mag_a)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
-    
+
         let split_idx = (blob_vec.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
+
+        // tournament selection
         let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
-    
+
         let (new_genovec, infovec, new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
-        
+
         // println!("{:#?}",new_genovec);
         // println!("nnveclen: {:#?}",new_nnvec.len());
-        
+
         pipe.push(new_genovec, infovec, new_nnvec);
     }
 }
 
-// TODO: test and debug this function
 /// delete neuron from nnvec based on outcasts
 fn clean_outcast(
     surviers: &mut [(Entity, (BlobGeno, BlobInfo))],
@@ -80,7 +82,7 @@ fn clean_outcast(
 
     // Check gap before the first ID
     if let Some(&first_id) = existed_nn_ids.first() {
-        missing_ids.extend(0..first_id); // This line checks for missing IDs before the smallest ID.
+        missing_ids.extend(0..first_id); // checks for missing IDs before the smallest ID.
     }
 
     // Check gaps between every consecutive pair of IDs
@@ -116,5 +118,48 @@ fn clean_outcast(
         infovec.push(info.clone());
     }
 
+    // reproduce
+    reproduce(&mut new_geno_vec, &mut infovec, nnvec);
+
     (new_geno_vec, infovec, nnvec.clone())
+}
+
+/// reproduce the blob to the target population
+///
+/// this function will reset spawn position of all blobs,
+/// the position won't inherit
+///
+/// new NN will be append to nnvec
+fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &mut Vec<GenericNN>) {
+    assert_eq!(genovec.len(), infovec.len());
+    assert!(genovec.len() < POPULATION);
+
+    let mut rng: ThreadRng = thread_rng();
+
+    let mut new_genovec: Vec<BlobGeno> = Vec::new();
+    let mut new_infovec: Vec<BlobInfo> = Vec::new();
+    let mut new_nnvec: Vec<GenericNN> = Vec::new();
+
+    loop {
+        let chosen_idx: usize = rng.gen_range(0..genovec.len());
+        let mut new_geno = genovec.get(chosen_idx).unwrap().clone();
+        let new_info = infovec.get(chosen_idx).unwrap().clone();
+        for nn_id in new_geno.all_nn_ids_mut() {
+            let copied_id = nn_id.unwrap();
+            let new_nn = nnvec.get(copied_id).unwrap().clone();
+            new_nnvec.push(new_nn);
+            // modify nn_id
+            *nn_id = Some(new_nnvec.len() + nnvec.len() -1)
+        }
+        new_genovec.push(new_geno);
+        new_infovec.push(new_info);
+
+        if new_genovec.len() + genovec.len() == POPULATION {
+            break;
+        }
+    }
+
+    genovec.append(&mut new_genovec);
+    infovec.append(&mut new_infovec);
+    nnvec.append(&mut new_nnvec);
 }
