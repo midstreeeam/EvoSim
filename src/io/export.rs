@@ -7,7 +7,8 @@ use serde::{Serialize, Deserialize};
 use chrono::{Local, NaiveDateTime, Datelike, Timelike};
 
 use crate::blob::blob::BlobInfo;
-use crate::consts::SAVE_ALL_BLOBS_TO_JSON;
+use crate::consts::{SAVE_ALL_BLOBS_TO_JSON, ITERATION_LENGTH, CHECKPOINTS_LENGTH};
+use crate::contorl::resource::Frames;
 use crate::{
     blob::{block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{resource::BevyBlockNeurons, neuron::GenericNN},
@@ -122,12 +123,13 @@ pub fn export(
     blob_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
     nn_q: Query<(&Parent, &NeuronId)>,
     bbn: Res<BevyBlockNeurons>,
+    frames: Res<Frames>
 ) {
     if blob_q.is_empty() || nn_q.is_empty() {
         return;
     }
 
-    if input.just_pressed(SAVE_ALL_BLOBS_TO_JSON) {
+    if input.just_pressed(SAVE_ALL_BLOBS_TO_JSON) || is_checkpoints(frames){
         create_if_not_exist();
         let mut ef = ExportFile::new();
         let nnvec = &bbn.nnvec;
@@ -166,4 +168,14 @@ fn current_time_filename() -> String {
     format!("{:04}-{:02}-{:02}T{:02}-{:02}-{:02}.json",
             now.year(), now.month(), now.day(),
             now.hour(), now.minute(), now.second())
+}
+
+fn is_checkpoints(frames: Res<Frames>) -> bool {
+    let iterations = frames.0 / ITERATION_LENGTH as u128;
+    let cur_cp_iter_num = iterations % CHECKPOINTS_LENGTH as u128;
+    if cur_cp_iter_num == 0 && iterations != 0 {
+        true
+    } else {
+        false
+    }
 }

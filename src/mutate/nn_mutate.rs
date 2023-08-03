@@ -6,7 +6,7 @@ use crate::{
         neuron::{BlockNN, BrainNN, GenericNN},
         nn::BaseNN,
     },
-    consts::{*, mutate_consts::*},
+    consts::mutate_consts::*,
 };
 
 pub fn mutate_nn(nnvec: &mut Vec<GenericNN>) {
