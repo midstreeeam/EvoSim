@@ -9,6 +9,7 @@ mod graphics;
 mod io;
 mod mutate;
 mod physics;
+mod logger;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;

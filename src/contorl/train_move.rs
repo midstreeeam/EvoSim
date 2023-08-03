@@ -5,7 +5,7 @@ use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
     consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
-    contorl::contorl::get_center,
+    contorl::contorl::get_center, logger_info,
 };
 
 use super::resource::{Frames, TrainMutPipe};
@@ -174,6 +174,7 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
 fn iteration_end(frames: Res<Frames>) -> bool {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt == 0 && frames.0 != 0 {
+        logger_info!("test");
         true
     } else {
         false

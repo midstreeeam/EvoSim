@@ -1558,6 +1558,7 @@ dependencies = [
  "bevy_rapier2d",
  "chrono",
  "itertools",
+ "lazy_static",
  "ndarray",
  "rand",
  "rand_distr",

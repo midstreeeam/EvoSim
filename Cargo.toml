@@ -10,6 +10,7 @@ serde = "1.0.174"
 serde_json = "1.0.103"
 chrono = "0.4.26"
 rand_distr = "0.4.3"
+lazy_static = "1.4.0"
 
 [features]
 default = ["move"]
