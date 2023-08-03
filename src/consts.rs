@@ -36,6 +36,7 @@ pub const MAX_MOTOR_VEL_ABS: f32 = 1.0;
 // math
 pub const EPSILON: f32 = 0.0001; // max error
 pub const POSITION_EPSILON: f32 = 0.001; // max eorror in position validation
+pub const PANIC_TRY_TIMES: usize = 10000;
 
 // physics
 pub const DRAG_COEFF: f32 = 1.0; // drag coefficient in fluid simulation
@@ -119,6 +120,14 @@ pub const MUTATE_NN_STD: f32 = 0.1;
 // training
 /// survival rate in `train_move.rs`
 pub const TRAIN_MOVE_SURVIVAL_RATE: f32 = 0.5;
+/// population for each training iteration
+pub const POPULATION: usize = 10;
+/// limit for population generation area
+/// 
+/// 100*100 world size with 0.5 ratio result in 50*50 generation area
+pub const SCATTER_RATIO: f32 = 0.5;
+/// min distance between two spawn point
+pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
