@@ -4,7 +4,7 @@ use rand::prelude::*;
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
+    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE}, contorl::contorl::get_center,
 };
 
 use super::resource::TrainMutPipe;
@@ -46,7 +46,10 @@ pub fn train_move(
         // tournament selection
         let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
 
-        let (new_genovec, infovec, new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
+        let (mut new_genovec, mut infovec, mut new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
+
+        // reproduce
+        reproduce(&mut new_genovec, &mut infovec, &mut new_nnvec);
 
         // println!("{:#?}",new_genovec);
         // println!("nnveclen: {:#?}",new_nnvec.len());
@@ -118,9 +121,6 @@ fn clean_outcast(
         infovec.push(info.clone());
     }
 
-    // reproduce
-    reproduce(&mut new_geno_vec, &mut infovec, nnvec);
-
     (new_geno_vec, infovec, nnvec.clone())
 }
 
@@ -162,4 +162,10 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
     genovec.append(&mut new_genovec);
     infovec.append(&mut new_infovec);
     nnvec.append(&mut new_nnvec);
+
+    let rand_centers = get_center();
+    assert_eq!(infovec.len(),rand_centers.len());
+    for (center,info) in rand_centers.iter().zip(infovec.iter_mut()) {
+        info.center_block_pos = Vec2::from_array([center.0, center.1])
+    }
 }

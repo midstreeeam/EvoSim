@@ -4,8 +4,8 @@ use rand_distr::{Normal, Distribution};
 
 use crate::{brain::{resource::BevyBlockNeurons, neuron::{GenericNN, BrainNN, BlockNN}, nn::BaseNN}, consts::{MUTATE_NN_STD, MUTATE_NN_PORB}};
 
-pub fn mutate_nn(bbn: &mut ResMut<BevyBlockNeurons>) {
-    for nn in bbn.nnvec.iter_mut(){
+pub fn mutate_nn(nnvec: &mut Vec<GenericNN>) {
+    for nn in nnvec.iter_mut(){
         let mut rng: ThreadRng = thread_rng();
 
         if !rng.gen_bool(MUTATE_NN_PORB as f64) {
