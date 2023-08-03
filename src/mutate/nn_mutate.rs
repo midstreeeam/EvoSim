@@ -1,11 +1,16 @@
-use bevy::prelude::ResMut;
 use rand::prelude::*;
-use rand_distr::{Normal, Distribution};
+use rand_distr::{Distribution, Normal};
 
-use crate::{brain::{resource::BevyBlockNeurons, neuron::{GenericNN, BrainNN, BlockNN}, nn::BaseNN}, consts::{MUTATE_NN_STD, MUTATE_NN_PORB}};
+use crate::{
+    brain::{
+        neuron::{BlockNN, BrainNN, GenericNN},
+        nn::BaseNN,
+    },
+    consts::{MUTATE_NN_PORB, MUTATE_NN_STD},
+};
 
 pub fn mutate_nn(nnvec: &mut Vec<GenericNN>) {
-    for nn in nnvec.iter_mut(){
+    for nn in nnvec.iter_mut() {
         let mut rng: ThreadRng = thread_rng();
 
         if !rng.gen_bool(MUTATE_NN_PORB as f64) {
@@ -14,7 +19,7 @@ pub fn mutate_nn(nnvec: &mut Vec<GenericNN>) {
 
         match nn {
             GenericNN::BRAINNN(nn) => mutate_brain_nn(nn),
-            GenericNN::BLOCKNN(nn) => mutate_block_nn(nn)
+            GenericNN::BLOCKNN(nn) => mutate_block_nn(nn),
         }
     }
 }

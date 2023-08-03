@@ -23,11 +23,7 @@ impl Default for TrainMutPipe {
 }
 
 impl TrainMutPipe {
-    pub fn push(
-        &mut self, genovec: Vec<BlobGeno>, 
-        infovec: Vec<BlobInfo>, 
-        nnvec: Vec<GenericNN>
-    ) {
+    pub fn push(&mut self, genovec: Vec<BlobGeno>, infovec: Vec<BlobInfo>, nnvec: Vec<GenericNN>) {
         assert!(self.genovec.is_empty());
         assert!(self.infovec.is_empty());
         assert!(self.nnvec.is_empty());

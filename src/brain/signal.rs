@@ -7,7 +7,7 @@ use crate::{
 use bevy::prelude::Entity;
 use itertools::Itertools;
 use ndarray::{concatenate, prelude::*};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 const CL: usize = INWARD_NN_CHILDREN_INPUT_LEN;
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;

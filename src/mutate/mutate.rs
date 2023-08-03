@@ -2,13 +2,18 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::ImpulseJoint;
 
 use crate::{
-    blob::{blob::{Blob, BlobInfo}, geno_blob_builder::{BlobGeno, GenoBlobBuilder}},
+    blob::{
+        blob::{Blob, BlobInfo},
+        geno_blob_builder::{BlobGeno, GenoBlobBuilder},
+    },
     brain::{
         neuron::{BlockNN, GenericNN},
         resource::BevyBlockNeurons,
     },
     componet::ColliderFlag,
-    physics::world::Wall, contorl::{update::block_action, resource::TrainMutPipe}, consts::MUTATE_AND_REFRESH_KEYCODE,
+    consts::MUTATE_AND_REFRESH_KEYCODE,
+    contorl::{resource::TrainMutPipe, update::block_action},
+    physics::world::Wall,
 };
 
 use super::{geno_mutate::mutate_geno, nn_mutate::mutate_nn};
@@ -26,7 +31,7 @@ impl Plugin for MutatePlugin {
 pub fn mutate_and_refresh(
     mut commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,
-    geno_info_q: Query<(&BlobGeno, &BlobInfo)>, 
+    geno_info_q: Query<(&BlobGeno, &BlobInfo)>,
     blob_q: Query<Entity, With<Blob>>,
     collider_q: Query<Entity, (With<ColliderFlag>, Without<Wall>)>,
     joint_q: Query<Entity, With<ImpulseJoint>>,
@@ -34,7 +39,7 @@ pub fn mutate_and_refresh(
 ) {
     let mut geno_vec = Vec::<BlobGeno>::new();
     let mut info_vec = Vec::<&BlobInfo>::new();
-    for (geno,info) in geno_info_q.iter() {
+    for (geno, info) in geno_info_q.iter() {
         geno_vec.push(geno.clone());
         info_vec.push(info);
     }
@@ -43,21 +48,21 @@ pub fn mutate_and_refresh(
         mutate_geno(&mut geno_vec);
         mutate_nn(&mut bbn.nnvec);
 
-        let (mut genovec,nnvec) = sync_mutate(&mut geno_vec, &mut bbn);
-    
+        let (mut genovec, nnvec) = sync_mutate(&mut geno_vec, &mut bbn);
+
         // despawn
         for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
             commands.entity(entity).despawn()
         }
-    
+
         // temp empty vector for builder
         let mut temp_nnvec = Vec::<GenericNN>::new();
         let mut builder = GenoBlobBuilder::from_commands(commands, &mut temp_nnvec);
-    
+
         for (geno, &info) in genovec.iter_mut().zip(info_vec.iter()) {
             builder.build(geno, info.center_block_pos.to_array())
         }
-    
+
         // update nnvec
         bbn.nnvec = nnvec;
     }
@@ -67,7 +72,7 @@ pub fn mutate_and_refresh_after_train(
     mut commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,
     mut pipe: ResMut<TrainMutPipe>,
-    // geno_info_q: Query<(&BlobGeno, &BlobInfo)>, 
+    // geno_info_q: Query<(&BlobGeno, &BlobInfo)>,
     blob_q: Query<Entity, With<Blob>>,
     collider_q: Query<Entity, (With<ColliderFlag>, Without<Wall>)>,
     joint_q: Query<Entity, With<ImpulseJoint>>,
@@ -75,7 +80,7 @@ pub fn mutate_and_refresh_after_train(
 ) {
     // emtpy pipe means no tournament selection preformed in this frame
     if pipe.is_empty() {
-        return
+        return;
     }
 
     let (mut pipe_genovec, infovec, mut pipe_nnvec) = pipe.pop();
@@ -85,7 +90,7 @@ pub fn mutate_and_refresh_after_train(
 
     bbn.nnvec = pipe_nnvec;
 
-    let (mut genovec,nnvec) = sync_mutate(&mut pipe_genovec, &mut bbn);
+    let (mut genovec, nnvec) = sync_mutate(&mut pipe_genovec, &mut bbn);
 
     // despawn
     for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
@@ -102,14 +107,13 @@ pub fn mutate_and_refresh_after_train(
 
     // update nnvec
     bbn.nnvec = nnvec;
-
 }
 
 /// mutated blob may gain or lose NN, sync it with resource
 fn sync_mutate(
-    geno_q: &mut Vec<BlobGeno>, 
-    bbn: &mut ResMut<BevyBlockNeurons>
-) -> (Vec<BlobGeno>,Vec<GenericNN>) {
+    geno_q: &mut Vec<BlobGeno>,
+    bbn: &mut ResMut<BevyBlockNeurons>,
+) -> (Vec<BlobGeno>, Vec<GenericNN>) {
     let mut existed_nn_ids = Vec::<usize>::new();
 
     for geno in geno_q.iter_mut() {
@@ -164,5 +168,5 @@ fn sync_mutate(
     }
 
     // copy geno
-    (Vec::from_iter(geno_q.iter().cloned()),bbn.nnvec.clone())
+    (Vec::from_iter(geno_q.iter().cloned()), bbn.nnvec.clone())
 }

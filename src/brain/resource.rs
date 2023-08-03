@@ -112,7 +112,10 @@ fn inward_bulk_pass(
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
-            panic!("nn with id {} is expected to be BLOCKNN, but found BRAINNN", unit.nn_id)
+            panic!(
+                "nn with id {} is expected to be BLOCKNN, but found BRAINNN",
+                unit.nn_id
+            )
         }
     }
 }
@@ -132,7 +135,10 @@ fn brain_pass(
                 .get_signal_mut()
                 .push_child_signal(nn.get_inward_output(&unit.signal), unit.anchor_pos);
         } else {
-            panic!("nn with id {} is expected to be BLOCKNN, but found BRAINNN", unit.nn_id)
+            panic!(
+                "nn with id {} is expected to be BLOCKNN, but found BRAINNN",
+                unit.nn_id
+            )
         }
     }
 }

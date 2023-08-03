@@ -4,7 +4,8 @@ use rand::prelude::*;
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE}, contorl::contorl::get_center,
+    consts::{POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
+    contorl::contorl::get_center,
 };
 
 use super::resource::TrainMutPipe;
@@ -149,7 +150,7 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
             let new_nn = nnvec.get(copied_id).unwrap().clone();
             new_nnvec.push(new_nn);
             // modify nn_id
-            *nn_id = Some(new_nnvec.len() + nnvec.len() -1)
+            *nn_id = Some(new_nnvec.len() + nnvec.len() - 1)
         }
         new_genovec.push(new_geno);
         new_infovec.push(new_info);
@@ -164,8 +165,8 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
     nnvec.append(&mut new_nnvec);
 
     let rand_centers = get_center();
-    assert_eq!(infovec.len(),rand_centers.len());
-    for (center,info) in rand_centers.iter().zip(infovec.iter_mut()) {
+    assert_eq!(infovec.len(), rand_centers.len());
+    for (center, info) in rand_centers.iter().zip(infovec.iter_mut()) {
         info.center_block_pos = Vec2::from_array([center.0, center.1])
     }
 }

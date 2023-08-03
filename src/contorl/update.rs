@@ -14,7 +14,7 @@ use crate::{
     },
     brain::{
         resource::BevyBlockNeurons,
-        signal::{BrainSignal, InwardNNInputSignal, SignalHandler}
+        signal::{BrainSignal, InwardNNInputSignal, SignalHandler},
     },
     componet::{BlobEntityIndex, ColliderFlag},
     consts::*,
@@ -42,12 +42,12 @@ pub fn block_action(
 
     if block_q.is_empty() {
         assert!(brain_q.is_empty());
-        return
+        return;
     }
 
     if brain_q.is_empty() {
         assert!(block_q.is_empty());
-        return
+        return;
     }
 
     let mut signal_handler = SignalHandler::default();
@@ -90,7 +90,7 @@ pub fn block_action(
             parent_nn_id.unwrap(),
             depth_q.get(entity_id).unwrap(),
             p_anchor_q.get(entity_id).unwrap(),
-            child
+            child,
         );
     }
 
@@ -118,9 +118,9 @@ pub fn block_action(
 
     // println!("{}",output[1].1);
     // update joints base on nn's output
-    for (entity_id,target_pos,target_vel) in output{
+    for (entity_id, target_pos, target_vel) in output {
         // println!("{},{}",target_pos,target_vel);
-        let (_,_,mut joint) = block_q.get_mut(entity_id).unwrap();
+        let (_, _, mut joint) = block_q.get_mut(entity_id).unwrap();
         joint
             .data
             .set_motor_position(JointAxis::AngX, target_pos, MOTOR_STIFFNESS, MOTOR_DAMPING);
@@ -128,8 +128,6 @@ pub fn block_action(
             .data
             .set_motor_velocity(JointAxis::AngX, target_vel, MOTOR_DAMPING);
     }
-
-    
 
     // let output = bbn.get_rand_outputs(signal_handler);
     // // TODO: make sure the element order in output vec matches the iterator so that they can be zipped together
@@ -143,7 +141,7 @@ pub fn block_action(
     //         .set_motor_velocity(JointAxis::AngX, signal[1], MOTOR_DAMPING);
     // }
     let duration = Instant::now() - start_time;
-    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION {
         println!("block_action: {:?}", duration);
     }
 }
@@ -231,7 +229,7 @@ pub fn update_joint_info(
         }
     }
     let duration = Instant::now() - start_time;
-    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION {
         println!("update_joint_info: {:?}", duration);
     }
 }
@@ -268,7 +266,7 @@ pub fn update_blob_info(
             new_mass_center[0] - blob.mass_center[0],
             new_mass_center[1] - blob.mass_center[1],
         ];
-        
+
         // update move_distance
         blob.move_distance[0] += blob.velocity[0];
         blob.move_distance[1] += blob.velocity[1];
@@ -277,7 +275,7 @@ pub fn update_blob_info(
         blob.mass_center = new_mass_center;
     }
     let duration = Instant::now() - start_time;
-    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION{
+    if PRINT_FUNCTION_TIME && duration >= MIN_PRINT_DURATION {
         println!("update_blob_info: {:?}", duration);
     }
 }

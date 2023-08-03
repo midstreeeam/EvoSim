@@ -7,11 +7,9 @@ use crate::{
     consts::*,
 };
 
-const CLAMP: [f32;2] = MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER;
+const CLAMP: [f32; 2] = MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER;
 
-pub fn mutate_geno(
-    geno_q: &mut Vec<BlobGeno>
-) {
+pub fn mutate_geno(geno_q: &mut Vec<BlobGeno>) {
     for mut geno in geno_q {
         mutate_tree_structure(&mut geno);
         mutate_block_size(&mut geno);
@@ -119,8 +117,14 @@ fn new_rand_node(parent: &GenoNode, direction: usize) -> GenericGenoNode {
 
     // no limitation implementation
     let size = [
-        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[0]),
-        rng.gen_range(RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[1]),
+        rng.gen_range(
+            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[0]
+                ..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[0],
+        ),
+        rng.gen_range(
+            RAND_SIZE_SCALER[0] * DEFAULT_BLOCK_SIZE[1]
+                ..RAND_SIZE_SCALER[1] * DEFAULT_BLOCK_SIZE[1],
+        ),
     ];
 
     // center
@@ -176,25 +180,26 @@ pub fn mutate_block_size(geno: &mut BlobGeno) {
             }
             let mutation_factor_0 = rng.gen_range(0.9..=1.1);
             let mutation_factor_1 = rng.gen_range(0.9..=1.1);
-            let new_size_0 = (node.size[0] * mutation_factor_0).clamp(DEFAULT_BLOCK_SIZE[0]*CLAMP[0], DEFAULT_BLOCK_SIZE[0]*CLAMP[1]);
-            let new_size_1 = (node.size[1] * mutation_factor_1).clamp(DEFAULT_BLOCK_SIZE[1]*CLAMP[0], DEFAULT_BLOCK_SIZE[1]*CLAMP[1]);
-    
+            let new_size_0 = (node.size[0] * mutation_factor_0).clamp(
+                DEFAULT_BLOCK_SIZE[0] * CLAMP[0],
+                DEFAULT_BLOCK_SIZE[0] * CLAMP[1],
+            );
+            let new_size_1 = (node.size[1] * mutation_factor_1).clamp(
+                DEFAULT_BLOCK_SIZE[1] * CLAMP[0],
+                DEFAULT_BLOCK_SIZE[1] * CLAMP[1],
+            );
+
             // Store the mutation
             potential_mutations.push((index, [new_size_0, new_size_1]));
         }
     }
-    
+
     for (index, new_size) in &potential_mutations {
-        mutate_single_block_size(geno, *index, *new_size);      
+        mutate_single_block_size(geno, *index, *new_size);
     }
 }
 
-
-fn mutate_single_block_size(
-    geno: &mut BlobGeno,
-    index: usize,
-    new_size: [f32;2]
-) {
+fn mutate_single_block_size(geno: &mut BlobGeno, index: usize, new_size: [f32; 2]) {
     let temp_geno = geno.clone();
 
     if let Some(Some(GenericGenoNode::Child(node))) = temp_geno.vec_tree.nodes.get(index) {
@@ -222,53 +227,44 @@ fn mutate_single_block_size(
 /// outputs front, left, right movement vector for input node (facing outward to the root node)
 fn get_movevec(
     index: usize,
-    old_size: [f32;2],
-    new_size: [f32;2]
-) -> Option<([f32;2],[f32;2],[f32;2])> {
+    old_size: [f32; 2],
+    new_size: [f32; 2],
+) -> Option<([f32; 2], [f32; 2], [f32; 2])> {
     if index == 0 {
-        return None
+        return None;
     } else {
-        let top = [0.0, new_size[1]-old_size[1]];
-        let bottom = [0.0, old_size[1]-new_size[1]];
-        let left = [old_size[0]-new_size[0], 0.0];
-        let right = [new_size[0]-old_size[0], 0.0];
+        let top = [0.0, new_size[1] - old_size[1]];
+        let bottom = [0.0, old_size[1] - new_size[1]];
+        let left = [old_size[0] - new_size[0], 0.0];
+        let right = [new_size[0] - old_size[0], 0.0];
 
         match (index - 1) % 4 {
-            0 => Some((
-                top,
-                left,
-                right
-            )),
-            1 => Some((
-                bottom,
-                right,
-                left
-            )),
-            2 => Some((
-                left,bottom,top
-            )),
-            3 => Some((
-                right,top,bottom
-            )),
-            _ => {panic!()}
+            0 => Some((top, left, right)),
+            1 => Some((bottom, right, left)),
+            2 => Some((left, bottom, top)),
+            3 => Some((right, top, bottom)),
+            _ => {
+                panic!()
+            }
         }
     }
-    
 }
 
-pub fn mutate_joint_limit(geno: &mut BlobGeno){
+pub fn mutate_joint_limit(geno: &mut BlobGeno) {
     let mut rng: ThreadRng = thread_rng();
 
-    for i in geno.vec_tree.nodes.iter_mut(){
+    for i in geno.vec_tree.nodes.iter_mut() {
         if !rng.gen_bool(MUTATE_JOINT_LIMIT_PROB as f64) {
             continue;
         }
         if let Some(GenericGenoNode::Child(node)) = i {
             let mutation_factor_0 = rng.gen_range(0.9..=1.1);
             let mutation_factor_1 = rng.gen_range(0.9..=1.1);
-            let new_limit_0 = (node.joint_limits[0] * mutation_factor_0).clamp(MUTATE_JOINT_LIMIT_MIN, 0.0);
-            let new_limit_1 = (node.joint_limits[1] * mutation_factor_1).clamp(0.0, MUTATE_JOINT_LIMIT_MAX);
-            node.joint_limits = [new_limit_0,new_limit_1];
+            let new_limit_0 =
+                (node.joint_limits[0] * mutation_factor_0).clamp(MUTATE_JOINT_LIMIT_MIN, 0.0);
+            let new_limit_1 =
+                (node.joint_limits[1] * mutation_factor_1).clamp(0.0, MUTATE_JOINT_LIMIT_MAX);
+            node.joint_limits = [new_limit_0, new_limit_1];
         }
     }
 }
