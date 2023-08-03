@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{File, self};
 use std::io::Read;
 
 use bevy::prelude::*;
@@ -9,7 +9,7 @@ use crate::blob::blob::Blob;
 use crate::blob::geno_blob_builder::GenoBlobBuilder;
 use crate::brain::resource::BevyBlockNeurons;
 use crate::componet::ColliderFlag;
-use crate::consts::{LOAD_FNAME, LOAD_ALL_BLOBS_FROM_JSON, CLEAN_ALL_BLOBS};
+use crate::consts::*;
 use crate::physics::world::Wall;
 
 use super::export::ExportFile;
@@ -19,15 +19,24 @@ pub fn load_blobs(
     mut bbn: ResMut<BevyBlockNeurons>,
     input: Res<Input<KeyCode>>,
 ) {
+    let mut load_fname = LOAD_FNAME.to_string();
+    if LOAD_NEWEST_FILE {
+        let path = newest_file_name_in_directory(LOAD_FOLDER);
+        if let Some(path) = path {
+            load_fname = LOAD_FOLDER.to_string() + &path;
+        } else {
+            panic!("empty load folder")
+        }
+    }
     
     if input.just_pressed(LOAD_ALL_BLOBS_FROM_JSON) {
-        match File::open(LOAD_FNAME) {
+        match File::open(&load_fname) {
             Ok(mut file) => {
                 let mut file_str = String::new();
 
                 // Handle read_to_string error
                 if let Err(e) = file.read_to_string(&mut file_str) {
-                    warn!("Failed to read from file {}: {:?}", LOAD_FNAME, e);
+                    warn!("Failed to read from file {}: {:?}", load_fname, e);
                     return;
                 }
 
@@ -57,7 +66,7 @@ pub fn clean(
     joint_q: Query<Entity, With<ImpulseJoint>>,
     input: Res<Input<KeyCode>>,
 ) {
-    if input.just_pressed(LOAD_ALL_BLOBS_FROM_JSON) || input.just_pressed(CLEAN_ALL_BLOBS) {
+    if input.just_pressed(LOAD_ALL_BLOBS_FROM_JSON) || input.just_pressed(CLEAN_ALL_BLOBS_KEYCODE) {
         for entity in blob_q.iter().chain(collider_q.iter()).chain(joint_q.iter()) {
             commands.entity(entity).despawn()
         }
@@ -77,7 +86,20 @@ fn overwrite(mut ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons)
         // println!("\n{:#?}",geno);
     }
 
-
     // set resource
     bbn.nnvec = ef.flatten_nnvec();
+}
+
+fn newest_file_name_in_directory(dir: &str) -> Option<String> {
+    fs::read_dir(dir)
+        .ok()?
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            if entry.path().extension()? == "json" {
+                entry.path().file_name()?.to_str().map(String::from)
+            } else {
+                None
+            }
+        })
+        .max()
 }

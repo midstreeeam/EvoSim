@@ -131,12 +131,14 @@ pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
-/// temperary
+pub const LOAD_FOLDER: &'static str = "./export/";
 pub const LOAD_FNAME: &'static str = "./export/2023-07-25T15-28-56.json";
+pub const LOAD_NEWEST_FILE: bool = true;
 
 // user contorl
 pub const MUTATE_AND_REFRESH_KEYCODE: KeyCode = KeyCode::M;
+pub const NEW_ITERATION_KEYCODE: KeyCode = KeyCode::R;
 pub const AUTO_NO_VSYNC_KEYCODE: KeyCode = KeyCode::V;
 pub const SAVE_ALL_BLOBS_TO_JSON: KeyCode = KeyCode::S;
 pub const LOAD_ALL_BLOBS_FROM_JSON: KeyCode = KeyCode::L;
-pub const CLEAN_ALL_BLOBS: KeyCode = KeyCode::X;
+pub const CLEAN_ALL_BLOBS_KEYCODE: KeyCode = KeyCode::X;
