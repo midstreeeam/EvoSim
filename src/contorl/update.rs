@@ -249,6 +249,7 @@ fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
 pub fn update_blob_info(
     tc_q: Query<(&Transform, &Collider)>,
     mut blob_q: Query<(&mut BlobInfo, &Children)>,
+    frames: Res<Frames>
 ) {
     let start_time = Instant::now();
     for (mut blob, children) in blob_q.iter_mut() {
@@ -270,8 +271,12 @@ pub fn update_blob_info(
         ];
 
         // update move_distance
-        blob.move_distance[0] += blob.velocity[0];
-        blob.move_distance[1] += blob.velocity[1];
+        if frames.0 != 1 {
+            blob.move_distance[0] += blob.velocity[0];
+            blob.move_distance[1] += blob.velocity[1];
+        }
+
+        println!("{:?}", blob.move_distance);
 
         // update mass_center
         blob.mass_center = new_mass_center;

@@ -29,11 +29,14 @@ impl Plugin for BlobContorlPlugin {
             mutate::mutate::mutate_and_refresh_after_train,
         };
 
-        app.add_systems(Startup, move_setup)
+        app.add_systems(
+            Startup, 
+            move_setup
+            )
             .add_systems(
                 Update,
                 (
-                    update_iteration_frames,
+                    update_iteration_frames.before(update_blob_info),
                     block_action,
                     update_blob_info,
                     update_joint_info,
