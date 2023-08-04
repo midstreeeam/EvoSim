@@ -161,7 +161,7 @@ pub mod mutate_consts{
 /// survival rate in `train_move.rs`
 pub const TRAIN_MOVE_SURVIVAL_RATE: f32 = 0.5;
 /// population for each training iteration
-pub const POPULATION: usize = 5;
+pub const POPULATION: usize = 30;
 /// limit for population generation area
 /// 
 /// 100*100 world size with 0.5 ratio result in 50*50 generation area

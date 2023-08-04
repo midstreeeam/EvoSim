@@ -80,6 +80,8 @@ pub fn train_move(
 /// survivers won move tournament and survivers won ted tournament
 /// 
 /// aiming to keep diversity
+/// 
+/// BUG: might select a signle blob and then insert it back to survivers_move, causing duplicate
 fn hybrid_selection(
     survivers_move: &mut [(Entity, (BlobGeno, BlobInfo))], 
     blob_vec_ted: &Vec<(Entity, (BlobGeno, BlobInfo))>
@@ -92,15 +94,17 @@ fn hybrid_selection(
     let weights: Vec<f64> = (0..blob_vec_ted.len())
         .map(|i| ((blob_vec_ted.len() - i) as f64).powf(bias_factor))
         .collect();
+    
     let mut chosen_indices = HashSet::new();
+    let survivers_entities: HashSet<_> = survivers_move.iter().map(|(entity, _)| *entity).collect();
 
     for _ in 0..x {
         let rand_surviver_idx = rng.gen_range(0..survivers_move.len());
         
         let mut blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
 
-        // Ensure the selected index is unique by resampling if necessary
-        while chosen_indices.contains(&blobvec_idx) {
+        // Ensure the selected index is unique and its Entity is not already in survivers_move
+        while chosen_indices.contains(&blobvec_idx) || survivers_entities.contains(&blob_vec_ted[blobvec_idx].0) {
             blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
         }
 
