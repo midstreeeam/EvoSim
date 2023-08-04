@@ -16,6 +16,15 @@ impl Default for Frames {
 }
 
 #[derive(Resource)]
+pub struct TED(pub f32);
+
+impl Default for TED {
+    fn default() -> Self {
+        Self(0.0)
+    }
+}
+
+#[derive(Resource)]
 pub struct TrainMutPipe {
     genovec: Vec<BlobGeno>,
     infovec: Vec<BlobInfo>,

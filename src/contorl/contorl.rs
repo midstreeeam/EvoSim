@@ -25,7 +25,7 @@ impl Plugin for BlobContorlPlugin {
     fn build(&self, app: &mut App) {
         use super::resource::TrainMutPipe;
         use crate::{
-            contorl::{resource::Frames, train_move::{train_move, log_train_move}, update::update_iteration_frames},
+            contorl::{resource::{Frames, TED}, train_move::{train_move, log_train_move}, update::{update_iteration_frames, update_crowding_distance}},
             mutate::mutate::mutate_and_refresh_after_train,
         };
 
@@ -40,13 +40,15 @@ impl Plugin for BlobContorlPlugin {
                     block_action,
                     update_blob_info,
                     update_joint_info,
+                    update_crowding_distance,
                     log_train_move.after(block_action),
                     train_move.after(log_train_move),
                     mutate_and_refresh_after_train.after(train_move),
                 ),
             )
             .init_resource::<TrainMutPipe>()
-            .init_resource::<Frames>();
+            .init_resource::<Frames>()
+            .init_resource::<TED>();
     }
 
     fn finish(&self, _app: &mut App) {

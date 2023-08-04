@@ -44,3 +44,14 @@
 ### Centrol, Inward, Ourward
 
 ### Brain parallel compute management
+
+## train
+- crowding distance & tree edit distance
+  - dp approach & paper
+- torunament selection strategy
+- mutation
+  - geno mutate
+    - tree structure
+    - block size
+    - joint limit
+  - nn mutate

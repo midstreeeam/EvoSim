@@ -20,7 +20,8 @@ pub struct BlobInfo {
     pub velocity: [f32;2],
     /// cumulated moving distance,
     /// base on `mass_center`
-    pub move_distance: [f32;2]
+    pub move_distance: [f32;2],
+    pub crowding_distance: f32
 }
 
 impl Default for BlobInfo {
@@ -32,7 +33,8 @@ impl Default for BlobInfo {
             color: Color::LIME_GREEN,
             mass_center: [0.0, 0.0],
             velocity: [0.0,0.0],
-            move_distance: [0.0,0.0]
+            move_distance: [0.0,0.0],
+            crowding_distance: 0.0
         }
     }
 }

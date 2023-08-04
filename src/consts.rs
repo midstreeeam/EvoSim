@@ -45,7 +45,7 @@ pub const DEFAULT_DAMPING_LINEAR: f32 = 0.0;
 pub const DEFAULT_DAMPING_ANGULAR: f32 = 2.0;
 
 // Geno
-pub const GENO_MAX_DEPTH: u32 = 4; // max recursion depth of Geno type
+pub const GENO_MAX_DEPTH: u32 = 3; // max recursion depth of Geno type
 pub const DEFAULT_BLOCK_SIZE: [f32; 2] = [50.0, 50.0];
 
 // Rand
@@ -129,7 +129,7 @@ pub mod mutate_consts{
     /// 
     /// if the tree structure is going to mutate, maximumly 1 node will mutate
     /// since single node blob can't lose a node anymore
-    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.02;
+    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.05;
     /// probablity for the choosen node to gain a child node,
     /// otherwise the blob gonna lose a limb
     pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
@@ -138,7 +138,7 @@ pub mod mutate_consts{
     /// condition of impossible new limb exist (the parent indicator was dropped)
     pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
     /// probablity of having limb size mutate
-    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 0.2;
+    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 0.25;
     /// probablity for each signle block to mutate
     /// 
     /// mutation is not garenteed since it might cause self-confliction
@@ -152,7 +152,7 @@ pub mod mutate_consts{
     pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
     pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
     /// porbablity of a single nn to mutate
-    pub const MUTATE_NN_PORB: f32 = 0.2;
+    pub const MUTATE_NN_PORB: f32 = 0.25;
     /// standard deviation for normal distribution mutation
     pub const MUTATE_NN_STD: f32 = 0.1;
 }

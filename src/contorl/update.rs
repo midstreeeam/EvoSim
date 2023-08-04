@@ -10,7 +10,7 @@ use bevy_rapier2d::{
 use crate::{
     blob::{
         blob::BlobInfo,
-        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId, ParentAnchor},
+        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId, ParentAnchor}, geno_blob_builder::BlobGeno,
     },
     brain::{
         resource::BevyBlockNeurons,
@@ -20,7 +20,7 @@ use crate::{
     consts::*,
 };
 
-use super::resource::Frames;
+use super::resource::{Frames, TED};
 
 /// select `Query<(&Parent, &mut ImpulseJoint)`
 /// means the center block will not be selected
@@ -309,4 +309,38 @@ fn get_mass_center(mass_points: Vec<[f32; 3]>) -> Option<[f32; 2]> {
 
 pub fn update_iteration_frames(mut frames: ResMut<Frames>) {
     frames.0 += 1;
+}
+
+pub fn update_crowding_distance(
+    mut blob_q: Query<(&BlobGeno, &mut BlobInfo)>,
+    mut ted: ResMut<TED>
+) {
+    let mut genovec: Vec<&BlobGeno> = Vec::new();
+    let mut infovec: Vec<BlobInfo> = Vec::new();
+    for (geno, info) in blob_q.iter() {
+        genovec.push(geno);
+        infovec.push(info.clone());
+    }
+
+    // calculate crowding distance
+    for i in 0..genovec.len() {
+        let &this_geno = genovec.get(i).unwrap();
+        let this_info = infovec.get_mut(i).unwrap();
+        let mut sum_crowding_distance:usize = 0;
+        for j in 0..genovec.len() {
+            let &other_geno = genovec.get(j).unwrap();
+            sum_crowding_distance += this_geno.vec_tree.tree_edit_distance(&other_geno.vec_tree) as usize;
+        }
+        let avg_corwding_distance = sum_crowding_distance as f32 / genovec.len() as f32;
+        this_info.crowding_distance = avg_corwding_distance;
+    }
+
+    let mut cd: f32 = 0.0;
+    // update crowding distance
+    for (i, (_,mut info)) in blob_q.iter_mut().enumerate() {
+        *info = infovec.get(i).unwrap().clone();
+        cd += infovec.get(i).unwrap().crowding_distance;
+    }
+
+    ted.0 = cd/blob_q.iter().len() as f32;
 }

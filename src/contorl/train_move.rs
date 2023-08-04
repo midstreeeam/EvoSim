@@ -9,7 +9,7 @@ use crate::{
     logger_info,
 };
 
-use super::resource::{Frames, TrainMutPipe};
+use super::resource::{Frames, TrainMutPipe, TED};
 
 /// `POPULATION == 1` in will make thread panic since it never trains
 pub fn train_move(
@@ -182,7 +182,11 @@ fn iteration_end(frames: Res<Frames>) -> bool {
     }
 }
 
-pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>) {
+pub fn log_train_move(
+    frames: Res<Frames>, 
+    info_q: Query<&BlobInfo>,
+    ted: Res<TED>
+) {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt != 0 || frames.0 == 0 {
         return;
@@ -223,9 +227,10 @@ pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>) {
     let mean_distance = total_distances / infovec.len() as f32;
 
     logger_info!(
-        "iteration {}, top_distance {:.5}, mean_distance {:.5}",
+        "iteration {}, top_distance {:.5}, mean_distance {:.5}, ted {:.5}",
         frames.0 / ITERATION_LENGTH as u128,
         top_distance,
-        mean_distance
+        mean_distance,
+        ted.0
     );
 }

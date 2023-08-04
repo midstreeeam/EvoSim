@@ -832,6 +832,55 @@ impl<T> QuadTree<T> {
             Some((index - 1) % 4)
         }
     }
+
+    pub fn is_empty(&self, index: usize) -> bool {
+        index < self.nodes.len() && self.nodes[index].is_none()
+    }
+
+    /// TED with another tree
+    pub fn tree_edit_distance(&self, other: &QuadTree<T>) -> usize {
+        // Create a cache to store previous computed results
+        let mut dp = vec![vec![None; other.nodes.len()]; self.nodes.len()];
+
+        self._tree_edit_distance(0, 0, other, &mut dp)
+    }
+
+    fn _tree_edit_distance(
+        &self, 
+        i: usize, 
+        j: usize, 
+        other: &QuadTree<T>, 
+        dp: &mut Vec<Vec<Option<usize>>>
+    ) -> usize {
+        if i >= self.nodes.len() && j >= other.nodes.len() {
+            return 0;
+        }
+        if i >= self.nodes.len() {
+            return 1 + other.children(j).iter().map(|&child_j| self._tree_edit_distance(i, child_j, other, dp)).sum::<usize>();
+        }
+        if j >= other.nodes.len() {
+            return 1 + self.children(i).iter().map(|&child_i| self._tree_edit_distance(child_i, j, other, dp)).sum::<usize>();
+        }
+        if let Some(val) = dp[i][j] {
+            return val;
+        }
+
+        let cost = if self.nodes[i].is_some() && other.nodes[j].is_some() {
+            let children_i = self.children(i);
+            let children_j = other.children(j);
+
+            (0..4).map(|k| self._tree_edit_distance(children_i[k], children_j[k], other, dp)).sum::<usize>()
+        } else if self.nodes[i].is_some() {
+            1 + self.children(i).iter().map(|&child_i| self._tree_edit_distance(child_i, j, other, dp)).sum::<usize>()
+        } else if other.nodes[j].is_some() {
+            1 + other.children(j).iter().map(|&child_j| self._tree_edit_distance(i, child_j, other, dp)).sum::<usize>()
+        } else {
+            0
+        };
+
+        dp[i][j] = Some(cost);
+        cost
+    }
 }
 
 impl<T: Debug> Debug for QuadTree<T> {
