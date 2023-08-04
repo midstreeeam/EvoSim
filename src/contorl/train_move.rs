@@ -11,6 +11,7 @@ use crate::{
 
 use super::resource::{Frames, TrainMutPipe};
 
+/// `POPULATION == 1` in will make thread panic since it never trains
 pub fn train_move(
     entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
     nn_q: Query<(&Parent, &NeuronId)>,
@@ -188,6 +189,7 @@ pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>) {
     }
 
     let mut infovec = Vec::from_iter(info_q.iter());
+
     infovec.sort_by(|a, b| {
         let a_distance_mag = a
             .move_distance
@@ -201,8 +203,6 @@ pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>) {
             .sqrt();
         b_distance_mag.partial_cmp(&a_distance_mag).unwrap()
     });
-
-    println!("{:#?}", infovec);
 
     let top_distance = infovec[0]
         .move_distance

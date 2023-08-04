@@ -138,7 +138,7 @@ pub mod mutate_consts{
     /// condition of impossible new limb exist (the parent indicator was dropped)
     pub const MUTATE_GAIN_LIMB_MAX_TRY: u32 = 10;
     /// probablity of having limb size mutate
-    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 0.1;
+    pub const MUTATE_BLOCK_SIZE_PROB: f32 = 0.2;
     /// probablity for each signle block to mutate
     /// 
     /// mutation is not garenteed since it might cause self-confliction
@@ -152,7 +152,7 @@ pub mod mutate_consts{
     pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
     pub const MUTATE_JOINT_LIMIT_MAX: f32 = PI*0.9;
     /// porbablity of a single nn to mutate
-    pub const MUTATE_NN_PORB: f32 = 0.1;
+    pub const MUTATE_NN_PORB: f32 = 0.2;
     /// standard deviation for normal distribution mutation
     pub const MUTATE_NN_STD: f32 = 0.1;
 }
@@ -161,15 +161,15 @@ pub mod mutate_consts{
 /// survival rate in `train_move.rs`
 pub const TRAIN_MOVE_SURVIVAL_RATE: f32 = 0.5;
 /// population for each training iteration
-pub const POPULATION: usize = 20;
+pub const POPULATION: usize = 30;
 /// limit for population generation area
 /// 
 /// 100*100 world size with 0.5 ratio result in 50*50 generation area
-pub const SCATTER_RATIO: f32 = 0.5;
+pub const SCATTER_RATIO: f32 = 0.8;
 /// min distance between two spawn point
 pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
 /// how long a signle iteration, counted in frame
-pub const ITERATION_LENGTH: usize = 600;
+pub const ITERATION_LENGTH: usize = 500;
 pub const CHECKPOINTS_LENGTH: usize = 50;
 
 // io
