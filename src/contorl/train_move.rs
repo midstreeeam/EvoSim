@@ -1,5 +1,8 @@
+use std::collections::HashSet;
+
 use bevy::prelude::*;
 use rand::prelude::*;
+use rand_distr::WeightedIndex;
 
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
@@ -83,12 +86,26 @@ fn hybrid_selection(
 ) {
     let mut rng: ThreadRng = thread_rng();
     let x = (HYBRID_RATE * survivers_move.len() as f32) as usize;
+    let bias_factor = 4.0;
+
+    // Generate the weighted distribution
+    let weights: Vec<f64> = (0..blob_vec_ted.len())
+        .map(|i| ((blob_vec_ted.len() - i) as f64).powf(bias_factor))
+        .collect();
+    let mut chosen_indices = HashSet::new();
 
     for _ in 0..x {
         let rand_surviver_idx = rng.gen_range(0..survivers_move.len());
-        let rand_blobvec_idx = rng.gen_range(0..blob_vec_ted.len());
         
-        survivers_move[rand_surviver_idx] = blob_vec_ted[rand_blobvec_idx].clone();
+        let mut blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
+
+        // Ensure the selected index is unique by resampling if necessary
+        while chosen_indices.contains(&blobvec_idx) {
+            blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
+        }
+
+        chosen_indices.insert(blobvec_idx);
+        survivers_move[rand_surviver_idx] = blob_vec_ted[blobvec_idx].clone();
     }
 }
 
