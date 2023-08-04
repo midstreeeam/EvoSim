@@ -5,7 +5,8 @@ use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
     consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
-    contorl::contorl::get_center
+    contorl::contorl::get_center,
+    logger_info,
 };
 
 use super::resource::{Frames, TrainMutPipe};
@@ -178,4 +179,53 @@ fn iteration_end(frames: Res<Frames>) -> bool {
     } else {
         false
     }
+}
+
+pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>) {
+    let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
+    if cur_gen_frame_cnt != 0 || frames.0 == 0 {
+        return;
+    }
+
+    let mut infovec = Vec::from_iter(info_q.iter());
+    infovec.sort_by(|a, b| {
+        let a_distance_mag = a
+            .move_distance
+            .iter()
+            .fold(0.0, |acc, &x| acc + x * x)
+            .sqrt();
+        let b_distance_mag = b
+            .move_distance
+            .iter()
+            .fold(0.0, |acc, &x| acc + x * x)
+            .sqrt();
+        b_distance_mag.partial_cmp(&a_distance_mag).unwrap()
+    });
+
+    println!("{:#?}", infovec);
+
+    let top_distance = infovec[0]
+        .move_distance
+        .iter()
+        .fold(0.0, |acc, &x| acc + x * x)
+        .sqrt();
+
+    let total_distances: f32 = infovec
+        .iter()
+        .map(|info| {
+            info.move_distance
+                .iter()
+                .fold(0.0, |acc, &x| acc + x * x)
+                .sqrt()
+        })
+        .sum();
+
+    let mean_distance = total_distances / infovec.len() as f32;
+
+    logger_info!(
+        "iteration {}, top_distance {:.5}, mean_distance {:.5}",
+        frames.0 / ITERATION_LENGTH as u128,
+        top_distance,
+        mean_distance
+    );
 }

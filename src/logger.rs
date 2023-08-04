@@ -1,6 +1,6 @@
+use chrono::Local;
 use std::fs::OpenOptions;
 use std::io::Write;
-use chrono::Local;
 
 use crate::consts::LOG_PATH;
 
@@ -13,7 +13,7 @@ pub fn log_to_file(level: &str, message: &str) {
         .unwrap();
 
     let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S");
-    
+
     writeln!(file, "[{} - {}] {}", timestamp, level, message).unwrap();
 }
 
