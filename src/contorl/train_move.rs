@@ -4,7 +4,7 @@ use rand::prelude::*;
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE},
+    consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE, HYBRID_RATE},
     contorl::contorl::get_center,
     logger_info,
 };
@@ -22,12 +22,14 @@ pub fn train_move(
 ) {
     if input.just_pressed(NEW_ITERATION_KEYCODE) || iteration_end(frames) {
         let nnvec = &mut bbn.nnvec;
-        let mut blob_vec: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
+        let mut blob_vec_move: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
+        let mut blob_vec_ted: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
         for (e, (geno, info)) in entity_geno_info_q.iter() {
-            blob_vec.push((e, (geno.clone(), info.clone())));
+            blob_vec_move.push((e, (geno.clone(), info.clone())));
+            blob_vec_ted.push((e, (geno.clone(), info.clone())));
         }
 
-        blob_vec.sort_by(|a, b| {
+        blob_vec_move.sort_by(|a, b| {
             let mag_a =
                 a.1 .1
                     .move_distance
@@ -45,11 +47,21 @@ pub fn train_move(
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
 
-        let split_idx = (blob_vec.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
+        blob_vec_ted.sort_by(|a, b| {
+            let mag_a = a.1.1.crowding_distance;
+            let mag_b = b.1.1.crowding_distance;
+            mag_b
+                .partial_cmp(&mag_a)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        let split_idx = (blob_vec_move.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
 
         // tournament selection
-        let (survivers, _outcasts) = blob_vec.split_at_mut(split_idx);
-        let (mut new_genovec, mut infovec, mut new_nnvec) = clean_outcast(survivers, nn_q, nnvec);
+        let (survivers_move, _outcasts) = blob_vec_move.split_at_mut(split_idx);
+        hybrid_selection(survivers_move, &blob_vec_ted);
+
+        let (mut new_genovec, mut infovec, mut new_nnvec) = clean_outcast(survivers_move, nn_q, nnvec);
 
         // reproduce
         reproduce(&mut new_genovec, &mut infovec, &mut new_nnvec);
@@ -61,9 +73,28 @@ pub fn train_move(
     }
 }
 
+/// determine the final surviers by random select blobs from 
+/// survivers won move tournament and survivers won ted tournament
+/// 
+/// aiming to keep diversity
+fn hybrid_selection(
+    survivers_move: &mut [(Entity, (BlobGeno, BlobInfo))], 
+    blob_vec_ted: &Vec<(Entity, (BlobGeno, BlobInfo))>
+) {
+    let mut rng: ThreadRng = thread_rng();
+    let x = (HYBRID_RATE * survivers_move.len() as f32) as usize;
+
+    for _ in 0..x {
+        let rand_surviver_idx = rng.gen_range(0..survivers_move.len());
+        let rand_blobvec_idx = rng.gen_range(0..blob_vec_ted.len());
+        
+        survivers_move[rand_surviver_idx] = blob_vec_ted[rand_blobvec_idx].clone();
+    }
+}
+
 /// delete neuron from nnvec based on outcasts
 fn clean_outcast(
-    surviers: &mut [(Entity, (BlobGeno, BlobInfo))],
+    survivers: &mut [(Entity, (BlobGeno, BlobInfo))],
     nn_q: Query<(&Parent, &NeuronId)>,
     nnvec: &mut Vec<GenericNN>,
 ) -> (Vec<BlobGeno>, Vec<BlobInfo>, Vec<GenericNN>) {
@@ -72,7 +103,7 @@ fn clean_outcast(
 
     let mut existed_nn_ids = Vec::<usize>::new();
 
-    for (blob_id, _) in surviers.iter() {
+    for (blob_id, _) in survivers.iter() {
         for (parent_id, neuron) in nn_q.iter() {
             if parent_id.get() != *blob_id {
                 continue;
@@ -110,7 +141,7 @@ fn clean_outcast(
     });
 
     // adjust nn_id values
-    for (_, (geno, _)) in surviers.iter_mut() {
+    for (_, (geno, _)) in survivers.iter_mut() {
         for option_id in geno.all_nn_ids_mut() {
             let copied_id = option_id.unwrap();
             // Count how many missing_ids are smaller than copied_id
@@ -119,7 +150,7 @@ fn clean_outcast(
         }
     }
 
-    for (_, (geno, info)) in surviers.iter() {
+    for (_, (geno, info)) in survivers.iter() {
         new_geno_vec.push(geno.clone());
         infovec.push(info.clone());
     }
@@ -182,11 +213,7 @@ fn iteration_end(frames: Res<Frames>) -> bool {
     }
 }
 
-pub fn log_train_move(
-    frames: Res<Frames>, 
-    info_q: Query<&BlobInfo>,
-    ted: Res<TED>
-) {
+pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TED>) {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt != 0 || frames.0 == 0 {
         return;

@@ -171,6 +171,8 @@ pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
 /// how long a signle iteration, counted in frame
 pub const ITERATION_LENGTH: usize = 500;
 pub const CHECKPOINTS_LENGTH: usize = 50;
+/// tournament selection hybrid
+pub const HYBRID_RATE: f32 = 0.5;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";

@@ -15,6 +15,7 @@ impl Default for Frames {
     }
 }
 
+// TODO: TED should be normalized by avg blob depth
 #[derive(Resource)]
 pub struct TED(pub f32);
 
