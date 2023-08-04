@@ -1,51 +1,49 @@
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::Write;
-use chrono::{Utc, DateTime};
+use chrono::Local;
 
-pub struct SimpleLogger {
-    file: File,
-}
+use crate::consts::LOG_PATH;
 
-impl SimpleLogger {
-    pub fn new(file_name: &str) -> Self {
-        let file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(file_name)
-            .unwrap();
+pub fn log_to_file(level: &str, message: &str) {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .append(true)
+        .open(LOG_PATH)
+        .unwrap();
 
-        SimpleLogger { file }
-    }
-
-    fn log(&mut self, level: &str, msg: &str) {
-        let now: DateTime<Utc> = Utc::now();
-        let log_msg = format!("{} [{}] {}\n", now.to_rfc3339_opts(chrono::SecondsFormat::Secs, true), level, msg);
-
-        self.file.write_all(log_msg.as_bytes()).unwrap();
-    }
-}
-
-lazy_static::lazy_static! {
-    static ref LOGGER: std::sync::Mutex<SimpleLogger> = std::sync::Mutex::new(SimpleLogger::new("training.log"));
+    let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S");
+    
+    writeln!(file, "[{} - {}] {}", timestamp, level, message).unwrap();
 }
 
 #[macro_export]
 macro_rules! logger_info {
     ($($arg:tt)*) => {
-        LOGGER.lock().unwrap().log("INFO", &format_args!($($arg)*).to_string());
+        crate::logger::log_to_file("INFO", &format!($($arg)*));
     };
 }
 
 #[macro_export]
 macro_rules! logger_warn {
     ($($arg:tt)*) => {
-        LOGGER.lock().unwrap().log("WARN", &format_args!($($arg)*).to_string());
+        crate::logger::log_to_file("WARN", &format!($($arg)*));
     };
 }
 
 #[macro_export]
 macro_rules! logger_error {
     ($($arg:tt)*) => {
-        LOGGER.lock().unwrap().log("ERROR", &format_args!($($arg)*).to_string());
+        crate::logger::log_to_file("ERROR", &format!($($arg)*));
     };
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_logger() {
+        logger_info!("This is an info message.");
+        logger_warn!("This is a warning with number: {}", 404);
+        logger_error!("An error occurred!");
+    }
 }

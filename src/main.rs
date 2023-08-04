@@ -9,6 +9,8 @@ mod graphics;
 mod io;
 mod mutate;
 mod physics;
+
+#[macro_use]
 mod logger;
 
 use bevy::prelude::*;

@@ -7,7 +7,7 @@ use crate::{
     consts::{
         BLOB_SPAWN_POINT_RADIUS, PANIC_TRY_TIMES, POPULATION, SCATTER_RATIO, WORLD_HEIGHT,
         WORLD_WIDTH,
-    },
+    }, logger_info,
 };
 
 use super::update::{block_action, update_blob_info, update_joint_info};
@@ -43,6 +43,10 @@ impl Plugin for BlobContorlPlugin {
             )
             .init_resource::<TrainMutPipe>()
             .init_resource::<Frames>();
+    }
+
+    fn finish(&self, _app: &mut App) {
+        logger_info!("BlobContorlPlugin started");
     }
 }
 

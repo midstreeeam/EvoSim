@@ -4,7 +4,7 @@ use bevy_rapier2d::prelude::{RapierConfiguration, TimestepMode};
 
 // use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
-use crate::consts::{AUTO_NO_VSYNC_KEYCODE, RAPIER_DT, RAPIER_SUBSTEPS};
+use crate::{consts::{AUTO_NO_VSYNC_KEYCODE, RAPIER_DT, RAPIER_SUBSTEPS}, logger_info};
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -28,6 +28,9 @@ impl Plugin for EvoGraphicsPlugin {
                 },
                 ..default()
             });
+    }
+
+    fn finish(&self, _app: &mut App) {
     }
 }
 

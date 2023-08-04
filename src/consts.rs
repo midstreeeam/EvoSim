@@ -185,3 +185,6 @@ pub const AUTO_NO_VSYNC_KEYCODE: KeyCode = KeyCode::V;
 pub const SAVE_ALL_BLOBS_TO_JSON: KeyCode = KeyCode::S;
 pub const LOAD_ALL_BLOBS_FROM_JSON: KeyCode = KeyCode::L;
 pub const CLEAN_ALL_BLOBS_KEYCODE: KeyCode = KeyCode::X;
+
+// log
+pub const LOG_PATH: &'static str = "./run.log";
