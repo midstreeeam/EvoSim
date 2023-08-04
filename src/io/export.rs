@@ -9,6 +9,7 @@ use chrono::{Local, NaiveDateTime, Datelike, Timelike};
 use crate::blob::blob::BlobInfo;
 use crate::consts::{SAVE_ALL_BLOBS_TO_JSON, ITERATION_LENGTH, CHECKPOINTS_LENGTH};
 use crate::contorl::resource::Frames;
+use crate::logger_info;
 use crate::{
     blob::{block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{resource::BevyBlockNeurons, neuron::GenericNN},
@@ -48,6 +49,7 @@ impl ExportFile {
         let mut file = File::create(&fname).expect("Unable to create file");
         file.write_all(file_str.as_bytes()).expect("Unable to write data");
         info!("MODEL SAVED {}", &fname);
+        logger_info!("MODEL SAVED {}", &fname);
     }
 
     pub fn len(&self) -> usize{
@@ -171,9 +173,10 @@ fn current_time_filename() -> String {
 }
 
 fn is_checkpoints(frames: Res<Frames>) -> bool {
+    let cur_frame = frames.0 % ITERATION_LENGTH as u128;
     let iterations = frames.0 / ITERATION_LENGTH as u128;
     let cur_cp_iter_num = iterations % CHECKPOINTS_LENGTH as u128;
-    if cur_cp_iter_num == 0 && iterations != 0 {
+    if cur_cp_iter_num == 0 && iterations != 0 && cur_frame == 0{
         true
     } else {
         false

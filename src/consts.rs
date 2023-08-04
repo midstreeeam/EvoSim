@@ -45,7 +45,7 @@ pub const DEFAULT_DAMPING_LINEAR: f32 = 0.0;
 pub const DEFAULT_DAMPING_ANGULAR: f32 = 2.0;
 
 // Geno
-pub const GENO_MAX_DEPTH: u32 = 3; // max recursion depth of Geno type
+pub const GENO_MAX_DEPTH: u32 = 4; // max recursion depth of Geno type
 pub const DEFAULT_BLOCK_SIZE: [f32; 2] = [50.0, 50.0];
 
 // Rand
