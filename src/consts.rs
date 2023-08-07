@@ -20,11 +20,11 @@ pub const MIN_PRINT_DURATION:Duration = Duration::from_micros(500);
 
 // scale world size
 // train walk
-// pub const WORLD_WIDTH: f32 = 100000.0;
-// pub const WORLD_HEIGHT: f32 = 2000.0;
+pub const WORLD_WIDTH_WALK: f32 = 100000.0;
+pub const WORLD_HEIGHT_WALK: f32 = 2000.0;
 // train swim
-pub const WORLD_WIDTH: f32 = 10000.0;
-pub const WORLD_HEIGHT: f32 = 10000.0;
+pub const WORLD_WIDTH_SWIM: f32 = 10000.0;
+pub const WORLD_HEIGHT_SWIM: f32 = 10000.0;
 
 // joint config
 pub const MOTOR_STIFFNESS: f32 = 10.0;
@@ -179,6 +179,8 @@ pub const ITERATION_LENGTH: usize = 1000;
 pub const CHECKPOINTS_LENGTH: usize = 100;
 /// tournament selection hybrid
 pub const HYBRID_RATE: f32 = 0.3;
+/// choose between swim and walk
+pub const TRAINING_MODE: &'static str = "swim";
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";

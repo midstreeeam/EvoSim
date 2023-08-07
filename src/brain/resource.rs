@@ -16,6 +16,7 @@ use super::{
 
 const DL: usize = OUTWARD_NN_PARENT_INPUT_LEN;
 
+// TODO: add random generator and oscillator
 /// Bevy resource, which make sure the neurons can be accessed
 /// and modified from bevy side
 #[derive(Resource, Debug)]

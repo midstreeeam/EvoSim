@@ -9,8 +9,14 @@ pub struct Wall;
 
 pub fn setup_walls(mut commands: Commands) {
 
-    let half_window_width = WORLD_WIDTH / 2.0;
-    let half_window_height = WORLD_HEIGHT /2.0;
+    let mut half_window_width = WORLD_WIDTH_SWIM / 2.0;
+    let mut half_window_height = WORLD_HEIGHT_SWIM /2.0;
+    
+    if TRAINING_MODE == "walk" {
+        half_window_width = WORLD_WIDTH_WALK / 2.0;
+        half_window_height = WORLD_HEIGHT_WALK /2.0;
+    }
+
 
     // Left wall
     commands.spawn((

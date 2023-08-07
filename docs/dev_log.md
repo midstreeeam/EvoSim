@@ -55,3 +55,4 @@
     - block size
     - joint limit
   - nn mutate
+  - first_train (swim & walk, quickly fall into local optimal)

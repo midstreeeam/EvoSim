@@ -4,13 +4,21 @@ use rand::prelude::*;
 use crate::{
     blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder},
     brain::resource::BevyBlockNeurons,
-    consts::{
-        BLOB_SPAWN_POINT_RADIUS, PANIC_TRY_TIMES, POPULATION, SCATTER_RATIO_Y, WORLD_HEIGHT,
-        WORLD_WIDTH, SCATTER_RATIO_X,
-    }, logger_info,
+    consts::*,
+    contorl::{
+        resource::{Frames, TED},
+        train_move::{log_train_move, train_move},
+        update::{update_crowding_distance, update_iteration_frames},
+    },
+    logger_info,
+    mutate::mutate::mutate_and_refresh_after_train,
 };
 
-use super::update::{block_action, update_blob_info, update_joint_info};
+use super::{
+    resource::TrainMutPipe,
+    train_move::{log_train_move_walk, train_move_walk},
+    update::{block_action, update_blob_info, update_joint_info},
+};
 
 pub struct BlobContorlPlugin;
 
@@ -23,55 +31,47 @@ impl Plugin for BlobContorlPlugin {
 
     #[cfg(feature = "move")]
     fn build(&self, app: &mut App) {
-        use super::resource::TrainMutPipe;
-        use crate::{
-            contorl::{resource::{Frames, TED}, train_move::{train_move, log_train_move}, update::{update_iteration_frames, update_crowding_distance}},
-            mutate::mutate::mutate_and_refresh_after_train,
-        };
-
-        // train swim
-        app.add_systems(
-            Startup, 
-            move_setup
-            )
-            .add_systems(
-                Update,
-                (
-                    update_iteration_frames.before(update_blob_info),
-                    block_action,
-                    update_blob_info,
-                    update_joint_info,
-                    update_crowding_distance,
-                    log_train_move.after(block_action),
-                    train_move.after(log_train_move),
-                    mutate_and_refresh_after_train.after(train_move),
-                ),
-            )
-            .init_resource::<TrainMutPipe>()
-            .init_resource::<Frames>()
-            .init_resource::<TED>();
-
-        // // train walk
-        // app.add_systems(
-        //     Startup, 
-        //     move_setup
-        //     )
-        //     .add_systems(
-        //         Update,
-        //         (
-        //             update_iteration_frames.before(update_blob_info),
-        //             block_action,
-        //             update_blob_info,
-        //             update_joint_info,
-        //             update_crowding_distance,
-        //             log_train_move.after(block_action),
-        //             train_move.after(log_train_move),
-        //             mutate_and_refresh_after_train.after(train_move),
-        //         ),
-        //     )
-        //     .init_resource::<TrainMutPipe>()
-        //     .init_resource::<Frames>()
-        //     .init_resource::<TED>();
+        if TRAINING_MODE == "swim" {
+            // train swim
+            app.add_systems(Startup, move_setup)
+                .add_systems(
+                    Update,
+                    (
+                        update_iteration_frames.before(update_blob_info),
+                        block_action,
+                        update_blob_info,
+                        update_joint_info,
+                        update_crowding_distance,
+                        log_train_move.after(block_action),
+                        train_move.after(log_train_move),
+                        mutate_and_refresh_after_train.after(train_move),
+                    ),
+                )
+                .init_resource::<TrainMutPipe>()
+                .init_resource::<Frames>()
+                .init_resource::<TED>();
+        } else if TRAINING_MODE == "walk" {
+            // train walk
+            app.add_systems(Startup, move_setup)
+                .add_systems(
+                    Update,
+                    (
+                        update_iteration_frames.before(update_blob_info),
+                        block_action,
+                        update_blob_info,
+                        update_joint_info,
+                        update_crowding_distance,
+                        log_train_move_walk.after(block_action),
+                        train_move_walk.after(log_train_move_walk),
+                        mutate_and_refresh_after_train.after(train_move_walk),
+                    ),
+                )
+                .init_resource::<TrainMutPipe>()
+                .init_resource::<Frames>()
+                .init_resource::<TED>();
+        } else {
+            panic!()
+        }
     }
 
     fn finish(&self, _app: &mut App) {
@@ -108,13 +108,20 @@ pub fn move_setup(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
 pub fn get_center() -> Vec<(f32, f32)> {
     let mut rng: ThreadRng = thread_rng();
 
+    let mut world_width = WORLD_WIDTH_SWIM as f32;
+    let mut world_height = WORLD_HEIGHT_SWIM as f32;
+    if TRAINING_MODE == "walk" {
+        world_width = WORLD_WIDTH_WALK as f32;
+        world_height = WORLD_HEIGHT_WALK as f32;
+    }
+
     let x_lim: (f32, f32) = (
-        -WORLD_WIDTH as f32 * SCATTER_RATIO_X * 0.5,
-        WORLD_WIDTH as f32 * SCATTER_RATIO_X * 0.5,
+        - world_width * SCATTER_RATIO_X * 0.5,
+        world_width as f32 * SCATTER_RATIO_X * 0.5,
     );
     let y_lim: (f32, f32) = (
-        -WORLD_HEIGHT as f32 * SCATTER_RATIO_Y * 0.5,
-        WORLD_HEIGHT as f32 * SCATTER_RATIO_Y * 0.5,
+        -world_height as f32 * SCATTER_RATIO_Y * 0.5,
+        world_height as f32 * SCATTER_RATIO_Y * 0.5,
     );
     let number: usize = POPULATION;
     let min_distance: f32 = BLOB_SPAWN_POINT_RADIUS;

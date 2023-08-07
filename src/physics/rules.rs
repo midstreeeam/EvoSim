@@ -6,7 +6,9 @@ use bevy_rapier2d::prelude::*;
 use crate::consts::*;
 
 pub fn setup_gravity(mut rapier_config: ResMut<RapierConfiguration>) {
-    rapier_config.gravity = Vec2::ZERO;
+    if TRAINING_MODE == "swim" {
+        rapier_config.gravity = Vec2::ZERO;
+    }
 }
 
 /// Create drag force for under-water simulation
