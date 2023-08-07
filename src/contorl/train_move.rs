@@ -7,7 +7,9 @@ use rand_distr::WeightedIndex;
 use crate::{
     blob::{blob::BlobInfo, block::NeuronId, geno_blob_builder::BlobGeno},
     brain::{neuron::GenericNN, resource::BevyBlockNeurons},
-    consts::{ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE, HYBRID_RATE},
+    consts::{
+        HYBRID_RATE, ITERATION_LENGTH, NEW_ITERATION_KEYCODE, POPULATION, TRAIN_MOVE_SURVIVAL_RATE,
+    },
     contorl::contorl::get_center,
     logger_info,
 };
@@ -32,6 +34,7 @@ pub fn train_move(
             blob_vec_ted.push((e, (geno.clone(), info.clone())));
         }
 
+        // move mag
         blob_vec_move.sort_by(|a, b| {
             let mag_a =
                 a.1 .1
@@ -51,8 +54,8 @@ pub fn train_move(
         });
 
         blob_vec_ted.sort_by(|a, b| {
-            let mag_a = a.1.1.crowding_distance;
-            let mag_b = b.1.1.crowding_distance;
+            let mag_a = a.1 .1.crowding_distance;
+            let mag_b = b.1 .1.crowding_distance;
             mag_b
                 .partial_cmp(&mag_a)
                 .unwrap_or(std::cmp::Ordering::Equal)
@@ -64,7 +67,8 @@ pub fn train_move(
         let (survivers_move, _outcasts) = blob_vec_move.split_at_mut(split_idx);
         hybrid_selection(survivers_move, &blob_vec_ted);
 
-        let (mut new_genovec, mut infovec, mut new_nnvec) = clean_outcast(survivers_move, nn_q, nnvec);
+        let (mut new_genovec, mut infovec, mut new_nnvec) =
+            clean_outcast(survivers_move, nn_q, nnvec);
 
         // reproduce
         reproduce(&mut new_genovec, &mut infovec, &mut new_nnvec);
@@ -76,15 +80,69 @@ pub fn train_move(
     }
 }
 
-/// determine the final surviers by random select blobs from 
+
+pub fn train_move_walk(
+    entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
+    nn_q: Query<(&Parent, &NeuronId)>,
+    mut bbn: ResMut<BevyBlockNeurons>,
+    mut pipe: ResMut<TrainMutPipe>,
+    input: Res<Input<KeyCode>>,
+    frames: Res<Frames>,
+) {
+    if input.just_pressed(NEW_ITERATION_KEYCODE) || iteration_end(frames) {
+        let nnvec = &mut bbn.nnvec;
+        let mut blob_vec_move: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
+        let mut blob_vec_ted: Vec<(Entity, (BlobGeno, BlobInfo))> = Vec::new();
+        for (e, (geno, info)) in entity_geno_info_q.iter() {
+            blob_vec_move.push((e, (geno.clone(), info.clone())));
+            blob_vec_ted.push((e, (geno.clone(), info.clone())));
+        }
+
+        // x axis move
+        blob_vec_move.sort_by(|a, b| {
+            let mag_a = a.1 .1.move_distance[0];
+            let mag_b = b.1 .1.move_distance[0];
+            mag_b
+                .partial_cmp(&mag_a)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        blob_vec_ted.sort_by(|a, b| {
+            let mag_a = a.1 .1.crowding_distance;
+            let mag_b = b.1 .1.crowding_distance;
+            mag_b
+                .partial_cmp(&mag_a)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        let split_idx = (blob_vec_move.len() as f32 * TRAIN_MOVE_SURVIVAL_RATE).ceil() as usize;
+
+        // tournament selection
+        let (survivers_move, _outcasts) = blob_vec_move.split_at_mut(split_idx);
+        hybrid_selection(survivers_move, &blob_vec_ted);
+
+        let (mut new_genovec, mut infovec, mut new_nnvec) =
+            clean_outcast(survivers_move, nn_q, nnvec);
+
+        // reproduce
+        reproduce(&mut new_genovec, &mut infovec, &mut new_nnvec);
+
+        // println!("{:#?}",new_genovec);
+        // println!("nnveclen: {:#?}",new_nnvec.len());
+
+        pipe.push(new_genovec, infovec, new_nnvec);
+    }
+}
+
+/// determine the final surviers by random select blobs from
 /// survivers won move tournament and survivers won ted tournament
-/// 
+///
 /// aiming to keep diversity
-/// 
+///
 /// BUG: might select a signle blob and then insert it back to survivers_move, causing duplicate
 fn hybrid_selection(
-    survivers_move: &mut [(Entity, (BlobGeno, BlobInfo))], 
-    blob_vec_ted: &Vec<(Entity, (BlobGeno, BlobInfo))>
+    survivers_move: &mut [(Entity, (BlobGeno, BlobInfo))],
+    blob_vec_ted: &Vec<(Entity, (BlobGeno, BlobInfo))>,
 ) {
     let mut rng: ThreadRng = thread_rng();
     let x = (HYBRID_RATE * survivers_move.len() as f32) as usize;
@@ -94,17 +152,19 @@ fn hybrid_selection(
     let weights: Vec<f64> = (0..blob_vec_ted.len())
         .map(|i| ((blob_vec_ted.len() - i) as f64).powf(bias_factor))
         .collect();
-    
+
     let mut chosen_indices = HashSet::new();
     let survivers_entities: HashSet<_> = survivers_move.iter().map(|(entity, _)| *entity).collect();
 
     for _ in 0..x {
         let rand_surviver_idx = rng.gen_range(0..survivers_move.len());
-        
+
         let mut blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
 
         // Ensure the selected index is unique and its Entity is not already in survivers_move
-        while chosen_indices.contains(&blobvec_idx) || survivers_entities.contains(&blob_vec_ted[blobvec_idx].0) {
+        while chosen_indices.contains(&blobvec_idx)
+            || survivers_entities.contains(&blob_vec_ted[blobvec_idx].0)
+        {
             blobvec_idx = WeightedIndex::new(&weights).unwrap().sample(&mut rng);
         }
 
@@ -279,6 +339,44 @@ pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TE
         frames.0 / ITERATION_LENGTH as u128,
         top_distance,
         mean_distance,
+        ted.0
+    );
+}
+
+pub fn log_train_move_walk(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TED>) {
+    let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
+    if cur_gen_frame_cnt != 0 || frames.0 == 0 {
+        return;
+    }
+
+    let mut infovec = Vec::from_iter(info_q.iter());
+
+    // x axis move
+    infovec.sort_by(|a, b| {
+        let mag_a = a.move_distance[0];
+        let mag_b = b.move_distance[0];
+        mag_b
+            .partial_cmp(&mag_a)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+
+    let top_x_distance = infovec[0]
+        .move_distance[0];
+
+    let total_x_distances: f32 = infovec
+    .iter()
+    .map(|info| {
+        info.move_distance[0]
+    })
+    .sum();
+
+    let mean_x_distance = total_x_distances / infovec.len() as f32;
+
+    logger_info!(
+        "iteration {}, top_x_distance {:.5}, mean_x_distance {:.5}, ted {:.5}",
+        frames.0 / ITERATION_LENGTH as u128,
+        top_x_distance,
+        mean_x_distance,
         ted.0
     );
 }

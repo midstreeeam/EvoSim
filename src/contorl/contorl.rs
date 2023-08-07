@@ -5,8 +5,8 @@ use crate::{
     blob::geno_blob_builder::{BlobGeno, GenoBlobBuilder},
     brain::resource::BevyBlockNeurons,
     consts::{
-        BLOB_SPAWN_POINT_RADIUS, PANIC_TRY_TIMES, POPULATION, SCATTER_RATIO, WORLD_HEIGHT,
-        WORLD_WIDTH,
+        BLOB_SPAWN_POINT_RADIUS, PANIC_TRY_TIMES, POPULATION, SCATTER_RATIO_Y, WORLD_HEIGHT,
+        WORLD_WIDTH, SCATTER_RATIO_X,
     }, logger_info,
 };
 
@@ -29,6 +29,7 @@ impl Plugin for BlobContorlPlugin {
             mutate::mutate::mutate_and_refresh_after_train,
         };
 
+        // train swim
         app.add_systems(
             Startup, 
             move_setup
@@ -49,6 +50,28 @@ impl Plugin for BlobContorlPlugin {
             .init_resource::<TrainMutPipe>()
             .init_resource::<Frames>()
             .init_resource::<TED>();
+
+        // // train walk
+        // app.add_systems(
+        //     Startup, 
+        //     move_setup
+        //     )
+        //     .add_systems(
+        //         Update,
+        //         (
+        //             update_iteration_frames.before(update_blob_info),
+        //             block_action,
+        //             update_blob_info,
+        //             update_joint_info,
+        //             update_crowding_distance,
+        //             log_train_move.after(block_action),
+        //             train_move.after(log_train_move),
+        //             mutate_and_refresh_after_train.after(train_move),
+        //         ),
+        //     )
+        //     .init_resource::<TrainMutPipe>()
+        //     .init_resource::<Frames>()
+        //     .init_resource::<TED>();
     }
 
     fn finish(&self, _app: &mut App) {
@@ -86,12 +109,12 @@ pub fn get_center() -> Vec<(f32, f32)> {
     let mut rng: ThreadRng = thread_rng();
 
     let x_lim: (f32, f32) = (
-        -WORLD_WIDTH as f32 * SCATTER_RATIO * 0.5,
-        WORLD_WIDTH as f32 * SCATTER_RATIO * 0.5,
+        -WORLD_WIDTH as f32 * SCATTER_RATIO_X * 0.5,
+        WORLD_WIDTH as f32 * SCATTER_RATIO_X * 0.5,
     );
     let y_lim: (f32, f32) = (
-        -WORLD_HEIGHT as f32 * SCATTER_RATIO * 0.5,
-        WORLD_HEIGHT as f32 * SCATTER_RATIO * 0.5,
+        -WORLD_HEIGHT as f32 * SCATTER_RATIO_Y * 0.5,
+        WORLD_HEIGHT as f32 * SCATTER_RATIO_Y * 0.5,
     );
     let number: usize = POPULATION;
     let min_distance: f32 = BLOB_SPAWN_POINT_RADIUS;

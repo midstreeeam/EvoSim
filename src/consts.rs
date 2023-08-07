@@ -19,6 +19,10 @@ pub const PRINT_FUNCTION_TIME:bool = false;
 pub const MIN_PRINT_DURATION:Duration = Duration::from_micros(500);
 
 // scale world size
+// train walk
+// pub const WORLD_WIDTH: f32 = 100000.0;
+// pub const WORLD_HEIGHT: f32 = 2000.0;
+// train swim
 pub const WORLD_WIDTH: f32 = 10000.0;
 pub const WORLD_HEIGHT: f32 = 10000.0;
 
@@ -129,7 +133,7 @@ pub mod mutate_consts{
     /// 
     /// if the tree structure is going to mutate, maximumly 1 node will mutate
     /// since single node blob can't lose a node anymore
-    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.9;
+    pub const MUTATE_TREE_STRUCTURE_PROB: f32 = 0.05;
     /// probablity for the choosen node to gain a child node,
     /// otherwise the blob gonna lose a limb
     pub const MUTATE_GAIN_LIMB_PROB: f32 = 0.5;
@@ -146,7 +150,7 @@ pub mod mutate_consts{
     /// scaler for block mutation
     pub const MUTATE_SINGLE_BLOCK_SIZE_SCALER: [f32;2] = [0.7,1.3];
     /// clamp between this scaler for `DEFAULT_BLOCK_SIZE`
-    pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.3,2.5];
+    pub const MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER: [f32;2] = [0.3,2.0];
     /// porbablity of a signle joint limit to mutate
     pub const MUTATE_JOINT_LIMIT_PROB: f32 = 0.1;
     pub const MUTATE_JOINT_LIMIT_MIN: f32 = -PI*0.9;
@@ -165,14 +169,16 @@ pub const POPULATION: usize = 30;
 /// limit for population generation area
 /// 
 /// 100*100 world size with 0.5 ratio result in 50*50 generation area
-pub const SCATTER_RATIO: f32 = 0.9;
+pub const SCATTER_RATIO_Y: f32 = 0.8;
+pub const SCATTER_RATIO_X: f32 = 0.8;
+
 /// min distance between two spawn point
-pub const BLOB_SPAWN_POINT_RADIUS: f32 = 700.0;
+pub const BLOB_SPAWN_POINT_RADIUS: f32 = 750.0;
 /// how long a signle iteration, counted in frame
-pub const ITERATION_LENGTH: usize = 300;
+pub const ITERATION_LENGTH: usize = 1000;
 pub const CHECKPOINTS_LENGTH: usize = 100;
 /// tournament selection hybrid
-pub const HYBRID_RATE: f32 = 0.4;
+pub const HYBRID_RATE: f32 = 0.3;
 
 // io
 pub const EXPORT_PATH: &'static str = "./export/";
