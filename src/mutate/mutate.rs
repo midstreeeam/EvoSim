@@ -18,16 +18,30 @@ use crate::{
 
 use super::{geno_mutate::mutate_geno, nn_mutate::mutate_nn};
 
+/// all implementations relate to mutation
+/// 
+/// include
+/// - geno (morphyology tree structrue) mutate
+/// - nn mutate
+/// 
+/// Notice: this plugin provide mutation function, 
+/// but do not provide update functions called each frame
+/// 
+/// Mutation process was called in `contorl.rs`
 pub struct MutatePlugin;
 
 impl Plugin for MutatePlugin {
     fn build(&self, app: &mut App) {
+        // this function is not mutation in training process
         app.add_systems(Update, mutate_and_refresh.after(block_action));
     }
 }
 
 /// similar implementation as `clean()` in `import.rs`
 /// respawn blobs, update bbn
+/// 
+/// Notice: this function only preform manually mutation after button was pressed,
+/// automatical mutation in training process is fn `mutate_and_refresh_after_train`
 pub fn mutate_and_refresh(
     mut commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,
@@ -68,6 +82,9 @@ pub fn mutate_and_refresh(
     }
 }
 
+/// mutate all blobs in both geno and nn,
+/// refresh the field, update all blobs componets,
+/// and update `BevyBlockNeurons` resource
 pub fn mutate_and_refresh_after_train(
     mut commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,
@@ -109,7 +126,13 @@ pub fn mutate_and_refresh_after_train(
     bbn.nnvec = nnvec;
 }
 
-/// mutated blob may gain or lose NN, sync it with resource
+/// mutated blob may gain or lose NN, sync it with resource.
+/// 
+/// If blob gain limbs, new NN will be append to the end of the NN vector in resource.
+/// 
+/// If blob lose limbs, unused NN will be delete, and all NN after that deleted NN will have its id changed
+/// to make sure the nn_id always match. 
+/// (NN resource do not have id since their id is index, changed id are in `BlobGeno`)
 fn sync_mutate(
     geno_q: &mut Vec<BlobGeno>,
     bbn: &mut ResMut<BevyBlockNeurons>,

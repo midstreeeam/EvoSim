@@ -8,6 +8,13 @@ use crate::consts::{AUTO_NO_VSYNC_KEYCODE, RAPIER_DT, RAPIER_SUBSTEPS};
 
 #[derive(Component)]
 pub struct MainCamera;
+
+/// all implementations relate to graphics
+/// 
+/// includes
+/// - camera & camera contorl
+/// - vsgnc & novsync
+/// - time step contorl
 pub struct EvoGraphicsPlugin;
 
 impl Plugin for EvoGraphicsPlugin {
@@ -33,6 +40,7 @@ impl Plugin for EvoGraphicsPlugin {
     
 }
 
+/// spawn camera
 pub fn setup_graphics(mut commands: Commands) {
     commands.spawn((Camera2dBundle::default(), PanCam::default(), MainCamera));
 }

@@ -58,6 +58,10 @@ pub fn load_blobs(
     }
 }
 
+
+/// despawn all the entities relate to blob
+/// 
+/// clean resources
 pub fn clean(
     mut commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,
@@ -75,7 +79,6 @@ pub fn clean(
 }
 
 /// ignore and overwrite all blobs and NNs that exist
-/// despawn all the entities except wall
 fn overwrite(mut ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbn.nnvec);
 
@@ -90,6 +93,7 @@ fn overwrite(mut ef: ExportFile, commands: Commands, bbn: &mut BevyBlockNeurons)
     bbn.nnvec = ef.flatten_nnvec();
 }
 
+/// take folder path as input, return fname
 fn newest_file_name_in_directory(dir: &str) -> Option<String> {
     fs::read_dir(dir)
         .ok()?

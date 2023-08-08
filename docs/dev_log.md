@@ -53,6 +53,7 @@
   - geno mutate
     - tree structure
     - block size
+      - move_vec and push
     - joint limit
   - nn mutate
   - first_train (swim & walk, quickly fall into local optimal)

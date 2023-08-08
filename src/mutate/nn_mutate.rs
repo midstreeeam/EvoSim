@@ -9,6 +9,7 @@ use crate::{
     consts::mutate_consts::*,
 };
 
+/// mutate Neuron Networks
 pub fn mutate_nn(nnvec: &mut Vec<GenericNN>) {
     for nn in nnvec.iter_mut() {
         let mut rng: ThreadRng = thread_rng();
@@ -33,6 +34,7 @@ fn mutate_brain_nn(nn: &mut BrainNN) {
     mutate_base_nn(&mut nn.nn);
 }
 
+/// add an random value to the existed weight and bias
 fn mutate_base_nn(nn: &mut BaseNN) {
     let normal = Normal::new(0.0, MUTATE_NN_STD).unwrap();
 

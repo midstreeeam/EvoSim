@@ -9,6 +9,11 @@ use crate::{
 
 const CLAMP: [f32;2] = MUTATE_SINGLE_BLOCK_SIZE_CLAMP_SCALER;
 
+/// loop over all blobs to mutate geno.
+/// mutate tree-structure, block-size, joint-limit in the order
+/// 
+/// After the mutation, the genos and the NN is unmatched, 
+/// will be rematched in function `sync_mutate`
 pub fn mutate_geno(
     geno_q: &mut Vec<BlobGeno>
 ) {
@@ -19,7 +24,10 @@ pub fn mutate_geno(
     }
 }
 
-/// gain or lose limbs
+/// gain or lose limbs for a blob
+/// 
+/// gain limb might cause self confilt.
+/// set `MUTATE_GAIN_LIMB_MAX_TRY` to try if gain limb process is unsuccessful.
 pub fn mutate_tree_structure(geno: &mut BlobGeno) {
     let mut rng: ThreadRng = thread_rng();
 
@@ -92,6 +100,12 @@ fn gain_limb(geno: &mut BlobGeno, idx: usize) -> bool {
     }
 }
 
+/// generate a new random `GenericGenoNode`，
+/// 
+/// used to generate new limbs to blob
+/// 
+/// Need to know the direction of the node to generate to prevent self confilt
+/// and to calculate the presice position of the new block.
 fn new_rand_node(parent: &GenoNode, direction: usize) -> GenericGenoNode {
     let mut rng = thread_rng();
 
@@ -153,13 +167,22 @@ fn new_rand_node(parent: &GenoNode, direction: usize) -> GenericGenoNode {
     });
 }
 
+/// the blob lose a block at index `idx`, and all its subnodes.
+/// (but in the implementation, dropped candidates can only be leaf nodes)
+/// 
 /// drop the indexed node
-/// after a node is dropped, the bounded nn will also be removed
+/// after a node is dropped, 
+/// the bounded nn will also be removed in function `sync_mutate`
 fn lose_limb(geno: &mut BlobGeno, idx: usize) {
     geno.vec_tree.clean_subtree(idx);
     // geno.vec_tree.nodes[idx] = None;
 }
 
+/// mutate size of blocks for a blob
+/// 
+/// all blocks of the blob can be mutate (but not must be mutate)
+/// 
+/// the mutation must valid, which means this function won't cause self confilt
 pub fn mutate_block_size(geno: &mut BlobGeno) {
     let mut rng = thread_rng();
 
@@ -190,6 +213,13 @@ pub fn mutate_block_size(geno: &mut BlobGeno) {
 }
 
 
+/// mutate the size of a single block to the new size provided
+/// 
+/// Notice: if a block has its size changed, all its subnode will have their position changed,
+/// which can casue self-confilt to happen.
+/// 
+/// if the mutation (new size) is not valid (cause self confilt), 
+/// then will not apply
 fn mutate_single_block_size(
     geno: &mut BlobGeno,
     index: usize,
@@ -219,6 +249,10 @@ fn mutate_single_block_size(
     }
 }
 
+/// if a block has its size changed, all its subnode will have their position changed
+/// 
+/// Base on the changes of a node, return how much and which direction all its subnodes will move.
+/// 
 /// outputs front, left, right movement vector for input node (facing outward to the root node)
 fn get_movevec(
     index: usize,
@@ -256,6 +290,7 @@ fn get_movevec(
     
 }
 
+/// Mutate joint limit of limbs
 pub fn mutate_joint_limit(geno: &mut BlobGeno){
     let mut rng: ThreadRng = thread_rng();
 

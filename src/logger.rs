@@ -1,3 +1,6 @@
+//! logger script, 
+//! provide macros to log informations (basically training process) into logfile.
+
 use chrono::Local;
 use std::fs::OpenOptions;
 use std::io::Write;

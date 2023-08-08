@@ -1,3 +1,5 @@
+//! Some bevy componets don't belongs to any module
+
 use bevy::prelude::*;
 
 /// Every collider should have a type flag.

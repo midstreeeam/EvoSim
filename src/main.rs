@@ -14,7 +14,6 @@ mod physics;
 mod logger;
 
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 use brain::resource::BevyBlockNeurons;
 use contorl::contorl::BlobContorlPlugin;
@@ -43,9 +42,7 @@ fn main() {
             //         ..default()
             //     }
             // }),
-            // raiper
-            RapierPhysicsPlugin::<NoUserData>::default(),
-            RapierDebugRenderPlugin::default(),
+
             // custom
             PhysiWorldPlugin,  // init physical world
             EvoGraphicsPlugin, // vsync and camera

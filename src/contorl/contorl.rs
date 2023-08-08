@@ -1,3 +1,5 @@
+//! This module is the entrance of all updates and neuron netwrok's function
+
 use bevy::prelude::*;
 use rand::prelude::*;
 

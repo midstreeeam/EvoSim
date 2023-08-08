@@ -4,6 +4,13 @@ use crate::contorl::update::block_action;
 
 use super::{export::export, import::{load_blobs, clean}};
 
+/// all implementations relate to import and export (save and load)
+/// 
+/// include
+/// - load from file
+/// - save to file
+/// - clean field
+/// - automatic checkpoint save
 pub struct EvoIOPlugin;
 
 impl Plugin for EvoIOPlugin {

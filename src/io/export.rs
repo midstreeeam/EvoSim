@@ -16,9 +16,13 @@ use crate::{
     consts::EXPORT_PATH,
 };
 
+/// struct for file to save & load
+/// 
+/// `genovec`, `nnvec`, `posvec` are paired
 #[derive(Serialize,Deserialize)]
 pub struct ExportFile{
     genovec: Vec<BlobGeno>,
+    /// nested vec, outer relate to blob, inner relate to block (blob's limb)
     nnvec: Vec<Vec<(GenericNN,usize)>>,
     posvec: Vec<[f32;2]>
 }
