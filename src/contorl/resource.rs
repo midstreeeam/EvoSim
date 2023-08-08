@@ -16,6 +16,7 @@ impl Default for Frames {
 }
 
 // TODO: TED should be normalized by avg blob depth
+/// The Tree Edit Distance, used as indicator for diversity
 #[derive(Resource)]
 pub struct TED(pub f32);
 
@@ -25,6 +26,13 @@ impl Default for TED {
     }
 }
 
+/// A temp storage for all blob and it's relate neuron's information.
+/// 
+/// After reproduction and mutation, all NN and Blobs will be cleaned,
+/// new blobs and nn are generated after that.
+/// 
+/// When doing cleaning, this Resource stores 
+/// all the blobs and neurons waiting to be spawned
 #[derive(Resource)]
 pub struct TrainMutPipe {
     genovec: Vec<BlobGeno>,

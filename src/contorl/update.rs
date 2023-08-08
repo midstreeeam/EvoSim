@@ -1,3 +1,5 @@
+//! all implementation of framely updates relate to blobs
+
 use std::f32::consts::PI;
 use std::time::Instant;
 
@@ -10,7 +12,8 @@ use bevy_rapier2d::{
 use crate::{
     blob::{
         blob::BlobInfo,
-        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId, ParentAnchor}, geno_blob_builder::BlobGeno,
+        block::{BlockDepth, CenterBlockFlag, JointInfo, NeuronId, ParentAnchor},
+        geno_blob_builder::BlobGeno,
     },
     brain::{
         resource::BevyBlockNeurons,
@@ -22,6 +25,10 @@ use crate::{
 
 use super::resource::{Frames, TED};
 
+/// **CORE FUNCTION**
+///
+/// Update all blobs' motor condition to let blobs preform action.
+///
 /// select `Query<(&Parent, &mut ImpulseJoint)`
 /// means the center block will not be selected
 ///
@@ -166,7 +173,12 @@ fn get_cf_event(
 }
 
 /// Not a bevy system.
+///
 /// Output singal depends on NN's input
+///
+/// collect contact force events and translate it into nn signals
+///
+/// contact blob and contact wall have different signal
 fn get_cf_signal(
     entity_id: Entity,
     cf_events_vec: &mut Vec<ContactForceEvent>,
@@ -200,6 +212,10 @@ fn get_cf_signal(
 }
 
 /// Update `JointInfo` componet each frame.
+///
+/// update:
+/// - current angular velocity
+/// - current angular position
 pub fn update_joint_info(
     parent_joint_q: Query<(&Parent, &ImpulseJoint)>,
     mut joint_info_q: Query<&mut JointInfo>,
@@ -236,20 +252,65 @@ pub fn update_joint_info(
     }
 }
 
-fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32 {
+/// Calculates the relative rotation between two transforms.
+///
+/// This function takes two references to `Transform` objects and computes the relative rotation
+/// between them in degrees. The rotation is calculated using the arctangent of the z and w components
+/// of the rotation quaternion.
+///
+/// # Parameters
+///
+/// * `transform1`: A reference to the first transform.
+/// * `transform2`: A reference to the second transform.
+///
+/// # Returns
+///
+/// Returns the relative rotation between the two transforms in degrees.
+pub fn get_relative_rotation(transform1: &Transform, transform2: &Transform) -> f32 {
     let r1 = transform1.rotation;
     let r2 = transform2.rotation;
     r1.z.atan2(r1.w) * 360.0 / PI - r2.z.atan2(r2.w) * 360.0 / PI
 }
 
-fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
+/// Calculates the relative angular velocity between two velocity objects.
+///
+/// This function takes two references to `Velocity` objects and computes the relative angular
+/// velocity between them in degrees per second. The result is normalized by dividing by π and
+/// multiplying by 180.
+///
+/// # Parameters
+///
+/// * `v1`: A reference to the first velocity object.
+/// * `v2`: A reference to the second velocity object.
+///
+/// # Returns
+///
+/// Returns the relative angular velocity between the two velocity objects in degrees per second.
+pub fn get_relative_angular_velocity(v1: &Velocity, v2: &Velocity) -> f32 {
     (v1.angvel - v2.angvel) / PI * 180.0
 }
 
+/// **a bevy function**
+///
+/// Updates the `BlobInfo` for every blob component in the ECS.
+///
+/// This function iterates through all blob components and calculates the new mass center and velocity
+/// based on the child entities' transforms and colliders. It also updates the move distance of the blob
+/// based on the current frame and iteration length.
+/// 
+/// it updates:
+/// - mass_center
+/// - velocity
+/// - cumulated move distance (for move training usage)
+/// 
+/// # Panics
+///
+/// This function will panic if any child of a blob does not have both a transform and collider, 
+/// or if a blob does not have at least one block.
 pub fn update_blob_info(
     tc_q: Query<(&Transform, &Collider)>,
     mut blob_q: Query<(&mut BlobInfo, &Children)>,
-    frames: Res<Frames>
+    frames: Res<Frames>,
 ) {
     let start_time = Instant::now();
     for (mut blob, children) in blob_q.iter_mut() {
@@ -275,7 +336,7 @@ pub fn update_blob_info(
             blob.move_distance[0] += blob.velocity[0];
             blob.move_distance[1] += blob.velocity[1];
         }
-        
+
         // update mass_center
         blob.mass_center = new_mass_center;
     }
@@ -285,6 +346,21 @@ pub fn update_blob_info(
     }
 }
 
+/// Calculates the mass center of a collection of points.
+///
+/// This function takes a vector of points, where each point is represented as an array of three `f32` values.
+/// The first two values are the x and y coordinates, and the third value is the mass at that point.
+/// The function calculates the weighted sum of the coordinates based on the mass and divides by the total mass
+/// to find the mass center.
+///
+/// # Parameters
+///
+/// * `mass_points`: A vector of points, where each point is an array `[x, y, mass]`.
+///
+/// # Returns
+///
+/// Returns an `Option` containing an array `[x, y]` representing the mass center of the points.
+/// If the input vector is empty or the total mass is zero, the function returns `None`.
 fn get_mass_center(mass_points: Vec<[f32; 3]>) -> Option<[f32; 2]> {
     if mass_points.is_empty() {
         return None;
@@ -307,13 +383,15 @@ fn get_mass_center(mass_points: Vec<[f32; 3]>) -> Option<[f32; 2]> {
     }
 }
 
+/// update iteration resource
 pub fn update_iteration_frames(mut frames: ResMut<Frames>) {
     frames.0 += 1;
 }
 
+/// update TED resource
 pub fn update_crowding_distance(
     mut blob_q: Query<(&BlobGeno, &mut BlobInfo)>,
-    mut ted: ResMut<TED>
+    mut ted: ResMut<TED>,
 ) {
     let mut genovec: Vec<&BlobGeno> = Vec::new();
     let mut infovec: Vec<BlobInfo> = Vec::new();
@@ -326,10 +404,11 @@ pub fn update_crowding_distance(
     for i in 0..genovec.len() {
         let &this_geno = genovec.get(i).unwrap();
         let this_info = infovec.get_mut(i).unwrap();
-        let mut sum_crowding_distance:usize = 0;
+        let mut sum_crowding_distance: usize = 0;
         for j in 0..genovec.len() {
             let &other_geno = genovec.get(j).unwrap();
-            sum_crowding_distance += this_geno.vec_tree.tree_edit_distance(&other_geno.vec_tree) as usize;
+            sum_crowding_distance +=
+                this_geno.vec_tree.tree_edit_distance(&other_geno.vec_tree) as usize;
         }
         let avg_corwding_distance = sum_crowding_distance as f32 / genovec.len() as f32;
         this_info.crowding_distance = avg_corwding_distance;
@@ -337,10 +416,10 @@ pub fn update_crowding_distance(
 
     let mut cd: f32 = 0.0;
     // update crowding distance
-    for (i, (_,mut info)) in blob_q.iter_mut().enumerate() {
+    for (i, (_, mut info)) in blob_q.iter_mut().enumerate() {
         *info = infovec.get(i).unwrap().clone();
         cd += infovec.get(i).unwrap().crowding_distance;
     }
 
-    ted.0 = cd/blob_q.iter().len() as f32;
+    ted.0 = cd / blob_q.iter().len() as f32;
 }

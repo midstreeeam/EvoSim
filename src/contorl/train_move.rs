@@ -1,3 +1,5 @@
+//! training process. Trainnig to let blobs to learn to move (swim or walk)
+
 use std::collections::HashSet;
 
 use bevy::prelude::*;
@@ -16,8 +18,14 @@ use crate::{
 
 use super::resource::{Frames, TrainMutPipe, TED};
 
+/// main training function for blob's swim moving.
+/// 
+/// When current iteration ends, the function will be called.
+/// 
+/// Preform tournament selection base on moving distance and crowding distance
+/// 
 /// `POPULATION == 1` in will make thread panic since it never trains
-pub fn train_move(
+pub fn train_move_swim(
     entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
     nn_q: Query<(&Parent, &NeuronId)>,
     mut bbn: ResMut<BevyBlockNeurons>,
@@ -80,7 +88,13 @@ pub fn train_move(
     }
 }
 
-
+/// main training function for blob's walk moving.
+/// 
+/// When current iteration ends, the function will be called.
+/// 
+/// Preform tournament selection base on moving distance (only on x axis) and crowding distance
+/// 
+/// `POPULATION == 1` in will make thread panic since it never trains
 pub fn train_move_walk(
     entity_geno_info_q: Query<(Entity, (&BlobGeno, &BlobInfo))>,
     nn_q: Query<(&Parent, &NeuronId)>,
@@ -138,8 +152,6 @@ pub fn train_move_walk(
 /// survivers won move tournament and survivers won ted tournament
 ///
 /// aiming to keep diversity
-///
-/// BUG: might select a signle blob and then insert it back to survivers_move, causing duplicate
 fn hybrid_selection(
     survivers_move: &mut [(Entity, (BlobGeno, BlobInfo))],
     blob_vec_ted: &Vec<(Entity, (BlobGeno, BlobInfo))>,
@@ -173,7 +185,7 @@ fn hybrid_selection(
     }
 }
 
-/// delete neuron from nnvec based on outcasts
+/// delete neuron from nnvec based on outcasts.
 fn clean_outcast(
     survivers: &mut [(Entity, (BlobGeno, BlobInfo))],
     nn_q: Query<(&Parent, &NeuronId)>,
@@ -285,6 +297,7 @@ fn reproduce(genovec: &mut Vec<BlobGeno>, infovec: &mut Vec<BlobInfo>, nnvec: &m
     }
 }
 
+/// determin if iteration ends
 fn iteration_end(frames: Res<Frames>) -> bool {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt == 0 && frames.0 != 0 {
@@ -294,7 +307,8 @@ fn iteration_end(frames: Res<Frames>) -> bool {
     }
 }
 
-pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TED>) {
+/// logger function for swim training
+pub fn log_train_move_swim(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TED>) {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt != 0 || frames.0 == 0 {
         return;
@@ -343,6 +357,7 @@ pub fn log_train_move(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TE
     );
 }
 
+/// logger function for walk training
 pub fn log_train_move_walk(frames: Res<Frames>, info_q: Query<&BlobInfo>, ted: Res<TED>) {
     let cur_gen_frame_cnt = frames.0 % ITERATION_LENGTH as u128;
     if cur_gen_frame_cnt != 0 || frames.0 == 0 {

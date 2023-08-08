@@ -9,7 +9,7 @@ use crate::{
     consts::*,
     contorl::{
         resource::{Frames, TED},
-        train_move::{log_train_move, train_move},
+        train_move::{log_train_move_swim, train_move_swim},
         update::{update_crowding_distance, update_iteration_frames},
     },
     logger_info,
@@ -22,6 +22,32 @@ use super::{
     update::{block_action, update_blob_info, update_joint_info},
 };
 
+/// Main entrance of the whole EvoSim system
+///
+/// all implementation relate to updates and blob contorl.
+///
+/// include
+/// - world initialize
+/// - blob information update (each frame)
+/// - training information update (each frame)
+/// - logger function call
+/// - neurons' input signal collection (each frame)
+/// - neurons' forward function call (each frame)
+/// - neurons' output collection (each frame)
+/// - blobs' behavior update base on neuron output (each frame)
+/// - training function call
+/// - mutation function call
+///
+/// some resource implementation
+///
+/// include
+/// - `TrainMutPipe`
+/// - `Frames`
+/// - `TED`
+///
+///
+/// implement all training style.
+/// choose between different training mode in const
 pub struct BlobContorlPlugin;
 
 impl Plugin for BlobContorlPlugin {
@@ -44,9 +70,9 @@ impl Plugin for BlobContorlPlugin {
                         update_blob_info,
                         update_joint_info,
                         update_crowding_distance,
-                        log_train_move.after(block_action),
-                        train_move.after(log_train_move),
-                        mutate_and_refresh_after_train.after(train_move),
+                        log_train_move_swim.after(block_action),
+                        train_move_swim.after(log_train_move_swim),
+                        mutate_and_refresh_after_train.after(train_move_swim),
                     ),
                 )
                 .init_resource::<TrainMutPipe>()
@@ -81,6 +107,7 @@ impl Plugin for BlobContorlPlugin {
     }
 }
 
+/// inital setup for demo (mainly for mutation demo)
 pub fn demo_setup(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
     // let mut geno = BlobGeno::new_rand();
@@ -97,6 +124,7 @@ pub fn demo_setup(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     }
 }
 
+/// inital setup for movement training
 pub fn move_setup(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     let mut builder = GenoBlobBuilder::from_commands(commands, &mut bbns.nnvec);
 
@@ -106,7 +134,12 @@ pub fn move_setup(commands: Commands, mut bbns: ResMut<BevyBlockNeurons>) {
     }
 }
 
-/// generate blob center pos base on target population
+/// generate a random blob center pos base on target population
+///
+/// centers generation is contorled by several consts.
+///
+/// function will panic if it is not very likely to
+/// fit all blobs into the given field
 pub fn get_center() -> Vec<(f32, f32)> {
     let mut rng: ThreadRng = thread_rng();
 
@@ -118,7 +151,7 @@ pub fn get_center() -> Vec<(f32, f32)> {
     }
 
     let x_lim: (f32, f32) = (
-        - world_width * SCATTER_RATIO_X * 0.5,
+        -world_width * SCATTER_RATIO_X * 0.5,
         world_width as f32 * SCATTER_RATIO_X * 0.5,
     );
     let y_lim: (f32, f32) = (
@@ -176,6 +209,7 @@ pub fn get_center() -> Vec<(f32, f32)> {
     points
 }
 
+/// educlidean distance between two points
 fn euclidean_distance((x1, y1): (f32, f32), (x2, y2): (f32, f32)) -> f32 {
     ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
 }

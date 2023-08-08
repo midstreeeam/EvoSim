@@ -837,7 +837,27 @@ impl<T> QuadTree<T> {
         index < self.nodes.len() && self.nodes[index].is_none()
     }
 
-    /// TED with another tree
+    /// Calculates the Tree Edit Distance (TED) between two QuadTrees.
+    ///
+    /// The Tree Edit Distance is a measure of the similarity between two trees, defined as the minimum
+    /// cost sequence of node deletions, insertions, and substitutions that transform one tree into the other.
+    /// This function uses dynamic programming to efficiently compute the TED between the current tree and another.
+    ///
+    /// # Parameters
+    ///
+    /// * `other`: A reference to the other `QuadTree` with which the edit distance is to be calculated.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `usize` representing the Tree Edit Distance between the two trees.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let tree1 = QuadTree::new(...);
+    /// let tree2 = QuadTree::new(...);
+    /// let distance = tree1.tree_edit_distance(&tree2);
+    /// ```
     pub fn tree_edit_distance(&self, other: &QuadTree<T>) -> usize {
         // Create a cache to store previous computed results
         let mut dp = vec![vec![None; other.nodes.len()]; self.nodes.len()];

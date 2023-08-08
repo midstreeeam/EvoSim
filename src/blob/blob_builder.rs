@@ -10,6 +10,7 @@ use crate::{
 
 use super::{blob::*, block::*, geno_blob_builder::BlobGeno};
 
+/// Blob unit for builder to use
 #[derive(Debug)]
 pub struct BlobBlock {
     id: Entity,
@@ -25,6 +26,9 @@ pub struct BlobBlock {
     nn_id: usize,
 }
 
+/// BlobBuilder, takes ownership fo commands and mut reference of nnvec.
+/// 
+/// Can use it to generate a physical blob with nn in any possible structures
 pub struct BlobBuilder<'a> {
     // tools
     commands: Commands<'a, 'a>,
@@ -585,7 +589,9 @@ impl<'a> BlobBuilder<'a> {
     }
 }
 
-// helper function
+/// helper function.
+/// 
+/// bind a joint between two colliders
 pub fn bind_joint(
     commands: &mut Commands,
     parent: Entity,
