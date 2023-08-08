@@ -6,6 +6,7 @@ use crate::{componet::{ColliderFlag, BlobEntityIndex}, consts::{DEFAULT_DAMPING_
 #[derive(Component)]
 pub struct CenterBlockFlag;
 
+/// Anchor points that other joints can connect to.
 #[derive(Component, Clone, Debug)]
 pub struct BlockAnchors {
     pub top: Vec2,

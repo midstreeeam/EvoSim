@@ -249,7 +249,9 @@ fn build_node_with_nn(
 }
 
 /// The Geno for morphyology of the blob.
+/// 
 /// The Geno is a QuadTree (it can be represented as TernaryTree as well).
+/// 
 /// index 0,1,2,3 means up,down,left,right (one of them can be ParentIndicator)
 #[derive(Debug, Component, Clone, Serialize, Deserialize)]
 pub struct BlobGeno {
@@ -410,6 +412,7 @@ impl BlobGeno {
         bg
     }
 
+    /// get the first GenoNode
     pub fn get_first(&self) -> Option<&GenoNode> {
         self.vec_tree.nodes[0].as_ref().and_then(|node| match node {
             GenericGenoNode::Parent => None,
@@ -417,7 +420,7 @@ impl BlobGeno {
         })
     }
 
-    /// The genotype is valid or not.
+    /// checker function to check the genotype is valid or not.
     /// 
     /// Not valid means self-conflit limbs
     pub fn is_valid(&self) -> bool {
@@ -496,6 +499,7 @@ impl BlobGeno {
         result
     }
 
+    /// assign an nn_id to root (sometimes builder don't need new random geno)
     pub fn assign_nn_id_to_root(&mut self, id: usize) {
         if let Some(Some(GenericGenoNode::Child(node))) = self.vec_tree.nodes.get_mut(0) {
             if node.nn_id.is_none() {
@@ -541,6 +545,7 @@ impl BlobGeno {
             .collect()
     }
 
+    /// push all subtrees outside if the root block's size changed
     pub fn move_subtree_nodes_root(&mut self, old_size: [f32;2], new_size: [f32;2]) {
         let root_index: usize = 0;
         let xmove = new_size[0]-old_size[0];
@@ -685,7 +690,10 @@ impl BlobGeno {
 }
 
 /// GenericGenoNode is the Node in the BlobGeno QuadTree.
+/// 
 /// Representing morphyology of each block inside blob.
+/// 
+/// `Parent` is an indicator to show the parent direction of current node
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GenericGenoNode {
     /// parent indicator
@@ -693,6 +701,7 @@ pub enum GenericGenoNode {
     Child(GenoNode),
 }
 
+/// minium signle geno node
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GenoNode {
     pub joint_limits: [f32; 2],
@@ -931,6 +940,8 @@ impl<T: Debug> Debug for QuadTree<T> {
     }
 }
 
+/// input the forward direction.
+/// output the left and right direction in tuple
 fn get_left_right_direction(direction:usize) -> (usize,usize) {
     match direction {
         0 => (2,3),
