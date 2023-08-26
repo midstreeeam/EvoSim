@@ -1,0 +1,159 @@
+{
+  "main": {
+    "id": "a4637558e8edd01c",
+    "type": "split",
+    "children": [
+      {
+        "id": "1f9df8335fa2c1b8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3cc0eb53b9ed9f53",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "reports/index.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "fec1f8430818c79b",
+    "type": "split",
+    "children": [
+      {
+        "id": "c3910de4154df6ac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2c8ebde490051b16",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "9cc7a9472bebfc67",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b11f336f566f6e00",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d798e1a59632c39f",
+    "type": "split",
+    "children": [
+      {
+        "id": "34984dbcc747b160",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "dca1b4c6b61fb47f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "reports/index.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1febfb31b0467603",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "reports/index.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1213717905e18b5c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "a5ae69297df5df32",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "reports/index.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "webpage-html-export:Export Vault to HTML": false
+    }
+  },
+  "active": "3cc0eb53b9ed9f53",
+  "lastOpenFiles": [
+    "reports/index.md",
+    "reports/Neural.md",
+    "reports/Relate Works.md",
+    "reports/Physical.md",
+    "reports/Gene.md",
+    "docs/Notes.md",
+    "docs/dev_log.md",
+    "reports"
+  ]
+}
