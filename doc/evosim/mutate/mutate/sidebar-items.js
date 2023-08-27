@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["mutate_and_refresh","mutate_and_refresh_after_train","sync_mutate"],"struct":["MutatePlugin"]};

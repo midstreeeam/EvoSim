@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"evosim":[["impl DynamicBundle for <a class=\"struct\" href=\"evosim/blob/block/struct.PhysiBlockBundle.html\" title=\"struct evosim::blob::block::PhysiBlockBundle\">PhysiBlockBundle</a>"],["impl DynamicBundle for <a class=\"struct\" href=\"evosim/blob/blob/struct.BlobBundle.html\" title=\"struct evosim::blob::blob::BlobBundle\">BlobBundle</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

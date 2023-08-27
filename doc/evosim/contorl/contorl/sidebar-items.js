@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["demo_setup","euclidean_distance","get_center","move_setup"],"struct":["BlobContorlPlugin"]};

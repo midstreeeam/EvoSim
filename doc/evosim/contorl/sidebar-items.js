@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["contorl","resource","train_move","update"]};

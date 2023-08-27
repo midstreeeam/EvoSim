@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["physical_world","rules","world"]};
