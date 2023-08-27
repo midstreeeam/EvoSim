@@ -1,3 +1,5 @@
+//! Serialize and export the simulation stage
+
 use std::fs::File;
 use std::io::Write;
 use std::{fs, path::Path};

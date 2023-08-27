@@ -1,3 +1,5 @@
+//! implementation of geno (morphyologt) mutation
+
 use std::f32::consts::PI;
 
 use rand::prelude::*;

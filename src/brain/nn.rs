@@ -1,3 +1,5 @@
+//! base neuron implementation
+
 use std::fmt;
 
 use ndarray::prelude::*;

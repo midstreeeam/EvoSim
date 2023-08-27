@@ -24,6 +24,7 @@ use physics::physical_world::PhysiWorldPlugin;
 
 // TODO: Headless mode causing panic
 // TODO: Not all cores are fully tuilized
+/// Main function to start the simulation (which is a bevy app)
 fn main() {
     App::new()
         .add_plugins((

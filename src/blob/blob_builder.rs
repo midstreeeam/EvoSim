@@ -1,3 +1,5 @@
+//! blob_builder, build a blob and gengrate corresponding neural network block by block
+
 use std::f32::consts::PI;
 
 use bevy::prelude::*;

@@ -1,4 +1,6 @@
 //! This module is the entrance of all updates and neuron netwrok's function
+//! 
+//! Implementation of `BlobContorlPlugin`
 
 use bevy::prelude::*;
 use rand::prelude::*;

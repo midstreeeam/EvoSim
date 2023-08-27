@@ -1,3 +1,5 @@
+//! Import and deserialize the checkpoint or exported files
+
 use std::fs::{File, self};
 use std::io::Read;
 
@@ -14,6 +16,7 @@ use crate::physics::world::Wall;
 
 use super::export::ExportFile;
 
+/// load blobs from an exported file or checkpoints file
 pub fn load_blobs(
     commands: Commands,
     mut bbn: ResMut<BevyBlockNeurons>,

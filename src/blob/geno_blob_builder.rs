@@ -1,3 +1,5 @@
+//! implementation of blob's gene and builder that can build blob base on an given genotype
+
 use std::f32::consts::PI;
 use std::fmt::{self, Debug};
 

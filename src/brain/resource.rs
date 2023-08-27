@@ -1,3 +1,5 @@
+//! implementation about `BevyBlockNeurons`, which is a wrapper around neural network to make it into a bevy resource.
+
 use std::f32::consts::PI;
 
 use bevy::prelude::*;

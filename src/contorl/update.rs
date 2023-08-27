@@ -1,4 +1,4 @@
-//! all implementation of framely updates relate to blobs
+//! all implementation of framely updates relate to blobs (sensors and activators behavior)
 
 use std::f32::consts::PI;
 use std::time::Instant;

@@ -1,3 +1,5 @@
+//! additional physical rules applied
+
 use std::time::Instant;
 
 use bevy::prelude::*;

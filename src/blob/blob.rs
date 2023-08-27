@@ -1,3 +1,5 @@
+//! `BlobInfo` componet and `BlobBundle`
+
 use std::f32::NAN;
 
 use bevy::prelude::*;

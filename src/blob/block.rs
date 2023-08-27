@@ -1,3 +1,5 @@
+//! block, the smallest rigid body unit in the project, used to construct blobs
+
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 

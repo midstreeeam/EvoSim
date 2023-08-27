@@ -1,3 +1,5 @@
+//! signals that passes between neurons
+
 use std::fmt;
 
 use crate::{

@@ -1,3 +1,5 @@
+//! implementation of two neuron type: brain neuron and block neuron
+
 use std::fmt;
 
 use ndarray::prelude::*;

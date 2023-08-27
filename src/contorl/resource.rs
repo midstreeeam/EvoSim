@@ -1,3 +1,5 @@
+//! hepler bevy resources to pass information and signals between bevy systems
+
 use bevy::prelude::*;
 
 use crate::{

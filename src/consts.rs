@@ -1,3 +1,5 @@
+//! all the consts
+
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::KeyCode;

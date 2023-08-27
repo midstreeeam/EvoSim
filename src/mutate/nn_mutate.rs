@@ -1,3 +1,5 @@
+//! implementations about neural networks's mutation (weight and bias)
+
 use rand::prelude::*;
 use rand_distr::{Distribution, Normal};
 
@@ -33,6 +35,7 @@ fn mutate_block_nn(nn: &mut BlockNN) {
 fn mutate_brain_nn(nn: &mut BrainNN) {
     mutate_base_nn(&mut nn.nn);
 }
+
 
 /// add an random value to the existed weight and bias
 fn mutate_base_nn(nn: &mut BaseNN) {
