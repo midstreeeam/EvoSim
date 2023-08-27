@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CL","DL"],"struct":["BrainSignal","BrainSignalUnit","InwardNNInputSignal","InwardNNInputSignalUnit","OutwardNNInputSignal","SignalHandler"]};

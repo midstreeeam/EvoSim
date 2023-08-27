@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Activation"],"struct":["BaseLayer","BaseNN"]};

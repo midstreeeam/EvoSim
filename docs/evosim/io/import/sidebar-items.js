@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["clean","load_blobs","newest_file_name_in_directory","overwrite"],"static":["CALLSITE","META"]};

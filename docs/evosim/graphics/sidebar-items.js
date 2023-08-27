@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["setup_graphics","toggle_vsync"],"static":["CALLSITE","META"],"struct":["EvoGraphicsPlugin","MainCamera"]};

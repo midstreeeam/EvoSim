@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["bind_joint"],"static":["CALLSITE","META"],"struct":["BlobBlock","BlobBuilder"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["mutate_base_nn","mutate_block_nn","mutate_brain_nn","mutate_nn"]};

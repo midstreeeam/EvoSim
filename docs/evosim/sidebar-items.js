@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["main"],"macro":["logger_error","logger_info","logger_warn"],"mod":["blob","brain","componet","consts","contorl","graphics","io","logger","mutate","physics"]};

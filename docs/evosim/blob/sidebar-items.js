@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["blob","blob_builder","block","geno_blob_builder"]};

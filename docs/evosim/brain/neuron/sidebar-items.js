@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CL","DL"],"enum":["GenericNN"],"struct":["BlockNN","BrainNN","InwardNN","OutwardNN"]};
