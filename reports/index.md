@@ -17,7 +17,7 @@ The core architecture of the simulation is segmented into several pivotal compon
 
 Moving away from the traditional evolution simulations that provide pre-defined movement functions for virtual entities, we aspire for our creatures to autonomously discover means of motion within a simulated physical realm, mirroring the evolutionary trajectory of cells in the real world. Thus, we've developed an underwater physics simulation, encouraging virtual entities to adapt and learn to swim.
 
-Dive deeper into the intricacies of our physical simulation design and its implementation by visiting [this dedicated page](Physical.md).
+Dive deeper into the intricacies of our physical simulation design and its implementation by visiting [this dedicated page](Physics.md).
 ### Morphylogoly
 
 Creatures are architecturally composed of rectangular rigid bodies interconnected by joints. These rigid bodies serve as the physical elements facilitating movement, while the joints, constrained by specific angles and equipped with controllable motors, enable articulated action.
@@ -35,3 +35,17 @@ Our creatures' neural configurations deviate markedly from conventional neural n
 
 Owing to this unique neural makeup, existing frameworks fall short. As a solution, we've crafted our own from the ground up. Delve into the nuances of our neural structure [here](Neural.md).
 ### Training
+
+Evolutionary training stands at the heart of our project. Without this, our virtual entities would merely be random, inanimate blocks, and their intricate neural networks would lack purpose and function.
+
+The adaptability of our training regimen is noteworthy. By designing a myriad of tasks, we can guide creatures towards various objectives—be it movement, terrestrial ambulation, aquatic swimming, or other specialized actions. To facilitate the evolution of these creatures, we employ genetic algorithms. Given the intricate nature of our dynamic neural networks, conventional back-propagation proves too mathematically challenging. Thus, genetic algorithms offer a more viable and efficient approach.
+
+For a deeper dive into the nuances of our evolutionary training process, explore [this section](Training.md).
+
+## Design Pattern
+
+To harness the advantages of parallel computing, our design embraces the Entity Component System (ECS) paradigm over the traditional Object-Oriented Programming (OOP) approach.
+
+Our virtual creatures boast a distinct hierarchical neural network. Organizing such a network in a conventional nested manner would immensely complicate parallel computation due to the intricate interdependencies present within the neural network's segments. To navigate this complexity, we've restructured the neural network. Each expansive network is fragmented into its smallest functional units, which are then interlinked. An auxiliary scheduling system is incorporated to dictate the sequence of processing. This reconfiguration significantly simplifies the parallel processing of the numerous neural network units.
+
+For managing other resources and datasets, we lean into Bevy's ECS framework, which offers robust support for parallel operations.
