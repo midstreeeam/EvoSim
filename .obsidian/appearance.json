@@ -1,5 +1,6 @@
 {
   "accentColor": "",
   "theme": "system",
-  "cssTheme": "Minimal"
+  "cssTheme": "Minimal",
+  "baseFontSize": 15
 }

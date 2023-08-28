@@ -40,7 +40,7 @@ Evolutionary training stands at the heart of our project. Without this, our virt
 
 The adaptability of our training regimen is noteworthy. By designing a myriad of tasks, we can guide creatures towards various objectives—be it movement, terrestrial ambulation, aquatic swimming, or other specialized actions. To facilitate the evolution of these creatures, we employ genetic algorithms. Given the intricate nature of our dynamic neural networks, conventional back-propagation proves too mathematically challenging. Thus, genetic algorithms offer a more viable and efficient approach.
 
-For a deeper dive into the nuances of our evolutionary training process, explore [this section](Training.md).
+For a deeper dive into the nuances of our evolutionary training process, explore [training section](Training.md) and [mutation section](Mutation.md).
 
 ## Design Pattern
 
