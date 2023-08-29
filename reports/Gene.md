@@ -21,6 +21,8 @@ Within our tree design:
 - Indexes 1, 2, 3, and 4 correspond to the anchor points: up, down, left, and right, respectively.
 - If no children are connected to an anchor point, its value is set to `None`.
 - If an anchor is connected to valid block, its value is an enum [GenericGenoNode](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/enum.GenericGenoNode.html), which can be either `Parent` or `Child`, where parent is an indicator and child is a [GenoNode](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/enum.GenericGenoNode.html) that contains block's information.
+![[quadtree.png]]
+As shown the in the graph, the left-hand side QuadTree represents the right-hand side blob structure.
 
 For a deeper dive into the implementation specifics, refer to our documentation on [BlobGeno](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/struct.BlobGeno.html) and [QuadTree](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/struct.QuadTree.html).
 
@@ -28,4 +30,9 @@ For a deeper dive into the implementation specifics, refer to our documentation 
 
 In our structure, every blob's morphyology can be represented by a unique gene, but not every possible gene relate to a valid structure. So, when a gene is randomly generated, or mutated, we need to check if the new gene corresponds to a valid morphyology structure.
 
-checker function [here](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/struct.BlobGeno.html#method.is_valid).
+Usually, there are two types of invalidate gene, as shown in the graph below:
+![[validation.jpg]]
+
+The first type of invalidation is easy to prevent if we simply limit the size of child blocks, but the second one is hard to prevent by limiting the generation rule. So, instead of modifying the genration rule, we just check the validation each time there are mophyological changes.
+
+You can find checker function [here](https://evosim.kaiyuanlou.com/evosim/blob/geno_blob_builder/struct.BlobGeno.html#method.is_valid).
