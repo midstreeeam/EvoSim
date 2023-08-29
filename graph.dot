@@ -1,0 +1,197 @@
+digraph {
+
+    graph [
+        label="evosim",
+        labelloc=t,
+
+        pad=0.4,
+
+        // Consider rendering the graph using a different layout algorithm, such as:
+        // [dot, neato, twopi, circo, fdp, sfdp]
+        layout=neato,
+        overlap=false,
+        splines="line",
+        rankdir=LR,
+
+        fontname="Helvetica",
+        fontsize="36",
+    ];
+
+    node [
+        fontname="monospace",
+        fontsize="10",
+        shape="record",
+        style="filled",
+    ];
+
+    edge [
+        fontname="monospace",
+        fontsize="10",
+    ];
+
+    "evosim" [label="crate|evosim", fillcolor="#5397c8"]; // "crate" node
+    "evosim::blob" [label="pub(crate) mod|blob", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::blob::blob" [label="pub mod|blob::blob", fillcolor="#81c169"]; // "mod" node
+    "evosim::blob::blob::Blob" [label="pub struct|blob::blob::Blob", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::blob::BlobBundle" [label="pub struct|blob::blob::BlobBundle", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::blob::BlobInfo" [label="pub struct|blob::blob::BlobInfo", fillcolor="#81c169"]; // "struct" node    
+    "evosim::blob::blob_builder" [label="pub mod|blob::blob_builder", fillcolor="#81c169"]; // "mod" node
+    "evosim::blob::blob_builder::BlobBlock" [label="pub struct|blob::blob_builder::BlobBlock", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::blob_builder::BlobBuilder" [label="pub struct|blob::blob_builder::BlobBuilder", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block" [label="pub mod|blob::block", fillcolor="#81c169"]; // "mod" node
+    "evosim::blob::block::BlockAnchors" [label="pub struct|blob::block::BlockAnchors", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block::BlockDepth" [label="pub struct|blob::block::BlockDepth", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block::CenterBlockFlag" [label="pub struct|blob::block::CenterBlockFlag", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block::JointInfo" [label="pub struct|blob::block::JointInfo", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block::NeuronId" [label="pub struct|blob::block::NeuronId", fillcolor="#81c169"]; // "struct" node  
+    "evosim::blob::block::ParentAnchor" [label="pub struct|blob::block::ParentAnchor", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::block::PhysiBlockBundle" [label="pub struct|blob::block::PhysiBlockBundle", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::geno_blob_builder" [label="pub mod|blob::geno_blob_builder", fillcolor="#81c169"]; // "mod" node    
+    "evosim::blob::geno_blob_builder::BlobGeno" [label="pub struct|blob::geno_blob_builder::BlobGeno", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::geno_blob_builder::GenericGenoNode" [label="pub enum|blob::geno_blob_builder::GenericGenoNode", fillcolor="#81c169"]; // "enum" node
+    "evosim::blob::geno_blob_builder::GenoBlobBuilder" [label="pub struct|blob::geno_blob_builder::GenoBlobBuilder", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::geno_blob_builder::GenoNode" [label="pub struct|blob::geno_blob_builder::GenoNode", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::geno_blob_builder::QuadTree" [label="pub struct|blob::geno_blob_builder::QuadTree", fillcolor="#81c169"]; // "struct" node
+    "evosim::blob::geno_blob_builder::builder_validation_test" [label="pub(self) mod|blob::geno_blob_builder::builder_validation_test", fillcolor="#db5367"]; // "mod" node
+    "evosim::brain" [label="pub(crate) mod|brain", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::brain::neuron" [label="pub mod|brain::neuron", fillcolor="#81c169"]; // "mod" node
+    "evosim::brain::neuron::BlockNN" [label="pub struct|brain::neuron::BlockNN", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::neuron::BrainNN" [label="pub struct|brain::neuron::BrainNN", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::neuron::GenericNN" [label="pub enum|brain::neuron::GenericNN", fillcolor="#81c169"]; // "enum" node
+    "evosim::brain::neuron::InwardNN" [label="pub struct|brain::neuron::InwardNN", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::neuron::OutwardNN" [label="pub struct|brain::neuron::OutwardNN", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::nn" [label="pub mod|brain::nn", fillcolor="#81c169"]; // "mod" node
+    "evosim::brain::nn::Activation" [label="pub enum|brain::nn::Activation", fillcolor="#81c169"]; // "enum" node      
+    "evosim::brain::nn::BaseLayer" [label="pub struct|brain::nn::BaseLayer", fillcolor="#81c169"]; // "struct" node    
+    "evosim::brain::nn::BaseNN" [label="pub struct|brain::nn::BaseNN", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::resource" [label="pub mod|brain::resource", fillcolor="#81c169"]; // "mod" node
+    "evosim::brain::resource::BevyBlockNeurons" [label="pub struct|brain::resource::BevyBlockNeurons", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal" [label="pub mod|brain::signal", fillcolor="#81c169"]; // "mod" node
+    "evosim::brain::signal::BrainSignal" [label="pub struct|brain::signal::BrainSignal", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal::BrainSignalUnit" [label="pub struct|brain::signal::BrainSignalUnit", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal::InwardNNInputSignal" [label="pub struct|brain::signal::InwardNNInputSignal", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal::InwardNNInputSignalUnit" [label="pub struct|brain::signal::InwardNNInputSignalUnit", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal::OutwardNNInputSignal" [label="pub struct|brain::signal::OutwardNNInputSignal", fillcolor="#81c169"]; // "struct" node
+    "evosim::brain::signal::SignalHandler" [label="pub struct|brain::signal::SignalHandler", fillcolor="#81c169"]; // "struct" node
+    "evosim::componet" [label="pub(crate) mod|componet", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::componet::BlobEntityIndex" [label="pub struct|componet::BlobEntityIndex", fillcolor="#81c169"]; // "struct" node
+    "evosim::componet::ColliderFlag" [label="pub enum|componet::ColliderFlag", fillcolor="#81c169"]; // "enum" node    
+    "evosim::consts" [label="pub(crate) mod|consts", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::consts::mutate_consts" [label="pub mod|consts::mutate_consts", fillcolor="#81c169"]; // "mod" node        
+    "evosim::contorl" [label="pub(crate) mod|contorl", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::contorl::contorl" [label="pub mod|contorl::contorl", fillcolor="#81c169"]; // "mod" node
+    "evosim::contorl::contorl::BlobContorlPlugin" [label="pub struct|contorl::contorl::BlobContorlPlugin", fillcolor="#81c169"]; // "struct" node
+    "evosim::contorl::resource" [label="pub mod|contorl::resource", fillcolor="#81c169"]; // "mod" node
+    "evosim::contorl::resource::Frames" [label="pub struct|contorl::resource::Frames", fillcolor="#81c169"]; // "struct" node
+    "evosim::contorl::resource::TED" [label="pub struct|contorl::resource::TED", fillcolor="#81c169"]; // "struct" node
+    "evosim::contorl::resource::TrainMutPipe" [label="pub struct|contorl::resource::TrainMutPipe", fillcolor="#81c169"]; // "struct" node
+    "evosim::contorl::train_move" [label="pub mod|contorl::train_move", fillcolor="#81c169"]; // "mod" node
+    "evosim::contorl::update" [label="pub mod|contorl::update", fillcolor="#81c169"]; // "mod" node
+    "evosim::graphics" [label="pub(crate) mod|graphics", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::graphics::EvoGraphicsPlugin" [label="pub struct|graphics::EvoGraphicsPlugin", fillcolor="#81c169"]; // "struct" node
+    "evosim::graphics::MainCamera" [label="pub struct|graphics::MainCamera", fillcolor="#81c169"]; // "struct" node    
+    "evosim::io" [label="pub(crate) mod|io", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::io::evoio" [label="pub mod|io::evoio", fillcolor="#81c169"]; // "mod" node
+    "evosim::io::evoio::EvoIOPlugin" [label="pub struct|io::evoio::EvoIOPlugin", fillcolor="#81c169"]; // "struct" node
+    "evosim::io::export" [label="pub mod|io::export", fillcolor="#81c169"]; // "mod" node
+    "evosim::io::export::ExportFile" [label="pub struct|io::export::ExportFile", fillcolor="#81c169"]; // "struct" node
+    "evosim::io::export::ExportFileIter" [label="pub struct|io::export::ExportFileIter", fillcolor="#81c169"]; // "struct" node
+    "evosim::io::export::ExportFileIterMut" [label="pub struct|io::export::ExportFileIterMut", fillcolor="#81c169"]; // "struct" node
+    "evosim::io::import" [label="pub mod|io::import", fillcolor="#81c169"]; // "mod" node
+    "evosim::logger" [label="pub(crate) mod|logger", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::logger::tests" [label="pub(self) mod|logger::tests", fillcolor="#db5367"]; // "mod" node
+    "evosim::mutate" [label="pub(crate) mod|mutate", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::mutate::geno_mutate" [label="pub(self) mod|mutate::geno_mutate", fillcolor="#db5367"]; // "mod" node      
+    "evosim::mutate::mutate" [label="pub mod|mutate::mutate", fillcolor="#81c169"]; // "mod" node
+    "evosim::mutate::mutate::MutatePlugin" [label="pub struct|mutate::mutate::MutatePlugin", fillcolor="#81c169"]; // "struct" node
+    "evosim::mutate::nn_mutate" [label="pub(self) mod|mutate::nn_mutate", fillcolor="#db5367"]; // "mod" node
+    "evosim::physics" [label="pub(crate) mod|physics", fillcolor="#f8c04c"]; // "mod" node
+    "evosim::physics::physical_world" [label="pub mod|physics::physical_world", fillcolor="#81c169"]; // "mod" node    
+    "evosim::physics::physical_world::PhysiWorldPlugin" [label="pub struct|physics::physical_world::PhysiWorldPlugin", fillcolor="#81c169"]; // "struct" node
+    "evosim::physics::rules" [label="pub mod|physics::rules", fillcolor="#81c169"]; // "mod" node
+    "evosim::physics::world" [label="pub mod|physics::world", fillcolor="#81c169"]; // "mod" node
+    "evosim::physics::world::Wall" [label="pub struct|physics::world::Wall", fillcolor="#81c169"]; // "struct" node    
+
+    "evosim" -> "evosim::blob" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge        
+    "evosim" -> "evosim::brain" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge       
+    "evosim" -> "evosim::componet" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge    
+    "evosim" -> "evosim::consts" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge      
+    "evosim" -> "evosim::contorl" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge     
+    "evosim" -> "evosim::graphics" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge    
+    "evosim" -> "evosim::io" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim" -> "evosim::logger" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge      
+    "evosim" -> "evosim::mutate" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge      
+    "evosim" -> "evosim::physics" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge     
+    "evosim::blob" -> "evosim::blob::blob" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob" -> "evosim::blob::blob_builder" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob" -> "evosim::blob::block" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob" -> "evosim::blob::geno_blob_builder" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::blob" -> "evosim::blob::blob::Blob" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::blob" -> "evosim::blob::blob::BlobBundle" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::blob" -> "evosim::blob::blob::BlobInfo" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::blob_builder" -> "evosim::blob::blob_builder::BlobBlock" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::blob_builder" -> "evosim::blob::blob_builder::BlobBuilder" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::BlockAnchors" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::BlockDepth" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::CenterBlockFlag" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::JointInfo" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::NeuronId" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::ParentAnchor" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::block" -> "evosim::blob::block::PhysiBlockBundle" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::BlobGeno" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::GenericGenoNode" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::GenoBlobBuilder" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::GenoNode" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::QuadTree" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::blob::geno_blob_builder" -> "evosim::blob::geno_blob_builder::builder_validation_test" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain" -> "evosim::brain::neuron" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain" -> "evosim::brain::nn" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain" -> "evosim::brain::resource" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain" -> "evosim::brain::signal" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::neuron" -> "evosim::brain::neuron::BlockNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::neuron" -> "evosim::brain::neuron::BrainNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::neuron" -> "evosim::brain::neuron::GenericNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::neuron" -> "evosim::brain::neuron::InwardNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::neuron" -> "evosim::brain::neuron::OutwardNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::nn" -> "evosim::brain::nn::Activation" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::nn" -> "evosim::brain::nn::BaseLayer" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::nn" -> "evosim::brain::nn::BaseNN" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::resource" -> "evosim::brain::resource::BevyBlockNeurons" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::BrainSignal" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::BrainSignalUnit" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::InwardNNInputSignal" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::InwardNNInputSignalUnit" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::OutwardNNInputSignal" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::brain::signal" -> "evosim::brain::signal::SignalHandler" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::componet" -> "evosim::componet::BlobEntityIndex" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::componet" -> "evosim::componet::ColliderFlag" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::consts" -> "evosim::consts::mutate_consts" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl" -> "evosim::contorl::contorl" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl" -> "evosim::contorl::resource" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl" -> "evosim::contorl::train_move" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl" -> "evosim::contorl::update" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl::contorl" -> "evosim::contorl::contorl::BlobContorlPlugin" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl::resource" -> "evosim::contorl::resource::Frames" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl::resource" -> "evosim::contorl::resource::TED" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::contorl::resource" -> "evosim::contorl::resource::TrainMutPipe" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::graphics" -> "evosim::graphics::EvoGraphicsPlugin" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::graphics" -> "evosim::graphics::MainCamera" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io" -> "evosim::io::evoio" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io" -> "evosim::io::export" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io" -> "evosim::io::import" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io::evoio" -> "evosim::io::evoio::EvoIOPlugin" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io::export" -> "evosim::io::export::ExportFile" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io::export" -> "evosim::io::export::ExportFileIter" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::io::export" -> "evosim::io::export::ExportFileIterMut" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::logger" -> "evosim::logger::tests" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::mutate" -> "evosim::mutate::geno_mutate" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::mutate" -> "evosim::mutate::mutate" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::mutate" -> "evosim::mutate::nn_mutate" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::mutate::mutate" -> "evosim::mutate::mutate::MutatePlugin" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::physics" -> "evosim::physics::physical_world" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::physics" -> "evosim::physics::rules" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::physics" -> "evosim::physics::world" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::physics::physical_world" -> "evosim::physics::physical_world::PhysiWorldPlugin" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+    "evosim::physics::world" -> "evosim::physics::world::Wall" [label="owns", color="#000000", style="solid"] [constraint=true]; // "owns" edge
+
+}
