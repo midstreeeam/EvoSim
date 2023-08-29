@@ -200,10 +200,13 @@ We weighed two primary methods during our initial phase of implementation:
 
 As the name suggests, this method relies on the simulation of individual particles to mimic fluid behavior. It boasts of being one of the most accurate methods available, and the simplicity of its implementation is an added advantage. However, the method is not without its drawbacks. High computational costs are a significant barrier. Using larger particles can compromise the accuracy of the fluid behavior, while opting for smaller ones can restrict the size of the world we aim to simulate.
 
-## viscosity effect:
+### Viscosity Effect:
 
 A viscosity effect is used for the simulations in underwater environments. For each exposed moving surface, a viscous force resists the normal component of its velocity, proportional to its sur-face area and normal velocity magnitude. According to Karl Sims, "This is a simple approximation that does not include the motion of the fluid itself, but is still sufficient for simulating realistic looking swimming and paddling dynamics." Compared to particle-based simulations, it's faster but demands meticulous and intricate implementation. Moreover, in this model, creatures can't influence water movement because the water itself doesn't 'move'.
 
 A potantial bug case for viscosity effect simulation is that, for example, putting an propeller inside a box, the box can still move once the propeller starts even the box is a confined space.
 
 Considering the pros and cons, we decided to employ the viscosity effect for every object in motion, thereby simulating an underwater environment. You can find our implementation [here](https://evosim.kaiyuanlou.com/evosim/physics/rules/fn.viscosity.html).
+
+## Collision Rule
+

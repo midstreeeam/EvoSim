@@ -49,3 +49,90 @@ To harness the advantages of parallel computing, our design embraces the Entity 
 Our virtual creatures boast a distinct hierarchical neural network. Organizing such a network in a conventional nested manner would immensely complicate parallel computation due to the intricate interdependencies present within the neural network's segments. To navigate this complexity, we've restructured the neural network. Each expansive network is fragmented into its smallest functional units, which are then interlinked. An auxiliary scheduling system is incorporated to dictate the sequence of processing. This reconfiguration significantly simplifies the parallel processing of the numerous neural network units.
 
 For managing other resources and datasets, we lean into Bevy's ECS framework, which offers robust support for parallel operations.
+
+Codebase structure shown below:
+
+```console
+crate evosim
+├── mod blob: pub(crate)
+│   ├── mod blob: pub
+│   │   ├── struct Blob: pub
+│   │   ├── struct BlobBundle: pub
+│   │   └── struct BlobInfo: pub
+│   ├── mod blob_builder: pub
+│   │   ├── struct BlobBlock: pub
+│   │   └── struct BlobBuilder: pub
+│   ├── mod block: pub
+│   │   ├── struct BlockAnchors: pub
+│   │   ├── struct BlockDepth: pub
+│   │   ├── struct CenterBlockFlag: pub
+│   │   ├── struct JointInfo: pub
+│   │   ├── struct NeuronId: pub
+│   │   ├── struct ParentAnchor: pub
+│   │   └── struct PhysiBlockBundle: pub
+│   └── mod geno_blob_builder: pub
+│       ├── struct BlobGeno: pub
+│       ├── enum GenericGenoNode: pub
+│       ├── struct GenoBlobBuilder: pub
+│       ├── struct GenoNode: pub
+│       ├── struct QuadTree: pub
+│       └── mod builder_validation_test: pub(self) #[cfg(test)]
+├── mod brain: pub(crate)
+│   ├── mod neuron: pub
+│   │   ├── struct BlockNN: pub
+│   │   ├── struct BrainNN: pub
+│   │   ├── enum GenericNN: pub
+│   │   ├── struct InwardNN: pub
+│   │   └── struct OutwardNN: pub
+│   ├── mod nn: pub
+│   │   ├── enum Activation: pub
+│   │   ├── struct BaseLayer: pub
+│   │   └── struct BaseNN: pub
+│   ├── mod resource: pub
+│   │   └── struct BevyBlockNeurons: pub
+│   └── mod signal: pub
+│       ├── struct BrainSignal: pub
+│       ├── struct BrainSignalUnit: pub
+│       ├── struct InwardNNInputSignal: pub
+│       ├── struct InwardNNInputSignalUnit: pub
+│       ├── struct OutwardNNInputSignal: pub
+│       └── struct SignalHandler: pub
+├── mod componet: pub(crate)
+│   ├── struct BlobEntityIndex: pub
+│   └── enum ColliderFlag: pub
+├── mod consts: pub(crate)
+│   └── mod mutate_consts: pub #[cfg(feature = "move")]
+├── mod contorl: pub(crate)
+│   ├── mod contorl: pub
+│   │   └── struct BlobContorlPlugin: pub
+│   ├── mod resource: pub
+│   │   ├── struct Frames: pub
+│   │   ├── struct TED: pub
+│   │   └── struct TrainMutPipe: pub
+│   ├── mod train_move: pub
+│   └── mod update: pub
+├── mod graphics: pub(crate)
+│   ├── struct EvoGraphicsPlugin: pub
+│   └── struct MainCamera: pub
+├── mod io: pub(crate)
+│   ├── mod evoio: pub
+│   │   └── struct EvoIOPlugin: pub
+│   ├── mod export: pub
+│   │   ├── struct ExportFile: pub
+│   │   ├── struct ExportFileIter: pub
+│   │   └── struct ExportFileIterMut: pub
+│   └── mod import: pub
+├── mod logger: pub(crate)
+│   └── mod tests: pub(self) #[cfg(test)]
+├── mod mutate: pub(crate)
+│   ├── mod geno_mutate: pub(self)
+│   ├── mod mutate: pub
+│   │   └── struct MutatePlugin: pub
+│   └── mod nn_mutate: pub(self)
+└── mod physics: pub(crate)
+    ├── mod physical_world: pub
+    │   └── struct PhysiWorldPlugin: pub
+    ├── mod rules: pub
+    └── mod world: pub
+        └── struct Wall: pub
+```
