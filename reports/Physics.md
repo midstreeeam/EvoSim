@@ -209,4 +209,3 @@ A potantial bug case for viscosity effect simulation is that, for example, putti
 Considering the pros and cons, we decided to employ the viscosity effect for every object in motion, thereby simulating an underwater environment. You can find our implementation [here](https://evosim.kaiyuanlou.com/evosim/physics/rules/fn.viscosity.html).
 
 ## Collision Rule
-

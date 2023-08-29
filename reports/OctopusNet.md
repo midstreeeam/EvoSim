@@ -48,3 +48,8 @@ Challenges:
 ### Conclusion & Our Choice
 
 In conclusion, the Octopus Net offers a harmonious blend of decentralization and coordination, drawing inspiration from nature's evolutionary marvels and tailoring it to the unique requirements of our virtual blobs.
+
+While in our situation, we finally choose to use the hierarchical structure since we have the higher prority of mutation resilience for training. Keeping a relatively stable CB structure is essencial to our project regards of other benefits provided by flat design.
+
+## Inward & Outward Propagation
+
