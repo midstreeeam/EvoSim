@@ -21,14 +21,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "reports/Neural.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "61d178a6e61dbc21",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "reports/OctopusNet.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -78,7 +90,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 219.5
   },
   "right": {
     "id": "d798e1a59632c39f",
@@ -94,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "reports/OctopusNet.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -111,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "reports/OctopusNet.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -134,7 +146,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "reports/Physics.md"
+                "file": "reports/OctopusNet.md"
               }
             }
           }
@@ -154,8 +166,14 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "active": "85428d505d5491a4",
+  "active": "61d178a6e61dbc21",
   "lastOpenFiles": [
+    "reports/Neural.md",
+    "reports/OctopusNet.md",
+    "reports/Mutation.md",
+    "reports/index.md",
+    "reports/Gene.md",
+    "reports/Physics.md",
     "run.log",
     "target/debug/deps/evosim.10b2y7w3wgfluk94.rcgu.o",
     "target/debug/deps/evosim.166hh4vietassoys.rcgu.o",
@@ -166,15 +184,8 @@
     "target/debug/deps/evosim.1eyv6d1mnj8dn5lr.rcgu.o",
     "target/debug/deps/evosim.1uij0ydnr6tub21b.rcgu.o",
     "target/debug/deps/evosim.1v63bu165uvb1r13.rcgu.o",
-    "target/debug/deps/evosim.253690vno24mockx.rcgu.o",
-    "reports/Gene.md",
-    "reports/OctopusNet.md",
-    "reports/Neural.md",
-    "reports/Mutation.md",
-    "reports/index.md",
     "graph.png",
     "reports/img/validation.jpg",
-    "reports/Physics.md",
     "reports/Relate Works.md",
     "reports/img/quadtree.png",
     "reports/img/validation.png",

@@ -6,10 +6,16 @@ Octopus Net is a neural architecture, crafted specifically for our blobs, ensure
 -  **Peripheral Neural Units (PNU):** Associated with every block of the blob, these are the smallest computational units. Each PNU processes sensory input unique to its respective block and issues commands to its specific joint motor. This allows for autonomous decision-making at a micro level.
 -  **Central Brain (CB):** Positioned in the root block, the CB operates as a coordinator. It receives sensory information from all blocks, processes it, and emits overarching commands. These signals can modify or influence behaviors across all blocks, ensuring coordination.
 
+Implementation documents [here](https://evosim.kaiyuanlou.com/evosim/brain/neuron/index.html).
+
 ## Signal Transmission & Behavior Modulation:
 
-- **Bottom-up Transmission:** PNUs send specific sensory information hierarchially to the CB. This aids in holistic decision-making by the CB, considering inputs from all over the blob's body.
-- **Top-down Modulation:** The CB issues general commands to it children blocks, and hierarchially passes to every block. While a block's PNU makes independent decisions, these decisions are modulated based on its parents' overarching signals, ensuring harmony in the blob's behavior.
+- **Bottom-up Transmission (Inward Propagation):** PNUs send specific sensory information hierarchially to the CB. This aids in holistic decision-making by the CB, considering inputs from all over the blob's body.
+- **Top-down Modulation (Outward Propagation):** The CB issues general commands to it children blocks, and hierarchially passes to every block. While a block's PNU makes independent decisions, these decisions are modulated based on its parents' overarching signals, ensuring harmony in the blob's behavior.
+
+The following graph shows the general information flow in both Inward Propagation and Outward Propagation on a single blob.
+![[propagation.png]]
+See detailed explanation in **Inward & Outward Propagation** section.
 
 ## Advantages:
 
@@ -53,3 +59,12 @@ While in our situation, we finally choose to use the hierarchical structure sinc
 
 ## Inward & Outward Propagation
 
+Given our selection of a hierarchical neural network model, all illustrations within this section pertain to the hierarchical architecture.
+
+As previously highlighted, each Peripheral Neural Unit (PNU) is adept at both inward and outward propagation—capabilities beyond the scope of a singular neural network. Consequently, every PNU, representing the smallest independent neural network unit, houses two distinct networks: **Inward NN** and **Outward NN**. Refer to the [implementation details](https://evosim.kaiyuanlou.com/evosim/brain/neuron/struct.BlockNN.html).
+
+The Inward NN receives input from two sources: signals gathered from blocks and joints, and the outputs from the child nodes' Inward NNs. This network generates a singular output, a synthesized signal derived from all its inputs. The output's dimensionality is notably smaller than its input, as only crucial information is relayed to parent nodes. Should a block be equipped to process specific data independently, the Outward NN decides on the course of action without escalating every detail to higher-tier nodes or the Central Brain (CB).
+
+Conversely, the Outward NN accepts input from its block and joint and amalgamates it with directives descending from its parent nodes. It produces a dual-faceted output: one segment directs the joint motor—serving as the blob's muscle—while the other conveys commands to its child nodes.
+![[info_transmission.png]]
+The graph delineates the intricate pathways of information transfer from one block to another. It's essential to note that, for clarity in the illustration, each block is depicted with a single child. However, this simplification doesn't typically reflect reality. In actual simulations, a block can have up to three child blocks. Consequently, the PNUs both receive and relay information to all its associated child blocks.
