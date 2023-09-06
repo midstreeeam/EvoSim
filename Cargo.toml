@@ -19,5 +19,5 @@ move = [] # training to learn to move
 
 [package]
 name = "evosim"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
