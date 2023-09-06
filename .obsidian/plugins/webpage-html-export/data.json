@@ -6,8 +6,8 @@
   "includeSvelteCSS": true,
   "makeNamesWebStyle": false,
   "allowFoldingHeadings": true,
-  "addFilenameTitle": false,
-  "beautifyHTML": true,
+  "addFilenameTitle": true,
+  "beautifyHTML": false,
   "customLineWidth": "",
   "contentWidth": "",
   "sidebarWidth": "",
@@ -17,8 +17,8 @@
   "addDarkModeToggle": true,
   "includeOutline": true,
   "includeGraphView": false,
-  "includeFileTree": false,
-  "exportPreset": "website",
+  "includeFileTree": true,
+  "exportPreset": "",
   "openAfterExport": true,
   "graphAttractionForce": 1,
   "graphLinkLength": 10,
@@ -27,5 +27,5 @@
   "graphEdgePruning": 100,
   "graphMinNodeSize": 3,
   "graphMaxNodeSize": 7,
-  "lastExportPath": "F:\\Working\\git\\hub\\kaiyuanlou\\index.html"
+  "lastExportPath": "F:\\Working\\git\\hub\\EvoSim"
 }

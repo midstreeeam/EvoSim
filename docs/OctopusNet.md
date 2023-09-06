@@ -6,7 +6,7 @@ Octopus Net is a neural architecture, crafted specifically for our blobs, ensure
 -  **Peripheral Neural Units (PNU):** Associated with every block of the blob, these are the smallest computational units. Each PNU processes sensory input unique to its respective block and issues commands to its specific joint motor. This allows for autonomous decision-making at a micro level.
 -  **Central Brain (CB):** Positioned in the root block, the CB operates as a coordinator. It receives sensory information from all blocks, processes it, and emits overarching commands. These signals can modify or influence behaviors across all blocks, ensuring coordination.
 
-Implementation documents [here](https://evosim.kaiyuanlou.com/evosim/brain/neuron/index.html).
+Implementation documents [here](https://evodoc.kaiyuanlou.com/evosim/brain/neuron/index.html).
 
 ## Signal Transmission & Behavior Modulation:
 
@@ -61,7 +61,7 @@ While in our situation, we finally choose to use the hierarchical structure sinc
 
 Given our selection of a hierarchical neural network model, all illustrations within this section pertain to the hierarchical architecture.
 
-As previously highlighted, each Peripheral Neural Unit (PNU) is adept at both inward and outward propagation—capabilities beyond the scope of a singular neural network. Consequently, every PNU, representing the smallest independent neural network unit, houses two distinct networks: **Inward NN** and **Outward NN**. Refer to the [implementation details](https://evosim.kaiyuanlou.com/evosim/brain/neuron/struct.BlockNN.html).
+As previously highlighted, each Peripheral Neural Unit (PNU) is adept at both inward and outward propagation—capabilities beyond the scope of a singular neural network. Consequently, every PNU, representing the smallest independent neural network unit, houses two distinct networks: **Inward NN** and **Outward NN**. Refer to the [implementation details](https://evodoc.kaiyuanlou.com/evosim/brain/neuron/struct.BlockNN.html).
 
 The Inward NN receives input from two sources: signals gathered from blocks and joints, and the outputs from the child nodes' Inward NNs. This network generates a singular output, a synthesized signal derived from all its inputs. The output's dimensionality is notably smaller than its input, as only crucial information is relayed to parent nodes. Should a block be equipped to process specific data independently, the Outward NN decides on the course of action without escalating every detail to higher-tier nodes or the Central Brain (CB).
 

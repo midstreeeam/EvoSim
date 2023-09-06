@@ -8,39 +8,30 @@
         "type": "tabs",
         "children": [
           {
-            "id": "3cc0eb53b9ed9f53",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {}
-            }
-          },
-          {
-            "id": "85428d505d5491a4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "reports/Neural.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
             "id": "61d178a6e61dbc21",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "docs/Physics.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "381e17ce9bc2b9ce",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/Training.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -106,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "docs/OctopusNet.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -123,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "reports/Physics.md",
+                "file": "docs/OctopusNet.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -146,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "reports/Physics.md"
+                "file": "docs/OctopusNet.md"
               }
             }
           }
@@ -166,14 +157,58 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "active": "61d178a6e61dbc21",
+  "floating": {
+    "id": "3306c3609c77219a",
+    "type": "floating",
+    "children": [
+      {
+        "id": "a575d967d5b1eacf",
+        "type": "window",
+        "children": [
+          {
+            "id": "430ae1f04fc91a89",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "e21d63375a481f87",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "docs/OctopusNet.md",
+                    "mode": "preview",
+                    "source": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": 830,
+        "y": 914,
+        "width": 600,
+        "height": 302,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "e21d63375a481f87",
   "lastOpenFiles": [
-    "reports/OctopusNet.md",
-    "reports/Neural.md",
-    "reports/Mutation.md",
-    "reports/index.md",
-    "reports/Gene.md",
-    "reports/Physics.md",
+    "docs/Relate Works.md",
+    "docs/Physics.md",
+    "docs/Training.md",
+    "docs-d/dev_log.md",
+    "docs-d/Notes.md",
+    "README.md",
+    "docs/OctopusNet.md",
+    "docs/Neural.md",
+    "docs/Mutation.md",
+    "docs/Gene.md",
+    "docs/index.md",
+    "docs.zip",
+    "docs/Contorl.md",
     "run.log",
     "target/debug/deps/evosim.10b2y7w3wgfluk94.rcgu.o",
     "target/debug/deps/evosim.166hh4vietassoys.rcgu.o",
@@ -183,15 +218,11 @@
     "target/debug/deps/evosim.1e07m76ziq1d8u0i.rcgu.o",
     "target/debug/deps/evosim.1eyv6d1mnj8dn5lr.rcgu.o",
     "target/debug/deps/evosim.1uij0ydnr6tub21b.rcgu.o",
-    "target/debug/deps/evosim.1v63bu165uvb1r13.rcgu.o",
     "graph.png",
-    "reports/img/validation.jpg",
-    "reports/Relate Works.md",
-    "reports/img/quadtree.png",
+    "docs/img/validation.jpg",
+    "docs/img/quadtree.png",
     "reports/img/validation.png",
     "Mutate.md",
-    "reports/Training.md",
-    "README.md",
     "target/doc/static.files/wheel-7b819b6101059cd0.svg",
     "target/doc/static.files/SourceSerif4-LICENSE-3bb119e13b1258b7.md",
     "target/doc/static.files/rust-logo-151179464ae7ed46.svg",

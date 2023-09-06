@@ -281,10 +281,14 @@ fn get_movevec(
                 left
             )),
             2 => Some((
-                left,bottom,top
+                left,
+                bottom,
+                top
             )),
             3 => Some((
-                right,top,bottom
+                right,
+                top,
+                bottom
             )),
             _ => {panic!()}
         }

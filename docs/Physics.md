@@ -4,7 +4,7 @@ To enable our virtual creatures to engage with their surroundings and other enti
 
 For foundational physical simulations, we have chosen the [Rapier](https://rapier.rs/) physics engine to manage collision events. However, we encountered challenges, especially with joint functionalities.
 
-For full documentation, please visit document for [Module evosim::physics](https://evosim.kaiyuanlou.com/evosim/physics/index.html).
+For full documentation, please visit document for [Module evosim::physics](https://evodoc.kaiyuanlou.com/evosim/physics/index.html).
 
 ## Joints
 
@@ -206,8 +206,14 @@ A viscosity effect is used for the simulations in underwater environments. For e
 
 A potantial bug case for viscosity effect simulation is that, for example, putting an propeller inside a box, the box can still move once the propeller starts even the box is a confined space.
 
-Considering the pros and cons, we decided to employ the viscosity effect for every object in motion, thereby simulating an underwater environment. You can find our implementation [here](https://evosim.kaiyuanlou.com/evosim/physics/rules/fn.viscosity.html).
+Considering the pros and cons, we decided to employ the viscosity effect for every object in motion, thereby simulating an underwater environment. You can find our implementation [here](https://evodoc.kaiyuanlou.com/evosim/physics/rules/fn.viscosity.html).
 
-## Collision Rule
+## Collision Rules
+
+As outlined in our [morphology design](Gene.md) for the virtual entities, certain collision events must occasionally be deactivated to ensure normal behavior of our blobs.
+
+The image below delineates the specific collision rules applied to our blobs. Notably, each block is designed to avoid collisions with its immediate parent and child nodes, allowing for unimpeded movement around the joint. Yet, when two blocks connected to the same parent come into contact, a collision is triggered.
+
+This design ensures that blobs maintain a tactile awareness of themselves, balancing self-recognition with joint flexibility.
 
 ![[collision.png]]
