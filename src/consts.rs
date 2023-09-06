@@ -125,6 +125,10 @@ pub mod mutate_consts{
     pub const MUTATE_NN_PORB: f32 = 0.5;
     /// standard deviation for normal distribution mutation
     pub const MUTATE_NN_STD: f32 = 0.1;
+    /// probablity of a single weight to mutate after the `BaseNN` is chosen to be mutate.
+    pub const MUTATE_NN_WEIGHT_PROB: f32 = 0.8;
+    /// probablity of a single bias to mutate after the `BaseNN` is chosen to be mutate.
+    pub const MUTATE_NN_BIAS_PROB: f32 = 0.8;
 }
 
 #[cfg(feature = "move")]
@@ -161,6 +165,10 @@ pub mod mutate_consts{
     pub const MUTATE_NN_PORB: f32 = 0.25;
     /// standard deviation for normal distribution mutation
     pub const MUTATE_NN_STD: f32 = 0.15;
+    /// probablity of a single weight to mutate after the `BaseNN` is chosen to be mutate.
+    pub const MUTATE_NN_WEIGHT_PROB: f32 = 0.8;
+    /// probablity of a single bias to mutate after the `BaseNN` is chosen to be mutate.
+    pub const MUTATE_NN_BIAS_PROB: f32 = 0.8;
 }
 
 // training

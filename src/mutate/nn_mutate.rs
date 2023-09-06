@@ -47,11 +47,17 @@ fn mutate_base_nn(nn: &mut BaseNN) {
     for layer in &mut nn.layers {
         // Mutate weights
         for weight in layer.weights.iter_mut() {
+            if !rng.gen_bool(MUTATE_NN_WEIGHT_PROB as f64) {
+                continue;
+            }
             *weight += normal.sample(&mut rng) as f32;
         }
 
         // Mutate biases
         for bias in layer.bias.iter_mut() {
+            if !rng.gen_bool(MUTATE_NN_BIAS_PROB as f64) {
+                continue;
+            }
             *bias += normal.sample(&mut rng) as f32;
         }
     }
