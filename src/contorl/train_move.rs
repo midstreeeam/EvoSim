@@ -1,5 +1,7 @@
 //! training process. Trainnig to let blobs to learn to move (swim or walk)
 
+// TODO: Currently the crowing distance only considered the morphyology distance, need to consider the distance of neural network.
+
 use std::collections::HashSet;
 
 use bevy::prelude::*;
