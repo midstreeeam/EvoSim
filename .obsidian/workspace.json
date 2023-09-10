@@ -11,23 +11,9 @@
             "id": "61d178a6e61dbc21",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "docs/Physics.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "381e17ce9bc2b9ce",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/Training.md",
-                "mode": "source",
-                "source": false
+                "file": "docs/img/collision.png"
               }
             }
           }
@@ -97,7 +83,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/OctopusNet.md",
+                "file": "docs/img/collision.png",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/OctopusNet.md",
+                "file": "docs/img/collision.png",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +123,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/OctopusNet.md"
+                "file": "docs/img/collision.png"
               }
             }
           }
@@ -157,56 +143,24 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "floating": {
-    "id": "3306c3609c77219a",
-    "type": "floating",
-    "children": [
-      {
-        "id": "a575d967d5b1eacf",
-        "type": "window",
-        "children": [
-          {
-            "id": "430ae1f04fc91a89",
-            "type": "tabs",
-            "children": [
-              {
-                "id": "e21d63375a481f87",
-                "type": "leaf",
-                "state": {
-                  "type": "markdown",
-                  "state": {
-                    "file": "docs/OctopusNet.md",
-                    "mode": "preview",
-                    "source": false
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "direction": "vertical",
-        "x": 830,
-        "y": 914,
-        "width": 600,
-        "height": 302,
-        "maximize": false,
-        "zoom": 0
-      }
-    ]
-  },
-  "active": "e21d63375a481f87",
+  "active": "61d178a6e61dbc21",
   "lastOpenFiles": [
-    "docs/Relate Works.md",
+    "docs/img/info_transmission.png",
+    "docs/img/propagation.png",
+    "docs/img/quadtree.png",
+    "docs/img/validation.jpg",
+    "docs/UserInstruction.md",
     "docs/Physics.md",
     "docs/Training.md",
+    "docs/Gene.md",
+    "docs/index.md",
+    "docs/Mutation.md",
+    "docs/Neural.md",
+    "docs/OctopusNet.md",
+    "docs/Relate Works.md",
     "docs-d/dev_log.md",
     "docs-d/Notes.md",
     "README.md",
-    "docs/OctopusNet.md",
-    "docs/Neural.md",
-    "docs/Mutation.md",
-    "docs/Gene.md",
-    "docs/index.md",
     "docs.zip",
     "docs/Contorl.md",
     "run.log",
@@ -219,8 +173,6 @@
     "target/debug/deps/evosim.1eyv6d1mnj8dn5lr.rcgu.o",
     "target/debug/deps/evosim.1uij0ydnr6tub21b.rcgu.o",
     "graph.png",
-    "docs/img/validation.jpg",
-    "docs/img/quadtree.png",
     "reports/img/validation.png",
     "Mutate.md",
     "target/doc/static.files/wheel-7b819b6101059cd0.svg",
@@ -229,7 +181,6 @@
     "target/doc/static.files/favicon-32x32-422f7d1d52889060.png",
     "target/doc/static.files/favicon-2c020d218678b618.svg",
     "target/doc/static.files/favicon-16x16-8b506e7a72182f1c.png",
-    "target/doc/static.files/clipboard-7571035ce49a181d.svg",
     "docs/Notes.md",
     "docs/dev_log.md"
   ]
