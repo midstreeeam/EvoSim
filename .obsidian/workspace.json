@@ -11,9 +11,11 @@
             "id": "61d178a6e61dbc21",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "docs/img/collision.png"
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -83,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/img/collision.png",
+                "file": "docs/UserInstruction.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/img/collision.png",
+                "file": "docs/UserInstruction.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -123,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/img/collision.png"
+                "file": "docs/UserInstruction.md"
               }
             }
           }
@@ -143,44 +145,82 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "active": "61d178a6e61dbc21",
+  "floating": {
+    "id": "d426cda2adb5faef",
+    "type": "floating",
+    "children": [
+      {
+        "id": "ab48ab5ec031eb4d",
+        "type": "window",
+        "children": [
+          {
+            "id": "4f6bb9b7fa7455f1",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "4513494a217287c5",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "docs/UserInstruction.md",
+                    "mode": "preview",
+                    "source": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": 270,
+        "y": 375,
+        "width": 800,
+        "height": 400,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "4513494a217287c5",
   "lastOpenFiles": [
+    "docs/lib/styles/theme.css",
+    "docs/lib/styles/snippets.css",
+    "docs/lib/styles/generated-styles.css",
+    "docs/lib/styles/plugin-styles.css",
+    "docs/lib/styles/obsidian-styles.css",
+    "docs/lib/scripts",
+    "docs/lib/styles",
+    "docs/lib",
+    "docs/docs/gene.html",
+    "docs/docs/img/validation.jpg",
+    "docs/docs/img/quadtree.png",
+    "docs/docs/img/propagation.png",
+    "docs/docs/img/info_transmission.png",
+    "docs/docs/img/collision.png",
+    "docs/docs/img",
+    "docs/docs",
+    "docs/Training.md",
+    "docs/Physics.md",
+    "docs/OctopusNet.md",
+    "docs/Neural.md",
+    "docs/Mutation.md",
+    "docs/index.md",
+    "docs/Gene.md",
+    "Untitled.md",
+    "docs/UserInstruction.md",
+    "docs/img/collision.png",
     "docs/img/info_transmission.png",
     "docs/img/propagation.png",
     "docs/img/quadtree.png",
     "docs/img/validation.jpg",
-    "docs/UserInstruction.md",
-    "docs/Physics.md",
-    "docs/Training.md",
-    "docs/Gene.md",
-    "docs/index.md",
-    "docs/Mutation.md",
-    "docs/Neural.md",
-    "docs/OctopusNet.md",
     "docs/Relate Works.md",
     "docs-d/dev_log.md",
     "docs-d/Notes.md",
     "README.md",
-    "docs.zip",
     "docs/Contorl.md",
-    "run.log",
-    "target/debug/deps/evosim.10b2y7w3wgfluk94.rcgu.o",
-    "target/debug/deps/evosim.166hh4vietassoys.rcgu.o",
-    "target/debug/deps/evosim.16uh0whbp8r6d7bb.rcgu.o",
-    "target/debug/deps/evosim.16xi5ayx1idq0ht.rcgu.o",
-    "target/debug/deps/evosim.17jomyc4chzi0k85.rcgu.o",
-    "target/debug/deps/evosim.1e07m76ziq1d8u0i.rcgu.o",
-    "target/debug/deps/evosim.1eyv6d1mnj8dn5lr.rcgu.o",
-    "target/debug/deps/evosim.1uij0ydnr6tub21b.rcgu.o",
-    "graph.png",
-    "reports/img/validation.png",
     "Mutate.md",
-    "target/doc/static.files/wheel-7b819b6101059cd0.svg",
     "target/doc/static.files/SourceSerif4-LICENSE-3bb119e13b1258b7.md",
-    "target/doc/static.files/rust-logo-151179464ae7ed46.svg",
-    "target/doc/static.files/favicon-32x32-422f7d1d52889060.png",
-    "target/doc/static.files/favicon-2c020d218678b618.svg",
-    "target/doc/static.files/favicon-16x16-8b506e7a72182f1c.png",
     "docs/Notes.md",
     "docs/dev_log.md"
   ]
