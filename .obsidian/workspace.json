@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/Mutation.md",
+                "file": "Untitled.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/Training.md",
+                "file": "Untitled.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/Training.md",
+                "file": "Untitled.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/Training.md"
+                "file": "Untitled.md"
               }
             }
           },
@@ -155,49 +155,13 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "floating": {
-    "id": "1040facad928d00b",
-    "type": "floating",
-    "children": [
-      {
-        "id": "8f79d59990a29ed0",
-        "type": "window",
-        "children": [
-          {
-            "id": "859f699f77eea4e3",
-            "type": "tabs",
-            "children": [
-              {
-                "id": "37d271984c151d49",
-                "type": "leaf",
-                "state": {
-                  "type": "markdown",
-                  "state": {
-                    "file": "docs/Training.md",
-                    "mode": "preview",
-                    "source": false
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "direction": "vertical",
-        "x": 830,
-        "y": 914,
-        "width": 800,
-        "height": 402,
-        "maximize": false,
-        "zoom": 0
-      }
-    ]
-  },
-  "active": "37d271984c151d49",
+  "active": "61d178a6e61dbc21",
   "lastOpenFiles": [
+    "docs/Mutation.md",
+    "docs/Training.md",
     "docs/Physics.md",
     "docs/OctopusNet.md",
     "docs/Neural.md",
-    "docs/Mutation.md",
     "docs/index.md",
     "docs/Gene.md",
     "lib/scripts/tinycolor.js",
@@ -210,7 +174,6 @@
     "docs/Training.html",
     "docs/Physics.html",
     "docs/OctopusNet.html",
-    "docs/Training.md",
     "Untitled.md",
     "docs/docs/img/validation.jpg",
     "docs/docs/img/quadtree.png",
