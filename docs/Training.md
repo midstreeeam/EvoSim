@@ -55,7 +55,7 @@ fn build(&self, app: &mut App) {
         panic!()
     }
 }
-  ```
+```
 
 
 ## Tournament
