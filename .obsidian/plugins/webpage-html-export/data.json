@@ -4,7 +4,7 @@
   "inlineImages": true,
   "includePluginCSS": "",
   "includeSvelteCSS": true,
-  "makeNamesWebStyle": true,
+  "makeNamesWebStyle": false,
   "allowFoldingHeadings": true,
   "sidebarsAlwaysCollapsible": false,
   "addFilenameTitle": false,
