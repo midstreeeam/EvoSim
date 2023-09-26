@@ -1,5 +1,3 @@
 # EvoSim
 
-## mutation
-
-![](https://github.com/midstreeeam/EvoSim/blob/main/assets/mutation.gif)
+visit [webpage](https://evosim.kaiyuanlou.com/docs/index.html) or check [document](https://evodoc.kaiyuanlou.com/evosim/index.html) for detailed information
