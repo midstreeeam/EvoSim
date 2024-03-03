@@ -1,4 +1,4 @@
-# Genes & Morphyology
+# Genes & Morphology
 
 For our virtual creatures, affectionately termed "blobs", the goal is to encourage a diverse range of forms. We've built in a significant degree of freedom, allowing them to evolve into any shape or structure, as long as they adhere to certain guidelines:
 
@@ -28,7 +28,7 @@ For a deeper dive into the implementation specifics, refer to our documentation 
 
 ## Gene Validation
 
-In our structure, every blob's morphyology can be represented by a unique gene, but not every possible gene relate to a valid structure. So, when a gene is randomly generated, or mutated, we need to check if the new gene corresponds to a valid morphyology structure.
+In our structure, every blob's morphology can be represented by a unique gene, but not every possible gene relate to a valid structure. So, when a gene is randomly generated, or mutated, we need to check if the new gene corresponds to a valid morphology structure.
 
 Usually, there are two types of invalidate gene, as shown in the graph below:
 ![[validation.jpg]]

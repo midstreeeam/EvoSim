@@ -18,7 +18,7 @@ The core architecture of the simulation is segmented into several pivotal compon
 Moving away from the traditional evolution simulations that provide pre-defined movement functions for virtual entities, we aspire for our creatures to autonomously discover means of motion within a simulated physical realm, mirroring the evolutionary trajectory of cells in the real world. Thus, we've developed an underwater physics simulation, encouraging virtual entities to adapt and learn to swim.
 
 Dive deeper into the intricacies of our physical simulation design and its implementation by visiting [this dedicated page](Physics.md).
-### Morphylogoly
+### Morphologoly
 
 Creatures are architecturally composed of rectangular rigid bodies interconnected by joints. These rigid bodies serve as the physical elements facilitating movement, while the joints, constrained by specific angles and equipped with controllable motors, enable articulated action.
 

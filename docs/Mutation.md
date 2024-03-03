@@ -1,6 +1,6 @@
 # Mutation
 
-For an AI project that utulizing genetic algorithm for training, the mutation strategy can never be more important. Since the mutation is a process on top of virtual creatures' morphyology and neural network, I highly recommend you to read the [Gene](Gene.md) and [Neural](Neural.md) section before diving into the following sections.
+For an AI project that utulizing genetic algorithm for training, the mutation strategy can never be more important. Since the mutation is a process on top of virtual creatures' morphology and neural network, I highly recommend you to read the [Gene](Gene.md) and [Neural](Neural.md) section before diving into the following sections.
 
 Refering [this document](https://evodoc.kaiyuanlou.com/evosim/mutate/index.html) for detailed implementation.
 ## NN Mutation
@@ -11,7 +11,7 @@ Given the intricate and variable nature of a blob's neural network, mutation eff
 
 To mirror the unpredictability of mutations in the natural world, certain constants—`MUTATE_NN_PORB`, `MUTATE_NN_WEIGHT_PROB`, and `MUTATE_NN_BIAS_PROB`—govern the likelihood of mutations occurring at the neural network, weight, or bias levels, respectively.
 
-## Morphyology Mutation
+## Morphology Mutation
 
 While neural networks follow a unified mutation approach, the mutation of morphology is decidedly more intricate. A blob's physical structure is made up of individual blocks, each of which can undergo size mutations. The joints, pivotal for connecting these blocks, can experience alterations in their movement limits. Additionally, during the mutation process, blobs have the potential to either gain or lose blocks.
 

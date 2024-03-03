@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Untitled.md",
+                "file": "docs/Training.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Untitled.md",
+                "file": "docs/Training.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Untitled.md",
+                "file": "docs/Training.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Untitled.md"
+                "file": "docs/Training.md"
               }
             }
           },
@@ -158,12 +158,13 @@
   "active": "61d178a6e61dbc21",
   "lastOpenFiles": [
     "docs/Mutation.md",
-    "docs/Training.md",
-    "docs/Physics.md",
-    "docs/OctopusNet.md",
     "docs/Neural.md",
-    "docs/index.md",
+    "docs/OctopusNet.md",
     "docs/Gene.md",
+    "docs/Physics.md",
+    "docs/index.md",
+    "docs/Training.md",
+    "Untitled.md",
     "lib/scripts/tinycolor.js",
     "lib/scripts/graph_view.js",
     "lib/scripts/graph_wasm.js",
@@ -174,7 +175,6 @@
     "docs/Training.html",
     "docs/Physics.html",
     "docs/OctopusNet.html",
-    "Untitled.md",
     "docs/docs/img/validation.jpg",
     "docs/docs/img/quadtree.png",
     "docs/docs/img/propagation.png",

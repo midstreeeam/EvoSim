@@ -49,7 +49,7 @@ Strengths:
 Challenges:
 
 - **Lack of Gradation:** While signals are clearer, there's a potential loss in the depth and gradation of information. Everything is relayed directly to the CB, which could overwhelm it with a barrage of data.
-- **Inconstant CB structure:** Due to the direct linkage, the BC's shape and size changes while morphyological mutation happens, which might leads to a wide disable of blocks.
+- **Inconstant CB structure:** Due to the direct linkage, the BC's shape and size changes while morphological mutation happens, which might leads to a wide disable of blocks.
 
 ### Conclusion & Our Choice
 
